@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-title">
+  <p class="eyebrow">My profile</p>
+  <h1>Salam, {{ user.full_name.split(' ')[0] }}</h1>
+</div>
+
+<section class="account-grid">
+  <aside class="card">
+    <h2>Membership</h2>
+    <div class="status-row">
+      {% if is_subscribed %}
+        <span class="badge active">● Active member</span>
+      {% else %}
+        <span class="badge free">Free account</span>
+      {% endif %}
+    </div>
+
+    {% if is_subscribed %}
+      <p class="empty">Unlimited WhatsApp &amp; phone contacts.</p>
+      {% if user.stripe_customer_id %}
+        <form method="post" action="/billing/portal"><button class="button ghost full">Manage billing</button></form>
+      {% endif %}
+      <form method="post" action="/billing/cancel"
+            onsubmit="return confirm('Cancel your membership? You will keep access until the end of the billing period.');">
+        <button class="button ghost full">Cancel membership</button>
+      </form>
+    {% else %}
+      <p class="empty">You've opened <strong>{{ contacts_used }}</strong> of <strong>{{ contact_limit }}</strong> free contacts.</p>
+      <div class="meter"><span style="width: {{ (100 * contacts_used / contact_limit) if contact_limit else 0 }}%"></span></div>
+      <a class="button full" href="/pricing">Go unlimited — $5/month</a>
+    {% endif %}
+
+    <p class="ref" style="margin-top:16px">{{ user.email }}</p>
+  </aside>
+
+  <article class="card">
+    <div class="section-head" style="margin-top:0">
+      <div><h2>My submitted profiles</h2></div>
+      <a href="/submit">Add a profile →</a>
+    </div>
+    {% if my_profiles %}
+      <div class="my-list">
+        {% for p in my_profiles %}
+          <div class="my-row">
+            <div>
+              <strong>{{ p.full_name or p.profile_type ~ ' profile' }}</strong>
+              <div class="ref">{{ p.reference_code }}</div>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px">
+              <span class="status-tag {{ p.status }}">{{ p.status }}</span>
+              {% if p.status == 'approved' %}<a href="/profiles/{{ p.id }}">View</a>{% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="empty">You haven't added a profile yet. <a href="/submit">Add one now</a> — it goes live after admin review.</p>
+    {% endif %}
+  </article>
+</section>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% macro profile_card(profile, is_subscribed=False) %}
+<a class="card profile-card" href="/profiles/{{ profile.id }}">
+  <div class="card-topline">
+    <span class="chip">{{ profile.profile_type or 'Profile' }}</span>
+    <span class="ref">{{ profile.reference_code }}</span>
+  </div>
+  {% if profile.image_path %}
+    <img class="avatar" src="/uploads/{{ profile.image_path }}" alt="Profile image">
+  {% else %}
+    <div class="avatar placeholder">{{ (profile.profile_type or 'N')[0] }}</div>
+  {% endif %}
+  <h3>{{ profile.full_name or profile.profile_type ~ ' profile' }}</h3>
+  <div class="meta">
+    {% if profile.age %}<span>{{ profile.age }} yrs</span>{% endif %}
+    {% if profile.city %}<span>{{ profile.city }}</span>{% endif %}
+    {% if profile.marital_status %}<span>{{ profile.marital_status }}</span>{% endif %}
+  </div>
+  <p>{{ (profile.bio_summary or profile.raw_text or 'Profile summary available after review.') | truncate(220) }}</p>
+  <div class="blur-line {% if is_subscribed %}open{% endif %}">
+    {% if is_subscribed %}Contact unlocked{% else %}Contact locked for subscribers{% endif %}
+  </div>
+</a>
+{% endmacro %}
+
+{% macro field(label, value) %}
+  {% if value %}
+    <div class="field"><dt>{{ label }}</dt><dd>{{ value }}</dd></div>
+  {% endif %}
+{% endmacro %}

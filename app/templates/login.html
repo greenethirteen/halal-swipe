@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="auth-card card">
+  <p class="eyebrow">Welcome back</p>
+  <h1>Log in</h1>
+  <p class="auth-sub">Serious profiles, real people. Pick up where you left off.</p>
+  <form method="post" action="/login" class="form compact">
+    <input type="hidden" name="next" value="{{ next or '/' }}">
+    <label>Email <input name="email" type="email" autocomplete="email" required></label>
+    <label>Password <input name="password" type="password" autocomplete="current-password" required></label>
+    <button class="button full">Log in</button>
+  </form>
+  <p class="auth-alt">New here? <a href="/register{% if next and next != '/' %}?next={{ next }}{% endif %}">Create an account</a></p>
+</section>
+{% endblock %}

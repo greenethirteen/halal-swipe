@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-title">
+  <p class="eyebrow">Admin</p>
+  <h1>Import and review profiles</h1>
+</section>
+<div class="admin-grid">
+  <section class="card">
+    <h2>Database</h2>
+    <div class="stats vertical">
+      <span><strong>{{ stats.total or 0 }}</strong> total</span>
+      <span><strong>{{ stats.pending or 0 }}</strong> pending</span>
+      <span><strong>{{ stats.approved or 0 }}</strong> approved</span>
+      <span><strong>{{ stats.hidden or 0 }}</strong> hidden</span>
+    </div>
+  </section>
+  <section class="card">
+    <h2>Upload WhatsApp export zip</h2>
+    <p>The importer scans `_chat.txt`, extracts profile-like biodata messages and inserts only new unique profiles.</p>
+    <form method="post" action="/admin/import" enctype="multipart/form-data" class="form compact">
+      <input type="file" name="zip_file" accept=".zip" required>
+      <button class="button">Scan and import new profiles</button>
+    </form>
+  </section>
+</div>
+
+<section class="section-head">
+  <div><p class="eyebrow">Review queue</p><h2>Pending profiles</h2></div>
+</section>
+<div class="review-list">
+{% for p in pending %}
+  <article class="card review-card">
+    <div>
+      <span class="chip">{{ p.profile_type }}</span>
+      <h3><a href="/admin/profiles/{{ p.id }}">{{ p.full_name or p.reference_code }}</a></h3>
+      <p>{{ (p.bio_summary or p.raw_text) | truncate(280) }}</p>
+      <div class="meta">
+        {% if p.age %}<span>{{ p.age }} yrs</span>{% endif %}
+        {% if p.city %}<span>{{ p.city }}</span>{% endif %}
+        {% if p.source_name %}<span>{{ p.source_name }}</span>{% endif %}
+      </div>
+    </div>
+    <div class="review-actions">
+      <form method="post" action="/admin/profiles/{{ p.id }}/approve"><button class="button mini">Approve</button></form>
+      <form method="post" action="/admin/profiles/{{ p.id }}/hide"><button class="button mini ghost">Hide</button></form>
+    </div>
+  </article>
+{% else %}
+  <div class="empty card">No pending profiles.</div>
+{% endfor %}
+</div>
+
+<section class="section-head">
+  <div><p class="eyebrow">Imports</p><h2>Recent batches</h2></div>
+</section>
+<div class="table card">
+  <table>
+    <thead><tr><th>File</th><th>Candidates</th><th>New</th><th>Duplicates</th><th>Skipped</th><th>Date</th></tr></thead>
+    <tbody>
+      {% for b in batches %}
+      <tr><td>{{ b.filename }}</td><td>{{ b.total_candidates }}</td><td>{{ b.inserted }}</td><td>{{ b.duplicates }}</td><td>{{ b.skipped }}</td><td>{{ b.created_at }}</td></tr>
+      {% else %}
+      <tr><td colspan="6">No imports yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

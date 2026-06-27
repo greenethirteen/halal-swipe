@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+app.db
+uploads/imports/*
+uploads/profile_images/*

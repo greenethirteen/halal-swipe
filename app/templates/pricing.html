@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="pricing">
+  <div class="card price-card">
+    <p class="eyebrow">Membership</p>
+    <h1>$5<span>/month</span></h1>
+    <p>Browsing is free. Membership unlocks unlimited contact details so you can reach serious families directly.</p>
+    <ul>
+      <li><strong>Free:</strong> browse every profile and open {{ settings.free_contact_limit }} contacts</li>
+      <li><strong>Member:</strong> unlimited WhatsApp &amp; phone contacts</li>
+      <li>Reach the parent / guardian directly — no middlemen</li>
+      <li>Admin-reviewed, consent-first, real profiles only</li>
+      <li>Cancel anytime — no lock-in</li>
+    </ul>
+    {% if user and is_subscribed %}
+      <div class="unlock-box">You have an active membership. Manage it from <a href="/account">My profile</a>.</div>
+    {% elif user %}
+      <form method="post" action="/billing/checkout"><button class="button full">Subscribe with Stripe</button></form>
+      {% if settings.demo_mode %}
+        <form method="post" action="/billing/demo-activate"><button class="button ghost full">Activate demo membership</button></form>
+      {% endif %}
+    {% else %}
+      <a class="button full" href="/register?next=/pricing">Create a free account</a>
+      <p class="auth-alt">Already a member? <a href="/login?next=/pricing">Log in</a></p>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

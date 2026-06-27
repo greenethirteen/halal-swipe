@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="auth-card card">
+  <p class="eyebrow">Create account</p>
+  <h1>Join {{ settings.app_name }}</h1>
+  <p class="auth-sub">A calmer, more honest way to find a spouse. Free to browse — connect with real families.</p>
+  <form method="post" action="/register" class="form compact">
+    <input type="hidden" name="next" value="{{ next or '/' }}">
+    <label>Full name <input name="full_name" autocomplete="name" required></label>
+    <label>Email <input name="email" type="email" autocomplete="email" required></label>
+    <label>Password <input name="password" type="password" minlength="8" autocomplete="new-password" required></label>
+    <button class="button full">Create account</button>
+  </form>
+  <p class="auth-alt">Already a member? <a href="/login{% if next and next != '/' %}?next={{ next }}{% endif %}">Log in</a></p>
+</section>
+{% endblock %}

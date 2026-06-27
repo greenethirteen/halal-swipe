@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ settings.app_name }}</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <div class="splash" id="splash"><img src="/static/logo.png" alt="{{ settings.app_name }}"></div>
+  <header class="nav">
+    <a class="brand" href="/"><img src="/static/logo.png" alt="{{ settings.app_name }}"></a>
+    <nav>
+      <a href="/profiles">Browse</a>
+      <a href="/submit">Add profile</a>
+      <a href="/pricing">Pricing</a>
+      <a href="/about">About</a>
+      {% if is_admin %}<a href="/admin">Admin</a>{% endif %}
+      {% if user %}
+        <a href="/account">My profile</a>
+        <form class="inline" method="post" action="/logout"><button class="link-button">Log out</button></form>
+      {% else %}
+        <a href="/login">Log in</a>
+        <a class="button mini" href="/register">Join</a>
+      {% endif %}
+    </nav>
+  </header>
+  {% if flash %}<div class="flash">{{ flash }}</div>{% endif %}
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="footer">
+    <span>Built for consent-based Sri Lankan Nikah profiles.</span>
+    <span>Admin review required before profiles go live.</span>
+  </footer>
+  <script>
+    (function(){
+      var s = document.getElementById('splash');
+      if(!s) return;
+      if(sessionStorage.getItem('splashShown')){ s.remove(); return; }
+      sessionStorage.setItem('splashShown','1');
+      setTimeout(function(){ s.classList.add('hide'); setTimeout(function(){ s.remove(); }, 600); }, 1500);
+    })();
+  </script>
+  <script type="module" src="/static/firebase.js"></script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% from "components.html" import profile_card %}
+{% block content %}
+<section class="hero">
+  <div>
+    <p class="eyebrow">Private, searchable, subscription-ready</p>
+    <h1>A cleaner way to browse serious Sri Lankan Nikah profiles.</h1>
+    <p class="lead">Turn messy WhatsApp biodata drops into elegant profile cards with filters, admin review and duplicate-safe importing.</p>
+    <div class="actions">
+      <a class="button" href="/profiles">Browse profiles</a>
+      <a class="button ghost" href="/submit">Upload your profile</a>
+    </div>
+  </div>
+  <div class="hero-card">
+    <span class="spark">$5/month</span>
+    <h2>Unlock contact details</h2>
+    <p>Profiles stay browsable. Contact information is gated for subscribed members only.</p>
+    <div class="stats">
+      <span><strong>{{ stats.total or 0 }}</strong> profiles</span>
+      <span><strong>{{ stats.brides or 0 }}</strong> brides</span>
+      <span><strong>{{ stats.grooms or 0 }}</strong> grooms</span>
+    </div>
+  </div>
+</section>
+
+<section class="section-head">
+  <div>
+    <p class="eyebrow">Fresh profiles</p>
+    <h2>Recently approved</h2>
+  </div>
+  <a href="/profiles">View all →</a>
+</section>
+<div class="grid">
+  {% for profile in recent %}
+    {{ profile_card(profile, is_subscribed) }}
+  {% else %}
+    <div class="empty card">No approved profiles yet. Log in as admin and import a WhatsApp export zip.</div>
+  {% endfor %}
+</div>
+{% endblock %}

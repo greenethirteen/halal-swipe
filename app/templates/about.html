@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="about">
+  <div class="page-title">
+    <p class="eyebrow">Our purpose</p>
+    <h1>Marriage, made simple and sincere.</h1>
+  </div>
+  <p class="lead">
+    Most dating apps are built for hookups. Most Muslim matrimonial sites for Sri Lankans
+    are outdated and painful to use. {{ settings.app_name }} is the calm middle ground —
+    real profiles, serious people, and a respectful way to connect with the family.
+  </p>
+
+  <div class="about-grid">
+    <div class="card"><span class="emoji">🤝</span><strong>Serious, not casual</strong><span class="empty">For people genuinely looking for a spouse — Nikah-focused, never a hookup app.</span></div>
+    <div class="card"><span class="emoji">✅</span><strong>Real profiles</strong><span class="empty">Every profile is admin-reviewed and consent-first before it goes live.</span></div>
+    <div class="card"><span class="emoji">👪</span><strong>Family-first contact</strong><span class="empty">Reach the parent or guardian's WhatsApp / phone directly, the proper way.</span></div>
+    <div class="card"><span class="emoji">⚡</span><strong>Simple &amp; modern</strong><span class="empty">Clean, fast and easy — none of the clutter of the old matrimonial sites.</span></div>
+  </div>
+
+  <div class="compare">
+    <div class="card them">
+      <h3>The old way</h3>
+      <ul>
+        <li>Hookup-style swiping apps</li>
+        <li>Outdated, clunky matrimonial sites</li>
+        <li>Fake or recycled profiles</li>
+        <li>No respectful path to the family</li>
+      </ul>
+    </div>
+    <div class="card us">
+      <h3>The {{ settings.app_name }} way</h3>
+      <ul>
+        <li>Built only for serious marriage</li>
+        <li>Clean, modern and effortless</li>
+        <li>Reviewed, consent-based real profiles</li>
+        <li>Direct WhatsApp / phone to the parent</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section-head">
+    <div><p class="eyebrow">Ready when you are</p><h2>Find someone real</h2></div>
+    <a href="/profiles">Browse profiles →</a>
+  </div>
+  <div class="actions">
+    <a class="button" href="/register">Create a free account</a>
+    <a class="button ghost" href="/pricing">See membership</a>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ settings.app_name }}</title>
+  <link rel="stylesheet" href="/static/styles.css">
+  <style>
+    /* Swipe-only mechanics, themed from the shared palette in styles.css */
+    html, body { height: 100%; }
+    body { display: flex; flex-direction: column; margin: 0; }
+    .swipe-top {
+      width: min(1180px, calc(100% - 32px));
+      margin: 18px auto 8px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: rgba(255, 250, 242, .8);
+      backdrop-filter: blur(18px);
+    }
+    .swipe-top .brand { font-weight: 850; letter-spacing: -.04em; font-size: 1.2rem; }
+    .swipe-links { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; font-weight: 600; }
+    .swipe-top a { color: var(--muted); }
+    .swipe-top .swipe-links a:hover { color: var(--ink); }
+    .card-contacts { display: flex; gap: 12px; margin-top: 18px; }
+    .card-contacts .ic {
+      width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center;
+      color: #fff; cursor: pointer; transition: transform .14s ease, box-shadow .14s ease, filter .14s ease;
+    }
+    .card-contacts .ic svg { width: 22px; height: 22px; fill: currentColor; }
+    .card-contacts .ic:hover { transform: translateY(-2px) scale(1.06); filter: brightness(1.05); }
+    .card-contacts .ic:active { transform: scale(.92); }
+    .ic-wa { background: #25d366; box-shadow: 0 10px 22px rgba(37,211,102,.35); }
+    .ic-call { background: var(--coral); box-shadow: 0 10px 22px rgba(255,111,97,.35); }
+
+    .filter-btn {
+      display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+      border: 1px solid var(--line); background: #fff; color: var(--ink);
+      font: inherit; font-weight: 700; padding: 8px 14px; border-radius: 999px;
+      box-shadow: 0 6px 16px rgba(255,138,76,.14); transition: transform .14s ease, box-shadow .14s ease;
+    }
+    .filter-btn svg { width: 16px; height: 16px; fill: currentColor; }
+    .filter-btn:hover { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(255,138,76,.22); }
+    .filter-btn:active { transform: scale(.96); }
+
+    .filter-overlay {
+      position: fixed; inset: 0; z-index: 60; display: none;
+      align-items: center; justify-content: center; padding: 16px;
+      background: rgba(42,32,24,.38); backdrop-filter: blur(3px);
+    }
+    .filter-overlay.open { display: flex; }
+    .filter-sheet {
+      width: min(420px, 100%); background: var(--bg-2); border-radius: 26px;
+      padding: 24px; box-shadow: var(--shadow); display: grid; gap: 14px;
+      animation: pop-in .25s ease both;
+    }
+    @keyframes pop-in { from { transform: scale(.94) translateY(8px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+    .filter-sheet h3 { margin: 0 0 2px; font-size: 1.3rem; letter-spacing: -.02em; }
+    .filter-ages { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .filter-buttons { display: grid; grid-template-columns: 1fr 1.4fr; gap: 12px; margin-top: 6px; }
+    .filter-buttons .button { margin-top: 0; }
+    .stage { flex: 1; position: relative; display: flex; align-items: center; justify-content: center; padding: 16px; overflow: hidden; }
+    .card {
+      position: absolute; width: min(440px, 92vw); max-height: 74dvh; overflow: auto;
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,.7);
+      border-radius: 32px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+      padding: 26px; will-change: transform; touch-action: pan-y;
+    }
+    .card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 16px; }
+    .card-head h2 { margin: 0; }
+    .card h2 { font-size: 1.6rem; letter-spacing: -.03em; color: var(--ink); }
+    .card .chip {
+      display: inline-flex; align-items: center; border-radius: 999px; padding: 7px 11px;
+      font-size: .8rem; font-weight: 800; background: rgba(255,169,59,.2); color: var(--gold-dark);
+      flex-shrink: 0;
+    }
+    .row { display: flex; gap: 10px; font-size: .98rem; padding: 11px 0; border-top: 1px solid var(--line); color: var(--ink); }
+    .row .k { color: var(--muted); min-width: 110px; font-weight: 700; }
+    .bio { margin-top: 16px; color: var(--muted); line-height: 1.6; white-space: pre-line; }
+    .stamp {
+      position: absolute; top: 26px; font-size: 1.5rem; font-weight: 900; letter-spacing: 2px;
+      padding: 4px 14px; border: 3px solid; border-radius: 10px; opacity: 0;
+    }
+    .stamp.like { left: 26px; color: var(--green); border-color: var(--green); transform: rotate(-12deg); }
+    .stamp.nope { right: 26px; color: var(--coral); border-color: var(--coral); transform: rotate(12deg); }
+    .controls { display: flex; justify-content: center; gap: 24px; padding: 18px 0 36px; }
+    .controls button {
+      width: 64px; height: 64px; border-radius: 50%; border: 1px solid var(--line);
+      background: #fff; box-shadow: 0 10px 26px rgba(255,138,76,.18);
+      font-size: 26px; cursor: pointer; display: grid; place-items: center; transition: transform .12s ease;
+    }
+    .controls button:active { transform: scale(0.92); }
+    .controls #no { color: var(--coral); }
+    .controls #yes { color: #fff; background: linear-gradient(135deg, #ff8a5b, #ff6f61); border: 0; }
+    .empty { color: var(--muted); text-align: center; max-width: 320px; line-height: 1.6; }
+    .empty a { color: var(--green); font-weight: 800; }
+  </style>
+</head>
+<body>
+  <div class="splash" id="splash"><img src="/static/logo.png" alt="{{ settings.app_name }}"></div>
+  <div class="swipe-top">
+    <a class="brand" href="/"><img src="/static/logo.png" alt="{{ settings.app_name }}"></a>
+    <span class="swipe-links">
+      <a href="/profiles">Browse</a>
+      <a href="/pricing">Pricing</a>
+      <a href="/about">About</a>
+      {% if user %}<a href="/account">My profile</a>{% else %}<a href="/login">Log in</a>{% endif %}
+      <button class="filter-btn" id="filterBtn" type="button" aria-label="Filter">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18l-7 8v6l-4-2v-4L3 5Z"/></svg>
+        Filter
+      </button>
+    </span>
+  </div>
+  <div class="stage" id="stage"></div>
+  <div class="controls">
+    <button id="no" title="Pass">✕</button>
+    <button id="yes" title="Interested">♥</button>
+  </div>
+
+  <div class="filter-overlay" id="filterOverlay">
+    <div class="filter-sheet" role="dialog" aria-label="Filter profiles">
+      <h3>Filter profiles</h3>
+      <label>Looking for
+        <select id="fType">
+          <option value="">Anyone</option>
+          <option value="Bride">Bride</option>
+          <option value="Groom">Groom</option>
+        </select>
+      </label>
+      <div class="filter-ages">
+        <label>Min age <input id="fMin" type="number" min="18" max="99" inputmode="numeric" placeholder="18"></label>
+        <label>Max age <input id="fMax" type="number" min="18" max="99" inputmode="numeric" placeholder="60"></label>
+      </div>
+      <label>City / district <input id="fCity" type="text" placeholder="e.g. Colombo"></label>
+      <div class="filter-buttons">
+        <button class="button ghost" type="button" id="fReset">Reset</button>
+        <button class="button" type="button" id="fApply">Show results</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      var s = document.getElementById('splash');
+      if(!s) return;
+      if(sessionStorage.getItem('splashShown')){ s.remove(); return; }
+      sessionStorage.setItem('splashShown','1');
+      setTimeout(function(){ s.classList.add('hide'); setTimeout(function(){ s.remove(); }, 600); }, 1500);
+    })();
+  </script>
+  <script>
+    const PROFILES = {{ profiles_json | safe }};
+    const stage = document.getElementById('stage');
+    let deck = PROFILES.slice();
+    let idx = 0;
+
+    function esc(s){ const d=document.createElement('div'); d.textContent=s==null?'':s; return d.innerHTML; }
+    function rowHtml(k,v){ return v ? `<div class="row"><span class="k">${k}</span><span>${esc(v)}</span></div>` : ''; }
+
+    let filterActive = false;
+    function showEmpty(){
+      stage.innerHTML = filterActive
+        ? `<div class="empty">No profiles match your filter.<br><br>
+            <a href="#" id="clearFilter">Clear filter</a></div>`
+        : `<div class="empty">That's everyone for now.<br><br>
+            <a href="/profiles">Browse all profiles</a> &middot; <a href="/register">Join to connect</a></div>`;
+      document.querySelector('.controls').style.visibility='hidden';
+      const cf = document.getElementById('clearFilter');
+      if(cf) cf.onclick = (e)=>{ e.preventDefault(); resetFilter(); };
+    }
+
+    function render(){
+      stage.innerHTML='';
+      if(idx >= deck.length){ showEmpty(); return; }
+      // render up to 2 cards (top + one behind) for depth, top last so it's on top
+      for(let i=Math.min(idx+1,deck.length-1); i>=idx; i--){
+        const p = deck[i];
+        const c = document.createElement('div');
+        c.className='card';
+        c.style.zIndex = String(10-(i-idx));
+        if(i>idx){ c.style.transform='scale(0.96) translateY(10px)'; }
+        c.innerHTML = `
+          <div class="stamp like">LIKE</div><div class="stamp nope">NOPE</div>
+          <div class="card-head">
+            <h2>${esc(p.title)}</h2>
+            <span class="chip">${esc(p.profile_type || 'Profile')}</span>
+          </div>
+          ${rowHtml('Age', p.age)}
+          ${rowHtml('Location', p.location)}
+          ${rowHtml('Education', p.education)}
+          ${rowHtml('Profession', p.profession)}
+          ${rowHtml('Marital status', p.marital_status)}
+          ${p.bio ? `<div class="bio">${esc(p.bio)}</div>` : ''}
+          <div class="card-contacts">
+            <a class="ic ic-wa" href="/profiles/${p.id}/whatsapp" title="WhatsApp" aria-label="WhatsApp">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 1.67c2.2 0 4.27.86 5.83 2.42a8.2 8.2 0 0 1 2.42 5.82c0 4.54-3.7 8.24-8.25 8.24-1.5 0-2.96-.4-4.24-1.16l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.37c0-4.54 3.7-8.24 8.24-8.24Zm-4.5 4.43c-.21 0-.55.08-.84.39-.29.31-1.1 1.08-1.1 2.62 0 1.55 1.13 3.04 1.29 3.25.16.21 2.2 3.36 5.33 4.58 2.6 1.02 3.13.81 3.7.76.57-.05 1.83-.75 2.09-1.47.26-.72.26-1.34.18-1.47-.08-.13-.29-.21-.6-.37-.31-.16-1.83-.9-2.11-1-.28-.1-.49-.16-.7.16-.21.31-.8 1-.98 1.21-.18.21-.36.23-.67.08-.31-.16-1.31-.48-2.5-1.54-.92-.82-1.54-1.84-1.72-2.15-.18-.31-.02-.48.14-.63.14-.14.31-.36.47-.54.16-.18.21-.31.31-.52.1-.21.05-.39-.03-.54-.08-.16-.7-1.69-.96-2.31-.25-.61-.51-.53-.7-.54l-.6-.01Z"/></svg>
+            </a>
+            <a class="ic ic-call" href="/profiles/${p.id}/call" title="Call" aria-label="Call">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.62 10.79a15.5 15.5 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.24.2 2.45.57 3.57a1 1 0 0 1-.24 1.02l-2.21 2.2Z"/></svg>
+            </a>
+          </div>`;
+        stage.appendChild(c);
+        if(i===idx) attachDrag(c);
+      }
+    }
+
+    function attachDrag(card){
+      let sx=0, sy=0, dx=0, dy=0, down=false;
+      const like=card.querySelector('.stamp.like'), nope=card.querySelector('.stamp.nope');
+      const start=(x,y)=>{down=true; sx=x; sy=y; card.style.transition='none';};
+      const move=(x,y)=>{ if(!down) return; dx=x-sx; dy=y-sy;
+        card.style.transform=`translate(${dx}px,${dy}px) rotate(${dx/18}deg)`;
+        like.style.opacity = dx>0 ? Math.min(dx/100,1) : 0;
+        nope.style.opacity = dx<0 ? Math.min(-dx/100,1) : 0; };
+      const end=()=>{ if(!down) return; down=false; card.style.transition='transform .3s ease';
+        if(Math.abs(dx)>110){ fly(card, dx>0?1:-1); } else { card.style.transform=''; like.style.opacity=nope.style.opacity=0; } };
+      card.addEventListener('mousedown',e=>{ if(e.target.closest('.ic')) return; start(e.clientX,e.clientY); });
+      window.addEventListener('mousemove',e=>move(e.clientX,e.clientY));
+      window.addEventListener('mouseup',end);
+      card.addEventListener('touchstart',e=>{ if(e.target.closest('.ic')) return; start(e.touches[0].clientX,e.touches[0].clientY); },{passive:true});
+      card.addEventListener('touchmove',e=>move(e.touches[0].clientX,e.touches[0].clientY),{passive:true});
+      card.addEventListener('touchend',end);
+    }
+
+    let animating = false;
+    function fly(card, dir){
+      card.style.transition='transform .4s cubic-bezier(.4,0,.6,1), opacity .4s ease';
+      card.style.transform=`translate(${dir*700}px, -40px) rotate(${dir*30}deg)`;
+      card.style.opacity='0';
+      setTimeout(()=>{ idx++; animating=false; render(); }, 360);
+    }
+    function swipeTop(dir){
+      if(animating) return;
+      const card = stage.querySelector('.card:last-child');
+      if(!card) return;
+      animating = true;
+      // reveal the matching stamp, give a little nudge, then fling it off
+      const stamp = card.querySelector(dir>0 ? '.stamp.like' : '.stamp.nope');
+      if(stamp) stamp.style.opacity='1';
+      card.style.transition='transform .15s ease';
+      card.style.transform=`translate(${dir*40}px,0) rotate(${dir*4}deg)`;
+      setTimeout(()=>fly(card, dir), 120);
+    }
+
+    document.getElementById('yes').onclick=()=>swipeTop(1);
+    document.getElementById('no').onclick=()=>swipeTop(-1);
+    document.addEventListener('keydown',e=>{
+      if(document.getElementById('filterOverlay').classList.contains('open')) return;
+      if(e.key==='ArrowRight')swipeTop(1); if(e.key==='ArrowLeft')swipeTop(-1);
+    });
+
+    // ---- Filter popup ----
+    const overlay = document.getElementById('filterOverlay');
+    const fType = document.getElementById('fType');
+    const fMin = document.getElementById('fMin');
+    const fMax = document.getElementById('fMax');
+    const fCity = document.getElementById('fCity');
+
+    function openFilter(){ overlay.classList.add('open'); }
+    function closeFilter(){ overlay.classList.remove('open'); }
+
+    function applyFilter(){
+      const type = fType.value;
+      const min = parseInt(fMin.value, 10);
+      const max = parseInt(fMax.value, 10);
+      const city = (fCity.value || '').trim().toLowerCase();
+      deck = PROFILES.filter(p => {
+        if(type && p.profile_type !== type) return false;
+        if(!isNaN(min) && (!p.age || p.age < min)) return false;
+        if(!isNaN(max) && (!p.age || p.age > max)) return false;
+        if(city && !((p.location || '').toLowerCase().includes(city))) return false;
+        return true;
+      });
+      filterActive = !!(type || !isNaN(min) || !isNaN(max) || city);
+      idx = 0;
+      document.querySelector('.controls').style.visibility = '';
+      render();
+      closeFilter();
+    }
+
+    function resetFilter(){
+      fType.value = ''; fMin.value = ''; fMax.value = ''; fCity.value = '';
+      deck = PROFILES.slice(); filterActive = false; idx = 0;
+      document.querySelector('.controls').style.visibility = '';
+      render(); closeFilter();
+    }
+
+    document.getElementById('filterBtn').onclick = openFilter;
+    document.getElementById('fApply').onclick = applyFilter;
+    document.getElementById('fReset').onclick = resetFilter;
+    overlay.addEventListener('click', e=>{ if(e.target === overlay) closeFilter(); });
+    document.addEventListener('keydown', e=>{ if(e.key === 'Escape') closeFilter(); });
+
+    if(!deck.length) showEmpty(); else render();
+  </script>
+  <script type="module" src="/static/firebase.js"></script>
+</body>
+</html>

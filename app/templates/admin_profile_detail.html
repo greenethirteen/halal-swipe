@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% from "components.html" import field %}
+{% block content %}
+<section class="detail-layout">
+  <aside class="card sticky-card">
+    <span class="chip">{{ profile.status }}</span>
+    <h1>{{ profile.full_name or profile.reference_code }}</h1>
+    <p>{{ profile.profile_type }} · {{ profile.source_name or 'manual' }}</p>
+    <form method="post" action="/admin/profiles/{{ profile.id }}/approve"><button class="button full">Approve</button></form>
+    <form method="post" action="/admin/profiles/{{ profile.id }}/hide"><button class="button ghost full">Hide</button></form>
+  </aside>
+  <article class="card detail-card">
+    <h2>Extracted fields</h2>
+    <dl class="fields">
+      {{ field('Reference', profile.reference_code) }}
+      {{ field('Age', profile.age) }}
+      {{ field('Height', profile.height) }}
+      {{ field('City', profile.city) }}
+      {{ field('District', profile.district) }}
+      {{ field('Marital status', profile.marital_status) }}
+      {{ field('Education', profile.education) }}
+      {{ field('Profession', profile.profession) }}
+      {{ field('Family background', profile.family_background) }}
+      {{ field('Faith notes', profile.faith_notes) }}
+      {{ field('Expectations', profile.expectations) }}
+      {{ field('Contact details', profile.contact_details) }}
+      {{ field('Source sender', profile.source_sender) }}
+      {{ field('Source time', profile.source_message_at) }}
+    </dl>
+    <h2>Raw imported bio</h2>
+    <pre class="raw">{{ profile.raw_text }}</pre>
+  </article>
+</section>
+{% endblock %}
