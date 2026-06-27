@@ -142,15 +142,14 @@
     .gate-overlay.open { display: flex; }
     .gate-card { text-align: center; max-width: 460px; animation: pop-in .35s ease both; }
     .gate-logo { width: 200px; max-width: 70%; height: auto; margin-bottom: 4px; }
-    .gate-card h2 { font-size: 1.8rem; letter-spacing: -.03em; margin: 8px 0 4px; color: var(--ink); }
-    .gate-card p { color: var(--muted); margin: 0 0 22px; }
+    .gate-card h2 { font-size: 1.55rem; letter-spacing: -.03em; margin: 8px 0 18px; color: var(--ink); }
+    .gate-card p { display: none; }
     .gate-options { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    .gate-pick { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 24px 16px; border-radius: 22px;
+    .gate-pick { display: flex; align-items: center; justify-content: center; padding: 18px 16px; border-radius: 18px;
       border: 1.5px solid var(--line); background: #fff; cursor: pointer; font: inherit; color: var(--ink);
       box-shadow: 0 12px 28px rgba(120,40,70,.1); transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease; }
-    .gate-pick strong { font-size: 1.1rem; font-weight: 800; }
-    .gate-pick small { color: var(--muted); font-weight: 600; font-size: .82rem; }
-    .gp-orb { width: 56px; height: 56px; border-radius: 50%; box-shadow: 0 10px 24px rgba(120,40,70,.18); }
+    .gate-pick strong { font-size: 1.15rem; font-weight: 850; }
+    .gate-pick small, .gp-orb { display: none; }
     .gp-bride { background: linear-gradient(135deg, #ff9a8b, #ff6a88); }
     .gp-groom { background: linear-gradient(135deg, #2fae8f, #12876a); }
     .gate-pick:hover { transform: translateY(-4px); border-color: var(--coral); box-shadow: 0 20px 40px rgba(255,111,97,.24); }
@@ -217,11 +216,10 @@
   <div class="gate-overlay" id="gateOverlay">
     <div class="gate-card">
       <img class="gate-logo" src="/static/logo.png" alt="{{ settings.app_name }}">
-      <h2>Who are you looking for?</h2>
-      <p>Find a serious, marriage-minded match.</p>
+      <h2>Looking for</h2>
       <div class="gate-options">
-        <button type="button" class="gate-pick" data-type="Bride"><span class="gp-orb gp-bride"></span><strong>A Bride</strong><small>Find a bride</small></button>
-        <button type="button" class="gate-pick" data-type="Groom"><span class="gp-orb gp-groom"></span><strong>A Groom</strong><small>Find a groom</small></button>
+        <button type="button" class="gate-pick" data-type="Groom"><span class="gp-orb gp-groom"></span><strong>Groom</strong><small>Find a groom</small></button>
+        <button type="button" class="gate-pick" data-type="Bride"><span class="gp-orb gp-bride"></span><strong>Bride</strong><small>Find a bride</small></button>
       </div>
     </div>
   </div>
