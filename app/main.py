@@ -108,7 +108,7 @@ PUBLIC_TEXT_FIELDS = {
     "raw_text",
 }
 QUALIFICATION_RE = re.compile(
-    r"\b(?:o/l|a/l|acca|hnd|hnda|bsc|ba|bcom|llb|mbbs|msc|mba|phd|diploma|dip\.?|degree|"
+    r"\b(?:o/l|a/l|acca|hnd|hnda|bsc|ba|bcom|llb|mbbs|msc|mba|phd|diplomas?|dip\.?|degrees?|"
     r"graduate|undergraduate|bachelor|master|certificate|nvq)\b",
     re.IGNORECASE,
 )
@@ -171,7 +171,9 @@ def compact_public_work(value: object) -> str | None:
         low = piece.lower()
         if PUBLIC_FIELD_NOISE_RE.search(piece):
             continue
-        if re.search(r"\b(?:completed\s+o/l|completed\s+a/l|diploma|degree|qualification|school|college|passed away)\b", low):
+        if QUALIFICATION_RE.search(piece):
+            continue
+        if re.search(r"\b(?:completed\s+o/l|completed\s+a/l|qualification|schools?|college|passed away)\b", low):
             continue
         piece = re.sub(r"^(?:currently\s+)?(?:working\s+)?(?:as\s+)?", "", piece, flags=re.IGNORECASE).strip()
         piece = re.sub(r"^(?:al|a/l)\s+background\s*", "", piece, flags=re.IGNORECASE).strip()
