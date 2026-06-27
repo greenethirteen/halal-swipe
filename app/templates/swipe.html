@@ -58,7 +58,9 @@
     }
     @keyframes pop-in { from { transform: scale(.94) translateY(8px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
     .filter-sheet h3 { margin: 0 0 2px; font-size: 1.3rem; letter-spacing: -.02em; }
-    .filter-ages { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .filter-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .filter-sheet label { min-width: 0; }
+    .filter-sheet select, .filter-sheet input { width: 100%; }
     .filter-buttons { display: grid; grid-template-columns: 1fr 1.4fr; gap: 12px; margin-top: 6px; position: sticky; bottom: -24px; background: var(--bg-2); padding-bottom: 2px; }
     .filter-buttons .button { margin-top: 0; }
 
@@ -164,32 +166,38 @@
   <div class="filter-overlay" id="filterOverlay">
     <div class="filter-sheet" role="dialog" aria-label="Filter profiles">
       <h3>Filter profiles</h3>
-      <label>Looking for
-        <select id="fType">
-          <option value="">Anyone</option>
-          <option value="Bride">Bride</option>
-          <option value="Groom">Groom</option>
-        </select>
-      </label>
-      <div class="filter-ages">
+      <div class="filter-row">
+        <label>Looking for
+          <select id="fType">
+            <option value="">Anyone</option>
+            <option value="Bride">Bride</option>
+            <option value="Groom">Groom</option>
+          </select>
+        </label>
+        <label>Marital status
+          <select id="fMarital"><option value="">Any</option></select>
+        </label>
+      </div>
+      <div class="filter-row">
         <label>Min age <input id="fMin" type="number" min="18" max="99" inputmode="numeric" placeholder="18"></label>
         <label>Max age <input id="fMax" type="number" min="18" max="99" inputmode="numeric" placeholder="60"></label>
       </div>
-      <label>City / district
-        <select id="fCity"><option value="">Any</option></select>
-      </label>
-      <label>Height
-        <select id="fHeight"><option value="">Any</option></select>
-      </label>
-      <label>Qualification
-        <select id="fEducation"><option value="">Any</option></select>
-      </label>
-      <label>Job title
-        <select id="fProfession"><option value="">Any</option></select>
-      </label>
-      <label>Marital status
-        <select id="fMarital"><option value="">Any</option></select>
-      </label>
+      <div class="filter-row">
+        <label>City / district
+          <select id="fCity"><option value="">Any</option></select>
+        </label>
+        <label>Height
+          <select id="fHeight"><option value="">Any</option></select>
+        </label>
+      </div>
+      <div class="filter-row">
+        <label>Qualification
+          <select id="fEducation"><option value="">Any</option></select>
+        </label>
+        <label>Job title
+          <select id="fProfession"><option value="">Any</option></select>
+        </label>
+      </div>
       <div class="filter-buttons">
         <button class="button ghost" type="button" id="fReset">Reset</button>
         <button class="button" type="button" id="fApply">Show results</button>
