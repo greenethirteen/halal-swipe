@@ -131,7 +131,7 @@ QUALIFICATION_CATEGORIES: list[tuple[str, list[str]]] = [
 ]
 # Job/field buckets, checked in order (specific before the generic "business").
 JOB_CATEGORIES: list[tuple[str, list[str]]] = [
-    ("Healthcare / Medical", ["doctor", "physician", "nurse", "mbbs", "physio", "medical", "pharmac", "dental", "surgeon", "clinic", "therapist", "pathology", "health", " gp ", "midwife"]),
+    ("Healthcare / Medical", ["doctor", "physician", "nurse ", "registered nurse", "mbbs", "physio", "medical", "pharmac", "dental", "surgeon", "clinic", "therapist", "pathology", "health", " gp ", "midwife"]),
     ("Accounting / Finance", ["account", "financ", "audit", "bank", "actuar", "tax", "bookkeep", "controller"]),
     ("IT / Software", ["software", "developer", "programmer", " it ", "information tech", "qa ", "quality assurance", "data ", "network", "system", "devops", "web ", "tech "]),
     ("Engineering", ["engineer", "engineering", "surveyor"]),
@@ -207,13 +207,12 @@ def normalize_marital_status(value: object) -> str | None:
 
 
 def is_abroad(profile: dict) -> bool:
-    blob = " ".join(
-        str(profile.get(f) or "")
-        for f in ("city", "district", "country", "profession", "bio_summary", "family_background")
-    )
-    if re.search(r"\bsri\s*lanka\b", blob, re.IGNORECASE):
-        # Only count as abroad if a foreign place is also mentioned.
-        return bool(ABROAD_RE.search(blob))
+    # The cleaned data carries a real current country, so trust it first.
+    country = str(profile.get("country") or "").strip().lower()
+    if country and "sri lanka" not in country:
+        return True
+    # Fall back to scanning text for a foreign mention (e.g. job "in the UAE").
+    blob = " ".join(str(profile.get(f) or "") for f in ("city", "district", "profession", "bio_summary"))
     return bool(ABROAD_RE.search(blob))
 
 
@@ -448,10 +447,20 @@ def profiles(request: Request) -> HTMLResponse:
         p["qual_category"] = categorize(row["education"], QUALIFICATION_CATEGORIES)
         p["job_category"] = categorize(row["profession"], JOB_CATEGORIES)
         p["abroad"] = is_abroad(dict(row))
-        place = clean_place(row["city"]) or clean_place(row["district"])
-        p["location"] = place
-        if place:
-            locations.add(place)
+        # A profile is findable by hometown, current city and (if abroad) country.
+        places: list[str] = []
+        for raw in (row["city"], row["district"]):
+            cp = clean_place(raw)
+            if cp and cp not in places:
+                places.append(cp)
+        country_val = (row["country"] or "").strip()
+        if country_val and country_val.lower() != "sri lanka":
+            cp = clean_place(country_val)
+            if cp and cp not in places:
+                places.append(cp)
+        p["location"] = places[0] if places else ""
+        p["locations"] = places
+        locations.update(places)
         marital = (p.get("marital_status") or "").strip()
         if marital and len(marital) <= 24:
             marital_statuses.add(marital)

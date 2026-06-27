@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
-"""Import the contactable HalalSwipe JSONL profile superset.
+"""Import the contactable HalalSwipe profile superset.
 
 Usage:
   python scripts/import_contactable_jsonl.py /path/to/profiles.txt --replace
   python scripts/import_contactable_jsonl.py /path/to/profiles.txt --dry-run
+
+The importer accepts either JSONL rows or the display-ready TSV export.
 """
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 import re
 import sys
@@ -62,7 +65,7 @@ def compact_text(value: Any, limit: int) -> str | None:
 
 
 def parse_age(value: Any) -> int | None:
-    if value is None or value == "":
+    if clean(value) is None:
         return None
     try:
         age = int(value)
@@ -141,9 +144,32 @@ def clean_appearance(value: Any) -> str | None:
     return f"Appearance: {text}"
 
 
+def normalize_marital_status(value: Any) -> str | None:
+    text = clean(value)
+    if not text:
+        return None
+    low = text.lower()
+    if re.search(r"\b(?:widow|widower|widowed)\b", low):
+        return "Widowed"
+    if re.search(r"\b(?:separated|seperated)\b", low):
+        return "Separated"
+    if re.search(r"\b(?:annulled|annulment)\b", low):
+        return "Annulled"
+    if re.search(r"\b(?:divorc|devorc|devos|devoce|divoce|divors|divos|divoc|dovorc)\w*\b", low):
+        return "Divorced"
+    if re.search(r"\b(?:never\s*married|unmarried|single|not\s*married)\b", low):
+        return "Never married"
+    if re.fullmatch(r"married", low):
+        return "Married"
+    return None
+
+
 def phones(row: dict[str, Any]) -> list[str]:
     values: list[str] = []
-    for value in row.get("phones") or []:
+    raw_values = row.get("phones") or []
+    if isinstance(raw_values, str):
+        raw_values = PHONE_RE.findall(raw_values)
+    for value in raw_values:
         cleaned = clean(value)
         if cleaned:
             values.append(cleaned)
@@ -186,14 +212,13 @@ def parse_row(row: dict[str, Any], source_name: str) -> tuple[dict[str, Any] | N
 
     raw_age = row.get("age")
     age = parse_age(raw_age)
-    if raw_age not in (None, "") and age is None:
-        return None, f"invalid age {raw_age}"
 
     ptype = profile_type(row)
     city = clean_location(row.get("hometown"))
-    district = clean_location(row.get("current_location"))
+    district = clean_location(row.get("current_location") or row.get("current_city"))
     if district == city:
         district = None
+    country = clean_location(row.get("current_country")) or "Sri Lanka"
 
     education = compact_text(row.get("qualification"), 120)
     profession = clean_profession(row.get("job"), ptype)
@@ -212,8 +237,8 @@ def parse_row(row: dict[str, Any], source_name: str) -> tuple[dict[str, Any] | N
         "height": clean(row.get("height")),
         "city": city,
         "district": district,
-        "country": "Sri Lanka",
-        "marital_status": clean(row.get("marital_status")),
+        "country": country,
+        "marital_status": normalize_marital_status(row.get("marital_status")),
         "education": education,
         "profession": profession,
         "family_background": family,
@@ -229,7 +254,7 @@ def parse_row(row: dict[str, Any], source_name: str) -> tuple[dict[str, Any] | N
     return profile, None
 
 
-def load_profiles(path: Path) -> tuple[list[dict[str, Any]], dict[str, int], list[str]]:
+def load_jsonl_profiles(path: Path) -> tuple[list[dict[str, Any]], dict[str, int], list[str]]:
     profiles: list[dict[str, Any]] = []
     counts = {"total": 0, "bad_json": 0, "skipped": 0}
     reasons: list[str] = []
@@ -252,6 +277,36 @@ def load_profiles(path: Path) -> tuple[list[dict[str, Any]], dict[str, int], lis
             elif profile:
                 profiles.append(profile)
     return profiles, counts, reasons
+
+
+def load_tsv_profiles(path: Path) -> tuple[list[dict[str, Any]], dict[str, int], list[str]]:
+    profiles: list[dict[str, Any]] = []
+    counts = {"total": 0, "bad_json": 0, "skipped": 0}
+    reasons: list[str] = []
+    with path.open("r", encoding="utf-8", newline="") as fh:
+        reader = csv.DictReader(fh, delimiter="\t")
+        for line_no, row in enumerate(reader, 2):
+            counts["total"] += 1
+            profile, reason = parse_row(row, path.name)
+            if reason:
+                counts["skipped"] += 1
+                reasons.append(f"line {line_no} {row.get('profile_id')}: {reason}")
+            elif profile:
+                profiles.append(profile)
+    return profiles, counts, reasons
+
+
+def is_tsv_export(path: Path) -> bool:
+    with path.open("r", encoding="utf-8", newline="") as fh:
+        header = fh.readline()
+    fields = set(header.rstrip("\n").split("\t"))
+    return {"profile_id", "profile_type", "primary_phone"}.issubset(fields)
+
+
+def load_profiles(path: Path) -> tuple[list[dict[str, Any]], dict[str, int], list[str]]:
+    if is_tsv_export(path):
+        return load_tsv_profiles(path)
+    return load_jsonl_profiles(path)
 
 
 def main() -> int:

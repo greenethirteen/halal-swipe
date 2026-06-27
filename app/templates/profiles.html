@@ -101,7 +101,7 @@
       const age = parseInt(c.dataset.age, 10);
       let ok = true;
       if(type && c.dataset.type !== type) ok = false;
-      else if(loc && c.dataset.location !== loc) ok = false;
+      else if(loc && !(c.dataset.location || '').split('|').includes(loc)) ok = false;
       else if(qual && c.dataset.qual !== qual) ok = false;
       else if(job && c.dataset.job !== job) ok = false;
       else if(marital && c.dataset.marital !== marital) ok = false;

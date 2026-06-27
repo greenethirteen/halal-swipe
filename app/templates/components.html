@@ -2,7 +2,7 @@
 <article class="card profile-card"
   data-type="{{ profile.profile_type or '' }}"
   data-age="{{ profile.age or '' }}"
-  data-location="{{ profile.location or '' }}"
+  data-location="{{ (profile.locations or []) | join('|') }}"
   data-marital="{{ profile.marital_status or '' }}"
   data-qual="{{ profile.qual_category or '' }}"
   data-job="{{ profile.job_category or '' }}"
