@@ -1,15 +1,22 @@
 {% extends "base.html" %}
 {% block content %}
-<section class="auth-card card">
-  <img class="auth-logo" src="/static/logo.png" alt="{{ settings.app_name }}">
-  <h1>Log in</h1>
-  {% include "google_button.html" %}
-  <form method="post" action="/login" class="form compact">
-    <input type="hidden" name="next" value="{{ next or '/' }}">
-    <input name="email" type="email" autocomplete="email" placeholder="Email" required>
-    <input name="password" type="password" autocomplete="current-password" placeholder="Password" required>
-    <button class="button full">Log in</button>
-  </form>
-  <p class="auth-alt"><a href="/register{% if next and next != '/' %}?next={{ next }}{% endif %}">Create account</a></p>
+<section class="auth-shell">
+  <aside class="auth-aside">
+    <img class="auth-aside-logo" src="/static/logo.png" alt="{{ settings.app_name }}">
+    <p class="auth-aside-arabic" dir="rtl" lang="ar">وَجَعَلَ بَيْنَكُم مَّوَدَّةً وَرَحْمَةً</p>
+    <h2>Welcome back.</h2>
+    <p>Pick up where you left off — serious Sri Lankan Nikah profiles, kept private and respectful.</p>
+  </aside>
+  <div class="auth-card card">
+    <h1>Log in</h1>
+    {% include "google_button.html" %}
+    <form method="post" action="/login" class="form compact">
+      <input type="hidden" name="next" value="{{ next or '/' }}">
+      <input name="email" type="email" autocomplete="email" placeholder="Email" required>
+      <input name="password" type="password" autocomplete="current-password" placeholder="Password" required>
+      <button class="button full">Log in</button>
+    </form>
+    <p class="auth-alt">New here? <a href="/register{% if next and next != '/' %}?next={{ next }}{% endif %}">Create an account</a></p>
+  </div>
 </section>
 {% endblock %}

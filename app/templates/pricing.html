@@ -1,6 +1,16 @@
 {% extends "base.html" %}
 {% block content %}
 <section class="pricing">
+  <div class="pricing-intro">
+    <p class="eyebrow">Membership</p>
+    <h1>One simple plan.<br>Everything unlocked.</h1>
+    <p class="lead">Browse every profile for free. Subscribe to reveal WhatsApp and phone contacts and reach families directly — the respectful way.</p>
+    <ul class="pricing-benefits">
+      <li>Unlimited WhatsApp &amp; call reveals</li>
+      <li>{{ settings.free_contact_limit }} free contacts before you ever pay</li>
+      <li>Cancel anytime — no lock-in</li>
+    </ul>
+  </div>
   <div class="card price-card">
     <h1>$5<span>/month</span></h1>
     <p>Unlimited WhatsApp and call access.</p>

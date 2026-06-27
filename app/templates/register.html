@@ -1,16 +1,23 @@
 {% extends "base.html" %}
 {% block content %}
-<section class="auth-card card">
-  <img class="auth-logo" src="/static/logo.png" alt="{{ settings.app_name }}">
-  <h1>Create account</h1>
-  {% include "google_button.html" %}
-  <form method="post" action="/register" class="form compact">
-    <input type="hidden" name="next" value="{{ next or '/' }}">
-    <input name="full_name" autocomplete="name" placeholder="Full name" required>
-    <input name="email" type="email" autocomplete="email" placeholder="Email" required>
-    <input name="password" type="password" minlength="8" autocomplete="new-password" placeholder="Password" required>
-    <button class="button full">Create account</button>
-  </form>
-  <p class="auth-alt"><a href="/login{% if next and next != '/' %}?next={{ next }}{% endif %}">Log in</a></p>
+<section class="auth-shell">
+  <aside class="auth-aside">
+    <img class="auth-aside-logo" src="/static/logo.png" alt="{{ settings.app_name }}">
+    <p class="auth-aside-arabic" dir="rtl" lang="ar">وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُم مِّنْ أَنفُسِكُمْ أَزْوَاجًا</p>
+    <h2>Start your search.</h2>
+    <p>Create a free account to browse profiles and reveal contacts when you're ready. It only takes a minute.</p>
+  </aside>
+  <div class="auth-card card">
+    <h1>Create account</h1>
+    {% include "google_button.html" %}
+    <form method="post" action="/register" class="form compact">
+      <input type="hidden" name="next" value="{{ next or '/' }}">
+      <input name="full_name" autocomplete="name" placeholder="Full name" required>
+      <input name="email" type="email" autocomplete="email" placeholder="Email" required>
+      <input name="password" type="password" minlength="8" autocomplete="new-password" placeholder="Password" required>
+      <button class="button full">Create account</button>
+    </form>
+    <p class="auth-alt">Already a member? <a href="/login{% if next and next != '/' %}?next={{ next }}{% endif %}">Log in</a></p>
+  </div>
 </section>
 {% endblock %}

@@ -3,7 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{ settings.app_name }}</title>
+  <title>{% block title %}{{ settings.app_name }}™ — Serious Sri Lankan Nikah profiles{% endblock %}</title>
+  <meta name="description" content="{{ settings.app_name }} — browse serious, reviewed Sri Lankan Nikah profiles and connect with families the respectful way.">
+  <link rel="icon" type="image/png" href="/static/logo.png?v={{ settings.static_version }}">
+  <link rel="apple-touch-icon" href="/static/logo.png?v={{ settings.static_version }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&display=swap">
   <link rel="stylesheet" href="/static/styles.css?v={{ settings.static_version }}">
 </head>
 <body>
@@ -11,8 +17,23 @@
   <header class="nav app-top">
     <a class="brand" href="/"><img src="/static/logo.png" alt="{{ settings.app_name }}"></a>
     <div class="top-pill">
-      <a class="top-link" href="/profiles">Browse</a>
-      <a class="top-link" href="/pricing">Pricing</a>
+      <nav class="nav-links">
+        <a class="top-link" href="/">Swipe</a>
+        <a class="top-link" href="/profiles">Browse</a>
+        <a class="top-link" href="/pricing">Pricing</a>
+        <a class="top-link" href="/about">About</a>
+        {% if is_admin %}<a class="top-link" href="/admin">Admin</a>{% endif %}
+        {% if user %}
+          <a class="top-link" href="/account">My profile</a>
+          <a class="top-link" href="/submit">Add profile</a>
+          <form method="post" action="/logout" class="inline"><button class="link-button top-link" type="submit">Log out</button></form>
+        {% else %}
+          <a class="top-link" href="/login">Log in</a>
+          <a class="top-link nav-join" href="/register">Join free</a>
+        {% endif %}
+      </nav>
+      <a class="top-link pill-inline" href="/profiles">Browse</a>
+      <a class="top-link pill-inline" href="/pricing">Pricing</a>
       <button class="menu-btn" id="menuBtn" type="button" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
       <nav class="menu-drawer" id="menuDrawer">
         <a href="/">Swipe</a>

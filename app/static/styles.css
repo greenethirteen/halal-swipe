@@ -70,6 +70,18 @@ main { width: min(1180px, calc(100% - 24px)); margin: 0 auto 28px; }
 .menu-drawer a:hover, .menu-drawer .menu-link-btn:hover { background: rgba(255,138,76,.12); }
 .menu-join { background: var(--green) !important; color: #fff !important; text-align: center !important; font-weight: 850; margin-top: 4px; }
 
+/* Inline desktop nav (replaces the hamburger on wide screens) */
+.nav-links { display: none; align-items: center; gap: 2px; }
+.nav-links .top-link { padding: 8px 13px; border-radius: 999px; font-size: .92rem; line-height: 1; }
+.nav-links .top-link:hover { background: rgba(255,138,76,.12); color: var(--ink); }
+.nav-links .nav-join { background: var(--green); color: #fff; margin-left: 6px; }
+.nav-links .nav-join:hover { background: #0f6f57; color: #fff; }
+.nav-links form.inline { display: inline-flex; }
+@media (min-width: 900px) {
+  .nav-links { display: flex; }
+  .app-top .pill-inline, .app-top .menu-btn, .app-top .menu-drawer { display: none !important; }
+}
+
 /* Splash screen on page load */
 .splash {
   position: fixed; inset: 0; z-index: 1000;
@@ -232,9 +244,50 @@ label { display: grid; gap: 8px; font-weight: 750; color: var(--ink); }
 .unlock-box, .locked-box { padding: 13px; border-radius: 16px; margin-top: 12px; line-height: 1.45; white-space: pre-line; }
 .unlock-box { background: rgba(15,77,61,.1); color: var(--green); }
 .locked-box { background: rgba(184,138,59,.13); color: var(--gold-dark); }
-.auth-card, .pricing { max-width: 420px; margin: 10px auto 0; }
+/* Auth pages — split brand panel + form */
+.auth-shell { max-width: 440px; margin: 12px auto 0; display: grid; gap: 0; }
+.auth-aside { display: none; }
 .auth-card { display: grid; gap: 12px; text-align: center; padding: 20px; }
 .auth-card h1 { font-size: 2rem; }
+@media (min-width: 860px) {
+  .auth-shell {
+    max-width: 920px; margin: 5vh auto 0; grid-template-columns: 1fr 1fr;
+    align-items: stretch; gap: 0; border-radius: 30px; overflow: hidden;
+    box-shadow: 0 30px 80px rgba(120,40,70,.18); border: 1px solid rgba(255,255,255,.7);
+  }
+  .auth-aside {
+    display: flex; flex-direction: column; justify-content: center; gap: 14px; padding: 44px 40px;
+    color: #f6fffb; background: linear-gradient(155deg, #11362e 0%, #0f5d49 55%, #14785d 100%);
+  }
+  .auth-aside-logo { height: 96px; width: auto; align-self: flex-start; filter: drop-shadow(0 6px 14px rgba(0,0,0,.25)); }
+  .auth-aside-arabic { margin: 8px 0 0; font-family: "Amiri", serif; font-size: 1.7rem; line-height: 1.8; color: rgba(255,212,128,.95); }
+  .auth-aside h2 { margin: 6px 0 0; font-size: 2rem; letter-spacing: -.02em; }
+  .auth-aside p { margin: 0; color: rgba(246,255,251,.9); line-height: 1.55; font-weight: 500; }
+  .auth-shell .auth-card {
+    text-align: left; padding: 44px 40px; border-radius: 0; border: 0;
+    box-shadow: none; backdrop-filter: none; background: var(--bg-2); align-content: center;
+  }
+  .auth-shell .auth-card h1 { font-size: 2.2rem; }
+  .auth-shell .auth-alt { text-align: left; }
+  .auth-shell .google-auth { justify-items: stretch; }
+}
+
+/* Pricing — value column + plan card */
+.pricing { max-width: 440px; margin: 10px auto 0; display: grid; gap: 16px; }
+.pricing-intro { display: none; }
+@media (min-width: 860px) {
+  .pricing { max-width: 980px; margin: 6vh auto 0; grid-template-columns: 1.05fr .95fr; align-items: center; gap: 40px; }
+  .pricing-intro { display: block; }
+  .pricing-intro h1 { margin: 12px 0 0; font-size: clamp(2.4rem, 4vw, 3.4rem); line-height: 1; letter-spacing: -.03em; }
+  .pricing-intro .lead { margin: 18px 0 0; font-size: 1.15rem; color: var(--muted); line-height: 1.55; max-width: 42ch; }
+  .pricing-benefits { list-style: none; margin: 24px 0 0; padding: 0; display: grid; gap: 12px; }
+  .pricing-benefits li { position: relative; padding-left: 32px; font-weight: 700; color: var(--ink); }
+  .pricing-benefits li::before {
+    content: "✓"; position: absolute; left: 0; top: -1px; width: 22px; height: 22px; border-radius: 50%;
+    display: grid; place-items: center; font-size: .8rem; color: #fff; background: var(--green);
+  }
+  .price-card { margin: 0; }
+}
 .auth-logo { height: 86px; width: auto; margin: -6px auto -2px; }
 .auth-sub { color: var(--muted); line-height: 1.45; margin: 0; }
 .auth-alt { color: var(--muted); margin-top: 2px; text-align: center; font-size: .92rem; }
@@ -301,6 +354,13 @@ th { color: var(--muted); font-size: .82rem; text-transform: uppercase; letter-s
 .footer { display: none; }
 .footer-links a { color: var(--muted); font-weight: 700; }
 .footer-links a:hover { color: var(--ink); }
+@media (min-width: 900px) {
+  .footer {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    width: min(1180px, calc(100% - 24px)); margin: 8px auto 28px; padding: 22px 4px 0;
+    border-top: 1px solid var(--line); color: var(--muted); font-weight: 650; font-size: .92rem;
+  }
+}
 @media (max-width: 900px) {
   .hero, .detail-layout, .admin-grid { grid-template-columns: 1fr; }
   .grid, .browse-grid { grid-template-columns: 1fr 1fr; }
