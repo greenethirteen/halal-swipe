@@ -41,7 +41,7 @@ main { width: min(1180px, calc(100% - 32px)); margin: 0 auto 80px; }
   z-index: 20;
 }
 .brand { font-weight: 800; letter-spacing: -.01em; font-size: 1.2rem; display: inline-flex; align-items: center; }
-.brand img, .brand-logo { height: 72px; width: auto; display: block; transition: transform .18s ease; }
+.brand img, .brand-logo { height: 92px; width: auto; display: block; transition: transform .18s ease; }
 .brand:hover img { transform: scale(1.05) rotate(-1deg); }
 
 /* Splash screen on page load */

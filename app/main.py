@@ -137,6 +137,7 @@ def home(request: Request) -> HTMLResponse:
         cards.append(
             {
                 "id": r["id"],
+                "reference_code": r["reference_code"],
                 "title": r["full_name"] or f"{r['profile_type'] or 'Nikah'} profile",
                 "profile_type": r["profile_type"],
                 "age": r["age"],
@@ -149,6 +150,7 @@ def home(request: Request) -> HTMLResponse:
                 "marital_status": r["marital_status"],
                 "expectations": r["expectations"],
                 "family_background": r["family_background"],
+                "faith_notes": r["faith_notes"],
                 "country": r["country"],
                 "bio": r["bio_summary"],
             }

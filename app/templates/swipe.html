@@ -14,7 +14,7 @@
       position: relative; z-index: 60; width: min(1180px, calc(100% - 24px));
       margin: 8px auto 4px; display: flex; align-items: center; justify-content: space-between; gap: 10px;
     }
-    .swipe-top .brand img { height: 60px; }
+    .swipe-top .brand img { height: 84px; }
     .top-pill {
       position: relative; display: flex; align-items: center; gap: 14px;
       padding: 7px 8px 7px 18px; border: 1px solid var(--line); border-radius: 999px;
@@ -74,9 +74,17 @@
     .card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
     .card-head h2 { margin: 0; font-size: 1.5rem; letter-spacing: -.02em; color: var(--ink); line-height: 1.15; }
     .card-head h2 .age { color: var(--muted); font-weight: 600; font-size: 1.15rem; }
+    .card-tools { display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0; }
     .card .chip { flex-shrink: 0; display: inline-flex; align-items: center; border-radius: 999px; padding: 6px 11px;
       font-size: .76rem; font-weight: 800; background: rgba(255,111,97,.16); color: var(--coral); }
     .card .chip.groom { background: rgba(18,135,106,.16); color: var(--green); }
+    .more-btn {
+      flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--line);
+      display: grid; place-items: center; background: #fff; color: var(--ink); cursor: pointer;
+      box-shadow: 0 4px 12px rgba(255,138,76,.14); transition: transform .14s ease, box-shadow .14s ease;
+    }
+    .more-btn svg { width: 16px; height: 16px; fill: currentColor; }
+    .more-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(255,138,76,.2); }
     .loc { display: flex; align-items: center; gap: 6px; color: var(--muted); margin-top: 6px; font-weight: 600; font-size: .92rem; }
     .loc svg { width: 13px; height: 13px; fill: var(--coral); flex-shrink: 0; }
     .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
@@ -84,6 +92,7 @@
     .fact.wide { grid-column: 1 / -1; }
     .fact .fl { display: block; font-size: .66rem; text-transform: uppercase; letter-spacing: .09em; color: var(--coral); font-weight: 800; }
     .fact .fv { display: block; margin-top: 3px; font-size: .94rem; color: var(--ink); font-weight: 600; line-height: 1.42; }
+    .summary { margin-top: 14px; color: var(--muted); line-height: 1.5; font-weight: 600; font-size: .96rem; }
 
     .card-actions { display: flex; gap: 10px; margin-top: 16px; }
     .card-actions .ic { flex: 1; height: 46px; border-radius: 14px; display: flex; align-items: center; justify-content: center; gap: 8px;
@@ -153,12 +162,37 @@
     .filter-buttons { display: grid; grid-template-columns: 1fr 1.4fr; gap: 12px; margin-top: 4px; }
     .filter-buttons .button { margin-top: 0; }
 
+    .info-overlay {
+      position: fixed; inset: 0; z-index: 80; display: none; align-items: center; justify-content: center;
+      padding: 16px; background: rgba(42,32,24,.42); backdrop-filter: blur(4px);
+    }
+    .info-overlay.open { display: flex; }
+    .info-dialog {
+      width: min(620px, 100%); max-height: 88dvh; overflow: auto; background: var(--bg-2);
+      border-radius: 24px; padding: 22px; box-shadow: var(--shadow); animation: pop-in .2s ease both;
+    }
+    .info-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; margin-bottom: 16px; }
+    .info-head h3 { margin: 0; font-size: 1.4rem; letter-spacing: -.02em; line-height: 1.2; }
+    .info-close {
+      width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--line); background: #fff;
+      cursor: pointer; display: grid; place-items: center; color: var(--ink);
+    }
+    .info-close svg { width: 18px; height: 18px; fill: currentColor; }
+    .info-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .info-meta span { border: 1px solid var(--line); border-radius: 999px; padding: 5px 9px; color: var(--muted); font-size: .84rem; font-weight: 700; }
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .info-field { border: 1px solid var(--line); border-radius: 16px; background: rgba(255,255,255,.58); padding: 12px 13px; }
+    .info-field.wide { grid-column: 1 / -1; }
+    .info-field dt { color: var(--coral); font-size: .7rem; font-weight: 850; text-transform: uppercase; letter-spacing: .08em; }
+    .info-field dd { margin: 5px 0 0; color: var(--ink); line-height: 1.5; white-space: pre-line; }
+
     @media (max-width: 600px) {
       .swipe-top { padding: 5px 7px 5px 12px; }
-      .swipe-top .brand img { height: 36px; }
+      .swipe-top .brand img { height: 52px; }
       .stage { padding: 4px 10px 0; }
       .card-inner { padding: 16px 16px 6px; }
       .card-head h2 { font-size: 1.35rem; }
+      .info-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -236,6 +270,21 @@
     </div>
   </div>
 
+  <div class="info-overlay" id="infoOverlay">
+    <div class="info-dialog" role="dialog" aria-modal="true" aria-label="Profile details">
+      <div class="info-head">
+        <div>
+          <h3 id="infoTitle"></h3>
+          <div class="info-meta" id="infoMeta"></div>
+        </div>
+        <button class="info-close" id="infoClose" type="button" aria-label="Close details">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.3 5.71 12 12l6.3 6.29-1.42 1.42L10.59 13.4 4.3 19.7 2.88 18.3 9.17 12 2.88 5.71 4.3 4.29l6.29 6.3 6.29-6.3z"/></svg>
+        </button>
+      </div>
+      <dl class="info-grid" id="infoGrid"></dl>
+    </div>
+  </div>
+
   <script>
     (function(){
       var s = document.getElementById('splash');
@@ -261,7 +310,11 @@
       return s.length > n ? s.slice(0, n).trim() + '…' : s;
     }
     function factHtml(label, v, wide){ return v ? `<div class="fact${wide ? ' wide' : ''}"><span class="fl">${label}</span><span class="fv">${esc(v)}</span></div>` : ''; }
+    function infoField(label, value, wide){
+      return value ? `<div class="info-field${wide ? ' wide' : ''}"><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>` : '';
+    }
     const PIN = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5Z"/></svg>';
+    const INFO = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 17h2v-6h-2v6Zm1-14a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm0 16a7 7 0 1 1 0-14 7 7 0 0 1 0 14Zm-1-10h2V7h-2v2Z"/></svg>';
 
     function showEmpty(){
       stage.innerHTML = filterActive
@@ -288,33 +341,61 @@
           <div class="card-inner">
             <div class="card-head">
               <h2>${esc(p.title)}${p.age ? ` <span class="age">${esc(p.age)}</span>` : ''}</h2>
-              <span class="chip${groom ? ' groom' : ''}">${esc(p.profile_type || 'Profile')}</span>
+              <div class="card-tools">
+                <span class="chip${groom ? ' groom' : ''}">${esc(p.profile_type || 'Profile')}</span>
+                <button class="more-btn" type="button" data-profile-id="${p.id}" title="More info" aria-label="More info">${INFO}</button>
+              </div>
             </div>
             ${p.location ? `<div class="loc">${PIN}${esc(tidy(p.location, 40))}</div>` : ''}
             <div class="facts">
               ${factHtml('Height', tidy(p.height, 24))}
               ${factHtml('Marital status', tidy(p.marital_status, 30))}
-              ${factHtml('Education', tidy(p.education, 150), true)}
-              ${factHtml('Profession', tidy(p.profession, 150), true)}
-              ${factHtml('Looking for', tidy(p.expectations, 170), true)}
-              ${factHtml('Family', tidy(p.family_background, 150), true)}
+              ${factHtml('Education', tidy(p.education, 80), true)}
+              ${factHtml('Work', tidy(p.profession, 90), true)}
             </div>
+            ${p.bio ? `<p class="summary">${esc(tidy(p.bio, 150))}</p>` : ''}
             <div class="card-actions">
               <a class="ic ic-wa" href="/profiles/${p.id}/whatsapp" title="WhatsApp" aria-label="WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 1.67c2.2 0 4.27.86 5.83 2.42a8.2 8.2 0 0 1 2.42 5.82c0 4.54-3.7 8.24-8.25 8.24-1.5 0-2.96-.4-4.24-1.16l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.37c0-4.54 3.7-8.24 8.24-8.24Zm-4.5 4.43c-.21 0-.55.08-.84.39-.29.31-1.1 1.08-1.1 2.62 0 1.55 1.13 3.04 1.29 3.25.16.21 2.2 3.36 5.33 4.58 2.6 1.02 3.13.81 3.7.76.57-.05 1.83-.75 2.09-1.47.26-.72.26-1.34.18-1.47-.08-.13-.29-.21-.6-.37-.31-.16-1.83-.9-2.11-1-.28-.1-.49-.16-.7.16-.21.31-.8 1-.98 1.21-.18.21-.36.23-.67.08-.31-.16-1.31-.48-2.5-1.54-.92-.82-1.54-1.84-1.72-2.15-.18-.31-.02-.48.14-.63.14-.14.31-.36.47-.54.16-.18.21-.31.31-.52.1-.21.05-.39-.03-.54-.08-.16-.7-1.69-.96-2.31-.25-.61-.51-.53-.7-.54l-.6-.01Z"/></svg>WhatsApp</a>
               <a class="ic ic-call" href="/profiles/${p.id}/call" title="Call" aria-label="Call"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.62 10.79a15.5 15.5 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.24.2 2.45.57 3.57a1 1 0 0 1-.24 1.02l-2.21 2.2Z"/></svg>Call</a>
             </div>
           </div>`;
         c.addEventListener('animationend', ()=>{ c.style.animation='none'; }, {once:true});
+        const more = c.querySelector('.more-btn');
+        if(more) more.onclick = (e)=>{ e.preventDefault(); e.stopPropagation(); openInfo(p); };
         stage.appendChild(c);
         if(i===idx) attachDrag(c);
       }
     }
 
+    const infoOverlay = document.getElementById('infoOverlay');
+    const infoTitle = document.getElementById('infoTitle');
+    const infoMeta = document.getElementById('infoMeta');
+    const infoGrid = document.getElementById('infoGrid');
+    function openInfo(p){
+      infoTitle.textContent = p.title || 'Profile details';
+      const meta = [p.reference_code, p.profile_type, p.age ? `${p.age} yrs` : '', p.location].filter(Boolean);
+      infoMeta.innerHTML = meta.map(v => `<span>${esc(v)}</span>`).join('');
+      infoGrid.innerHTML = [
+        infoField('Height', p.height),
+        infoField('Marital status', p.marital_status),
+        infoField('Education', p.education, true),
+        infoField('Work', p.profession, true),
+        infoField('Family', p.family_background, true),
+        infoField('Faith / lifestyle', p.faith_notes, true),
+        infoField('Looking for', p.expectations, true),
+        infoField('Summary', p.bio, true),
+      ].join('') || '<div class="empty">No additional details available.</div>';
+      infoOverlay.classList.add('open');
+    }
+    function closeInfo(){ infoOverlay.classList.remove('open'); }
+    document.getElementById('infoClose').onclick = closeInfo;
+    infoOverlay.addEventListener('click', e=>{ if(e.target === infoOverlay) closeInfo(); });
+
     function attachDrag(card){
       let sx=0, sy=0, dx=0, down=false, decided=false, horiz=false;
       const like=card.querySelector('.stamp.like'), nope=card.querySelector('.stamp.nope');
       card.addEventListener('pointerdown', e=>{
-        if(animating || e.target.closest('.ic')) return;
+        if(animating || e.target.closest('.ic, .more-btn')) return;
         down=true; decided=false; horiz=false; dx=0; sx=e.clientX; sy=e.clientY;
         card.style.animation='none'; card.style.transition='none';
         try { card.setPointerCapture(e.pointerId); } catch(_){}
@@ -416,6 +497,7 @@
     overlay.addEventListener('click', e=>{ if(e.target === overlay) closeFilter(); });
 
     document.addEventListener('keydown', e=>{
+      if(infoOverlay.classList.contains('open')){ if(e.key==='Escape') closeInfo(); return; }
       if(overlay.classList.contains('open')){ if(e.key==='Escape') closeFilter(); return; }
       if(menuDrawer.classList.contains('open')){ if(e.key==='Escape') closeMenu(); return; }
       if(e.key==='ArrowRight') swipeTop(1);
