@@ -148,6 +148,7 @@ def home(request: Request) -> HTMLResponse:
                 "profession": r["profession"],
                 "marital_status": r["marital_status"],
                 "expectations": r["expectations"],
+                "family_background": r["family_background"],
                 "country": r["country"],
                 "bio": r["bio_summary"],
             }
