@@ -228,6 +228,13 @@ def parse_row(row: dict[str, Any], source_name: str) -> tuple[dict[str, Any] | N
     if not contact:
         return None, "missing phone"
 
+    # Prefer the richer narrative bio from the source; fall back to a generated
+    # one when it's missing. Contact fragments are stripped for safety.
+    rich_bio = strip_contact_text(row.get("bio"))
+    if rich_bio and len(rich_bio) > 600:
+        rich_bio = rich_bio[:600].rstrip(" ;,") + "…"
+    bio_summary = rich_bio or profile_summary(ptype, age, city, education, profession)
+
     raw_text = json.dumps(row, ensure_ascii=False, sort_keys=True)
     profile = {
         "reference_code": ref,
@@ -244,7 +251,7 @@ def parse_row(row: dict[str, Any], source_name: str) -> tuple[dict[str, Any] | N
         "family_background": family,
         "faith_notes": clean_appearance(row.get("appearance")),
         "expectations": expectations,
-        "bio_summary": profile_summary(ptype, age, city, education, profession),
+        "bio_summary": bio_summary,
         "contact_details": contact,
         "raw_text": raw_text,
         "source_name": source_name,

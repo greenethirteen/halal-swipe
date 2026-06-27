@@ -351,7 +351,9 @@ def public_profile(row) -> dict:
     profile["profession"] = compact_public_work(profile.get("profession"))
     profile["family_background"] = compact_public_long_text(profile.get("family_background")) or profile.get("family_background")
     profile["expectations"] = compact_public_expectations(profile.get("expectations"), profile.get("profile_type"))
-    profile["bio_summary"] = public_summary(profile)
+    # Prefer the imported narrative bio; only synthesise one when it's missing.
+    stored_bio = (profile.get("bio_summary") or "").strip()
+    profile["bio_summary"] = stored_bio or public_summary(profile)
     return profile
 
 
