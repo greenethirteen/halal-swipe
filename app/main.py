@@ -195,8 +195,8 @@ def public_profile(row) -> dict:
     for field in PUBLIC_TEXT_FIELDS:
         if field in profile:
             profile[field] = strip_public_contact_text(profile[field])
-    profile["education"] = compact_public_education(profile.get("education")) or profile.get("education")
-    profile["profession"] = compact_public_work(profile.get("profession")) or profile.get("profession")
+    profile["education"] = compact_public_education(profile.get("education"))
+    profile["profession"] = compact_public_work(profile.get("profession"))
     profile["family_background"] = compact_public_long_text(profile.get("family_background")) or profile.get("family_background")
     profile["expectations"] = compact_public_long_text(profile.get("expectations")) or profile.get("expectations")
     profile["bio_summary"] = compact_public_long_text(profile.get("bio_summary"), 300) or profile.get("bio_summary")
