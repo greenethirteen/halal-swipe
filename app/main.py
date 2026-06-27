@@ -416,6 +416,27 @@ def about(request: Request) -> HTMLResponse:
     return render(request, "about.html")
 
 
+@app.get("/healthz")
+def healthz() -> dict:
+    """Diagnostic: which DB engine is live and how many profiles it has."""
+    from .database import is_postgres
+
+    try:
+        total = one("SELECT COUNT(*) AS c FROM profiles")["c"]
+        approved = one("SELECT COUNT(*) AS c FROM profiles WHERE status='approved'")["c"]
+        users = one("SELECT COUNT(*) AS c FROM users")["c"]
+    except Exception as exc:  # surface DB errors instead of hiding them
+        return {"engine": "postgres" if is_postgres() else "sqlite", "error": str(exc)}
+    return {
+        "engine": "postgres" if is_postgres() else "sqlite",
+        "google_signin": bool(settings.google_client_id),
+        "demo_mode": settings.demo_mode,
+        "profiles_total": total,
+        "profiles_approved": approved,
+        "users": users,
+    }
+
+
 @app.post("/auth/google")
 async def auth_google(request: Request):
     """Verify a Google Identity Services credential and sign the user in."""
