@@ -24,7 +24,7 @@
     .swipe-links { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; justify-content: flex-end; font-weight: 600; }
     .swipe-top a { color: var(--muted); }
     .swipe-top .swipe-links a:hover { color: var(--ink); }
-    .card-contacts { display: flex; justify-content: center; gap: 12px; margin-top: 18px; }
+    .card-contacts { display: flex; justify-content: center; gap: 14px; margin-top: auto; padding-top: 18px; }
     .card-contacts .ic {
       width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center;
       color: #fff; cursor: pointer; transition: transform .14s ease, box-shadow .14s ease, filter .14s ease;
@@ -76,61 +76,86 @@
       backdrop-filter: blur(6px);
     }
     .gate-overlay.open { display: flex; }
-    .gate-card { text-align: center; max-width: 440px; animation: pop-in .35s ease both; }
-    .gate-logo { width: 200px; max-width: 70%; height: auto; margin-bottom: 6px; }
+    .gate-card { text-align: center; max-width: 460px; animation: pop-in .35s ease both; }
+    .gate-logo { width: 210px; max-width: 72%; height: auto; margin-bottom: 4px; }
     .gate-card h2 { font-size: 1.9rem; letter-spacing: -.03em; margin: 8px 0 4px; color: var(--ink); }
-    .gate-card p { color: var(--muted); margin: 0 0 22px; }
+    .gate-card p { color: var(--muted); margin: 0 0 24px; }
     .gate-options { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
     .gate-pick {
-      display: flex; flex-direction: column; align-items: center; gap: 8px;
-      padding: 22px 14px; border-radius: 22px; border: 1.5px solid var(--line);
-      background: #fff; cursor: pointer; font: inherit; font-weight: 800; font-size: 1.05rem; color: var(--ink);
-      box-shadow: 0 12px 26px rgba(255,138,76,.14); transition: transform .14s ease, box-shadow .14s ease, border-color .14s ease;
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+      padding: 26px 16px; border-radius: 24px; border: 1.5px solid var(--line);
+      background: #fff; cursor: pointer; font: inherit; color: var(--ink);
+      box-shadow: 0 14px 30px rgba(120,40,70,.1); transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
     }
-    .gate-pick span { font-size: 2.4rem; }
-    .gate-pick:hover { transform: translateY(-3px); border-color: var(--coral); box-shadow: 0 18px 36px rgba(255,111,97,.26); }
+    .gate-pick strong { font-size: 1.15rem; font-weight: 800; letter-spacing: -.01em; }
+    .gate-pick small { color: var(--muted); font-weight: 600; font-size: .82rem; }
+    .gp-orb { width: 60px; height: 60px; border-radius: 50%; box-shadow: 0 10px 24px rgba(120,40,70,.18); }
+    .gp-bride { background: linear-gradient(135deg, #ff9a8b, #ff6a88); }
+    .gp-groom { background: linear-gradient(135deg, #2fae8f, #12876a); }
+    .gate-pick:hover { transform: translateY(-4px); border-color: var(--coral); box-shadow: 0 22px 42px rgba(255,111,97,.24); }
     .gate-pick:active { transform: scale(.97); }
-    .stage { flex: 1; position: relative; display: flex; align-items: center; justify-content: center; padding: 16px; overflow: hidden; }
+    .stage { flex: 1; position: relative; display: flex; align-items: center; justify-content: center; padding: 8px 16px 0; overflow: hidden; }
     .card {
-      position: absolute; width: min(440px, 92vw); max-height: 74dvh; overflow: auto;
-      background: var(--card);
-      border: 1px solid rgba(255,255,255,.7);
-      border-radius: 32px;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(14px);
-      padding: 26px; will-change: transform; touch-action: pan-y;
+      position: absolute; width: min(412px, 92vw); height: min(600px, 74dvh); overflow: hidden;
+      background: #fff; border-radius: 30px;
+      box-shadow: 0 30px 60px -22px rgba(120,40,70,.5), 0 6px 18px rgba(120,40,70,.12);
+      display: flex; flex-direction: column; will-change: transform; touch-action: pan-y;
+      animation: card-in .42s cubic-bezier(.2,.9,.3,1.12) both;
     }
-    .card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 16px; }
-    .card-head h2 { margin: 0; }
-    .card h2 { font-size: 1.6rem; letter-spacing: -.03em; color: var(--ink); }
-    .card .chip {
-      display: inline-flex; align-items: center; border-radius: 999px; padding: 7px 11px;
-      font-size: .8rem; font-weight: 800; background: rgba(255,169,59,.2); color: var(--gold-dark);
-      flex-shrink: 0;
+    @keyframes card-in { from { opacity: 0; transform: scale(.9) translateY(22px); } to { opacity: 1; transform: none; } }
+    .card.liking { box-shadow: 0 0 0 3px var(--green), 0 30px 60px -20px rgba(47,158,126,.5); }
+    .card.noping { box-shadow: 0 0 0 3px var(--coral), 0 30px 60px -20px rgba(255,111,97,.5); }
+
+    .cover { position: relative; height: 188px; flex-shrink: 0; display: grid; place-items: center; }
+    .cover::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,.22), transparent 60%); }
+    .monogram {
+      width: 104px; height: 104px; border-radius: 50%; z-index: 1;
+      background: rgba(255,255,255,.22); border: 2px solid rgba(255,255,255,.65); backdrop-filter: blur(4px);
+      display: grid; place-items: center; font-size: 2.8rem; font-weight: 800; color: #fff;
+      text-shadow: 0 2px 8px rgba(0,0,0,.18); box-shadow: 0 12px 30px rgba(0,0,0,.18);
     }
-    .row { display: flex; gap: 10px; font-size: .98rem; padding: 11px 0; border-top: 1px solid var(--line); color: var(--ink); }
-    .row .k { color: var(--muted); min-width: 110px; font-weight: 700; }
-    .bio { margin-top: 16px; color: var(--muted); line-height: 1.6; white-space: pre-line; }
+    .ctype { position: absolute; top: 14px; right: 14px; z-index: 2; background: rgba(255,255,255,.92);
+      color: var(--ink); border-radius: 999px; padding: 6px 13px; font-size: .74rem; font-weight: 800; box-shadow: 0 4px 12px rgba(0,0,0,.12); }
+
+    .card-body { flex: 1; overflow: auto; padding: 18px 22px 18px; display: flex; flex-direction: column; }
+    .name-row { display: flex; align-items: baseline; gap: 9px; flex-wrap: wrap; }
+    .name-row h2 { margin: 0; font-size: 1.65rem; letter-spacing: -.02em; color: var(--ink); line-height: 1.1; }
+    .name-row .age { font-size: 1.35rem; font-weight: 600; color: var(--muted); }
+    .loc { display: flex; align-items: center; gap: 6px; color: var(--muted); margin-top: 7px; font-weight: 600; font-size: .94rem; }
+    .loc svg { width: 14px; height: 14px; fill: var(--coral); flex-shrink: 0; }
+    .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+    .fact { background: var(--bg); border: 1px solid var(--line); border-radius: 14px; padding: 9px 12px; min-width: 0; }
+    .fact.wide { grid-column: 1 / -1; }
+    .fact .fl { display: block; font-size: .66rem; text-transform: uppercase; letter-spacing: .09em; color: var(--coral); font-weight: 800; }
+    .fact .fv { display: block; margin-top: 3px; font-size: .94rem; color: var(--ink); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
     .stamp {
-      position: absolute; top: 26px; font-size: 1.5rem; font-weight: 900; letter-spacing: 2px;
-      padding: 4px 14px; border: 3px solid; border-radius: 10px; opacity: 0;
+      position: absolute; top: 22px; z-index: 4; font-size: 1.25rem; font-weight: 900; letter-spacing: 1px;
+      padding: 6px 16px; border: 3px solid; border-radius: 12px; opacity: 0;
+      background: rgba(255,255,255,.72); backdrop-filter: blur(2px);
     }
-    .stamp.like { left: 26px; color: var(--green); border-color: var(--green); transform: rotate(-12deg); }
-    .stamp.nope { right: 26px; color: var(--coral); border-color: var(--coral); transform: rotate(12deg); }
-    .controls { display: flex; justify-content: center; gap: 24px; padding: 18px 0 36px; }
-    .controls button {
-      width: 64px; height: 64px; border-radius: 50%; border: 1px solid var(--line);
-      background: #fff; box-shadow: 0 10px 26px rgba(255,138,76,.18);
-      font-size: 26px; cursor: pointer; display: grid; place-items: center; transition: transform .12s ease;
-    }
-    .controls button:active { transform: scale(0.92); }
-    .controls #no { color: var(--coral); }
-    .controls #yes { color: #fff; background: linear-gradient(135deg, #ff8a5b, #ff6f61); border: 0; }
-    .swipe-footer { display: flex; justify-content: center; align-items: center; gap: 10px; padding: 0 0 18px; font-size: .85rem; color: var(--muted); }
+    .stamp.like { left: 22px; color: var(--green); border-color: var(--green); transform: rotate(-14deg); }
+    .stamp.nope { right: 22px; color: var(--coral); border-color: var(--coral); transform: rotate(14deg); }
+
+    .controls { display: flex; justify-content: center; align-items: center; gap: 18px; padding: 16px 0 22px; }
+    .controls button { border-radius: 50%; border: 0; cursor: pointer; display: grid; place-items: center;
+      background: #fff; transition: transform .14s ease, box-shadow .14s ease; }
+    .controls button svg { fill: currentColor; }
+    .controls #rewind { width: 50px; height: 50px; color: var(--gold-dark); box-shadow: 0 8px 20px rgba(240,169,59,.26); }
+    .controls #rewind svg { width: 20px; height: 20px; }
+    .controls #no { width: 64px; height: 64px; color: var(--coral); box-shadow: 0 10px 26px rgba(255,111,97,.28); }
+    .controls #no svg { width: 26px; height: 26px; }
+    .controls #yes { width: 74px; height: 74px; color: #fff; background: linear-gradient(135deg, #ff8a5b, #ff6f61); box-shadow: 0 14px 32px rgba(255,111,97,.5); }
+    .controls #yes svg { width: 30px; height: 30px; }
+    .controls button:hover { transform: translateY(-3px) scale(1.05); }
+    .controls button:active { transform: scale(.9); }
+
+    .swipe-footer { display: flex; justify-content: center; align-items: center; gap: 10px; padding: 0 0 16px; font-size: .85rem; color: var(--muted); }
     .swipe-footer a { color: var(--muted); }
     .swipe-footer a:hover { color: var(--ink); }
     .empty { color: var(--muted); text-align: center; max-width: 320px; line-height: 1.6; }
-    .empty a { color: var(--green); font-weight: 800; }
+    .empty h3 { font-size: 1.5rem; color: var(--ink); margin: 0 0 6px; letter-spacing: -.02em; }
+    .empty a { color: var(--coral); font-weight: 800; }
   </style>
 </head>
 <body>
@@ -142,8 +167,12 @@
       <h2>Who are you looking for?</h2>
       <p>Find a serious, marriage-minded match.</p>
       <div class="gate-options">
-        <button type="button" class="gate-pick" data-type="Bride"><span>👰</span>A Bride</button>
-        <button type="button" class="gate-pick" data-type="Groom"><span>🤵</span>A Groom</button>
+        <button type="button" class="gate-pick" data-type="Bride">
+          <span class="gp-orb gp-bride"></span><strong>A Bride</strong><small>Find a bride</small>
+        </button>
+        <button type="button" class="gate-pick" data-type="Groom">
+          <span class="gp-orb gp-groom"></span><strong>A Groom</strong><small>Find a groom</small>
+        </button>
       </div>
     </div>
   </div>
@@ -161,8 +190,15 @@
   </div>
   <div class="stage" id="stage"></div>
   <div class="controls">
-    <button id="no" title="Pass">✕</button>
-    <button id="yes" title="Interested">♥</button>
+    <button id="rewind" title="Undo" aria-label="Undo">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5V1L7 6l5 5V7a6 6 0 1 1-6 6H4a8 8 0 1 0 8-8Z"/></svg>
+    </button>
+    <button id="no" title="Pass" aria-label="Pass">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.3 5.71 12 12l6.3 6.29-1.42 1.42L10.59 13.4 4.3 19.7 2.88 18.3 9.17 12 2.88 5.71 4.3 4.29l6.29 6.3 6.29-6.3z"/></svg>
+    </button>
+    <button id="yes" title="Interested" aria-label="Interested">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.9-10-9.2C.2 8.4 1.7 4.8 5 4.1c2-.4 3.9.5 5 2 1.1-1.5 3-2.4 5-2 3.3.7 4.8 4.3 3 7.7C19.5 16.1 12 21 12 21z"/></svg>
+    </button>
   </div>
   <footer class="swipe-footer">
     <a href="/about">About</a>
@@ -234,14 +270,19 @@
       s = s.replace(/^&\s*Profession:?\s*/i, '');
       return s.length > n ? s.slice(0, n).trim() + '…' : s;
     }
-    function rowHtml(k,v){ return v ? `<div class="row"><span class="k">${k}</span><span>${esc(v)}</span></div>` : ''; }
+    function factHtml(label, v, wide){ return v ? `<div class="fact${wide?' wide':''}"><span class="fl">${label}</span><span class="fv">${esc(v)}</span></div>` : ''; }
+    const PIN = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5Z"/></svg>';
+    const BRIDE_GRADS = ['linear-gradient(135deg,#ff9a8b,#ff6a88)','linear-gradient(135deg,#f6a93b,#ff6f61)','linear-gradient(135deg,#ff7eb3,#ff758c)','linear-gradient(135deg,#c1325a,#ff6f61)','linear-gradient(135deg,#ffb56b,#fd8a85)','linear-gradient(135deg,#ff6f91,#c1325a)'];
+    const GROOM_GRADS = ['linear-gradient(135deg,#2fae8f,#12876a)','linear-gradient(135deg,#5b7cfa,#3a5bd0)','linear-gradient(135deg,#6a5acd,#8e7cff)','linear-gradient(135deg,#0f9b8e,#3aa6b9)','linear-gradient(135deg,#496fad,#2f4f7a)','linear-gradient(135deg,#3a8dde,#2563a8)'];
+    function gradientFor(p){ const a = p.profile_type === 'Groom' ? GROOM_GRADS : BRIDE_GRADS; return a[(p.id || 0) % a.length]; }
+    function initialFor(p){ const t = (p.title || p.profile_type || '?').trim(); return (t[0] || '?').toUpperCase(); }
 
     let filterActive = false;
     function showEmpty(){
       stage.innerHTML = filterActive
-        ? `<div class="empty">No profiles match your filter.<br><br>
+        ? `<div class="empty"><h3>No matches</h3>No profiles match your filter.<br><br>
             <a href="#" id="clearFilter">Clear filter</a></div>`
-        : `<div class="empty">That's everyone for now.<br><br>
+        : `<div class="empty"><h3>That's everyone ✨</h3>You've seen all the profiles for now.<br><br>
             <a href="/profiles">Browse all profiles</a> &middot; <a href="/register">Join to connect</a></div>`;
       document.querySelector('.controls').style.visibility='hidden';
       const cf = document.getElementById('clearFilter');
@@ -257,19 +298,25 @@
         const c = document.createElement('div');
         c.className='card';
         c.style.zIndex = String(10-(i-idx));
-        if(i>idx){ c.style.transform='scale(0.96) translateY(10px)'; }
+        if(i>idx){ c.style.animation='none'; c.style.transform='scale(0.94) translateY(14px)'; c.style.filter='brightness(.98)'; }
         c.innerHTML = `
-          <div class="stamp like">LIKE</div><div class="stamp nope">NOPE</div>
-          <div class="card-head">
-            <h2>${esc(p.title)}</h2>
-            <span class="chip">${esc(p.profile_type || 'Profile')}</span>
+          <div class="stamp like">♥ Yes</div><div class="stamp nope">✕ No</div>
+          <div class="cover" style="background:${gradientFor(p)}">
+            <span class="ctype">${esc(p.profile_type || 'Profile')}</span>
+            <div class="monogram">${esc(initialFor(p))}</div>
           </div>
-          ${rowHtml('Age', p.age)}
-          ${rowHtml('Height', tidy(p.height, 20))}
-          ${rowHtml('Location', tidy(p.location, 40))}
-          ${rowHtml('Education', tidy(p.education, 54))}
-          ${rowHtml('Profession', tidy(p.profession, 54))}
-          ${rowHtml('Status', tidy(p.marital_status, 40))}
+          <div class="card-body">
+            <div class="name-row">
+              <h2>${esc(p.title)}</h2>
+              ${p.age ? `<span class="age">${esc(p.age)}</span>` : ''}
+            </div>
+            ${p.location ? `<div class="loc">${PIN}${esc(tidy(p.location, 38))}</div>` : ''}
+            <div class="facts">
+              ${factHtml('Height', tidy(p.height, 18))}
+              ${factHtml('Status', tidy(p.marital_status, 22))}
+              ${factHtml('Education', tidy(p.education, 60), true)}
+              ${factHtml('Profession', tidy(p.profession, 60), true)}
+            </div>
           <div class="card-contacts">
             <a class="ic ic-wa" href="/profiles/${p.id}/whatsapp" title="WhatsApp" aria-label="WhatsApp">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 1.67c2.2 0 4.27.86 5.83 2.42a8.2 8.2 0 0 1 2.42 5.82c0 4.54-3.7 8.24-8.25 8.24-1.5 0-2.96-.4-4.24-1.16l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.37c0-4.54 3.7-8.24 8.24-8.24Zm-4.5 4.43c-.21 0-.55.08-.84.39-.29.31-1.1 1.08-1.1 2.62 0 1.55 1.13 3.04 1.29 3.25.16.21 2.2 3.36 5.33 4.58 2.6 1.02 3.13.81 3.7.76.57-.05 1.83-.75 2.09-1.47.26-.72.26-1.34.18-1.47-.08-.13-.29-.21-.6-.37-.31-.16-1.83-.9-2.11-1-.28-.1-.49-.16-.7.16-.21.31-.8 1-.98 1.21-.18.21-.36.23-.67.08-.31-.16-1.31-.48-2.5-1.54-.92-.82-1.54-1.84-1.72-2.15-.18-.31-.02-.48.14-.63.14-.14.31-.36.47-.54.16-.18.21-.31.31-.52.1-.21.05-.39-.03-.54-.08-.16-.7-1.69-.96-2.31-.25-.61-.51-.53-.7-.54l-.6-.01Z"/></svg>
@@ -277,6 +324,7 @@
             <a class="ic ic-call" href="/profiles/${p.id}/call" title="Call" aria-label="Call">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.62 10.79a15.5 15.5 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.24.2 2.45.57 3.57a1 1 0 0 1-.24 1.02l-2.21 2.2Z"/></svg>
             </a>
+          </div>
           </div>`;
         stage.appendChild(c);
         if(i===idx) attachDrag(c);
@@ -290,9 +338,12 @@
       const move=(x,y)=>{ if(!down) return; dx=x-sx; dy=y-sy;
         card.style.transform=`translate(${dx}px,${dy}px) rotate(${dx/18}deg)`;
         like.style.opacity = dx>0 ? Math.min(dx/100,1) : 0;
-        nope.style.opacity = dx<0 ? Math.min(-dx/100,1) : 0; };
+        nope.style.opacity = dx<0 ? Math.min(-dx/100,1) : 0;
+        card.classList.toggle('liking', dx > 45);
+        card.classList.toggle('noping', dx < -45); };
       const end=()=>{ if(!down) return; down=false; card.style.transition='transform .3s ease';
-        if(Math.abs(dx)>110){ fly(card, dx>0?1:-1); } else { card.style.transform=''; like.style.opacity=nope.style.opacity=0; } };
+        if(Math.abs(dx)>110){ fly(card, dx>0?1:-1); }
+        else { card.style.transform=''; like.style.opacity=nope.style.opacity=0; card.classList.remove('liking','noping'); } };
       card.addEventListener('mousedown',e=>{ if(e.target.closest('.ic')) return; start(e.clientX,e.clientY); });
       window.addEventListener('mousemove',e=>move(e.clientX,e.clientY));
       window.addEventListener('mouseup',end);
@@ -321,11 +372,17 @@
       setTimeout(()=>fly(card, dir), 120);
     }
 
+    function rewind(){
+      if(animating || idx === 0) return;
+      idx--; render();
+    }
     document.getElementById('yes').onclick=()=>swipeTop(1);
     document.getElementById('no').onclick=()=>swipeTop(-1);
+    document.getElementById('rewind').onclick=rewind;
     document.addEventListener('keydown',e=>{
       if(document.getElementById('filterOverlay').classList.contains('open')) return;
       if(e.key==='ArrowRight')swipeTop(1); if(e.key==='ArrowLeft')swipeTop(-1);
+      if(e.key.toLowerCase()==='z')rewind();
     });
 
     // ---- Filter popup ----
