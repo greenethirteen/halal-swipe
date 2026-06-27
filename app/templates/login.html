@@ -1,16 +1,15 @@
 {% extends "base.html" %}
 {% block content %}
 <section class="auth-card card">
-  <p class="eyebrow">Welcome back</p>
+  <img class="auth-logo" src="/static/logo.png" alt="{{ settings.app_name }}">
   <h1>Log in</h1>
-  <p class="auth-sub">Serious profiles, real people. Pick up where you left off.</p>
+  {% include "google_button.html" %}
   <form method="post" action="/login" class="form compact">
     <input type="hidden" name="next" value="{{ next or '/' }}">
-    <label>Email <input name="email" type="email" autocomplete="email" required></label>
-    <label>Password <input name="password" type="password" autocomplete="current-password" required></label>
+    <input name="email" type="email" autocomplete="email" placeholder="Email" required>
+    <input name="password" type="password" autocomplete="current-password" placeholder="Password" required>
     <button class="button full">Log in</button>
   </form>
-  {% include "google_button.html" %}
-  <p class="auth-alt">New here? <a href="/register{% if next and next != '/' %}?next={{ next }}{% endif %}">Create an account</a></p>
+  <p class="auth-alt"><a href="/register{% if next and next != '/' %}?next={{ next }}{% endif %}">Create account</a></p>
 </section>
 {% endblock %}

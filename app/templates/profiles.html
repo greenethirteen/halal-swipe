@@ -1,12 +1,9 @@
 {% extends "base.html" %}
 {% from "components.html" import profile_card %}
 {% block content %}
-<section class="page-title">
-  <p class="eyebrow">Search</p>
-  <h1>Profiles</h1>
-</section>
-<form class="filters" method="get" action="/profiles">
-  <input name="q" placeholder="Search education, profession, notes" value="{{ filters.q }}">
+<section class="browse-shell">
+<form class="filters browse-filters" method="get" action="/profiles">
+  <input name="q" placeholder="Search profiles" value="{{ filters.q }}">
   <select name="profile_type">
     <option value="">All</option>
     <option value="Bride" {% if filters.profile_type == 'Bride' %}selected{% endif %}>Bride</option>
@@ -17,11 +14,16 @@
   <input name="max_age" type="number" min="18" placeholder="Max age" value="{{ filters.max_age }}">
   <button class="button">Filter</button>
 </form>
-<div class="grid">
+<div class="browse-head">
+  <h1>Browse</h1>
+  <span>{{ profiles|length }} shown</span>
+</div>
+<div class="browse-grid">
   {% for profile in profiles %}
     {{ profile_card(profile, is_subscribed) }}
   {% else %}
     <div class="empty card">No profiles match your filters.</div>
   {% endfor %}
 </div>
+</section>
 {% endblock %}

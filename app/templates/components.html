@@ -4,20 +4,16 @@
     <span class="chip">{{ profile.profile_type or 'Profile' }}</span>
     <span class="ref">{{ profile.reference_code }}</span>
   </div>
-  {% if profile.image_path %}
-    <img class="avatar" src="/uploads/{{ profile.image_path }}" alt="Profile image">
-  {% else %}
-    <div class="avatar placeholder">{{ (profile.profile_type or 'N')[0] }}</div>
-  {% endif %}
   <h3>{{ profile.full_name or profile.profile_type ~ ' profile' }}</h3>
   <div class="meta">
     {% if profile.age %}<span>{{ profile.age }} yrs</span>{% endif %}
     {% if profile.city %}<span>{{ profile.city }}</span>{% endif %}
     {% if profile.marital_status %}<span>{{ profile.marital_status }}</span>{% endif %}
   </div>
-  <p>{{ (profile.bio_summary or profile.raw_text or 'Profile summary available after review.') | truncate(220) }}</p>
-  <div class="blur-line {% if is_subscribed %}open{% endif %}">
-    {% if is_subscribed %}Contact unlocked{% else %}Contact locked for subscribers{% endif %}
+  <p>{{ (profile.bio_summary or 'Profile summary available.') | truncate(130) }}</p>
+  <div class="mini-facts">
+    {% if profile.education %}<span>{{ profile.education|truncate(34) }}</span>{% endif %}
+    {% if profile.profession %}<span>{{ profile.profession|truncate(34) }}</span>{% endif %}
   </div>
 </a>
 {% endmacro %}

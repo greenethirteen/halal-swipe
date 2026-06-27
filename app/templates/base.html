@@ -8,22 +8,26 @@
 </head>
 <body>
   <div class="splash" id="splash"><img src="/static/logo.png" alt="{{ settings.app_name }}"></div>
-  <header class="nav">
+  <header class="nav app-top">
     <a class="brand" href="/"><img src="/static/logo.png" alt="{{ settings.app_name }}"></a>
-    <nav>
-      <a href="/profiles">Browse</a>
-      <a href="/submit">Add profile</a>
-      <a href="/pricing">Pricing</a>
-      <a href="/about">About</a>
-      {% if is_admin %}<a href="/admin">Admin</a>{% endif %}
-      {% if user %}
-        <a href="/account">My profile</a>
-        <form class="inline" method="post" action="/logout"><button class="link-button">Log out</button></form>
-      {% else %}
-        <a href="/login">Log in</a>
-        <a class="button mini" href="/register">Join</a>
-      {% endif %}
-    </nav>
+    <div class="top-pill">
+      <a class="top-link" href="/profiles">Browse</a>
+      <a class="top-link" href="/pricing">Pricing</a>
+      <button class="menu-btn" id="menuBtn" type="button" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
+      <nav class="menu-drawer" id="menuDrawer">
+        <a href="/">Swipe</a>
+        <a href="/about">About</a>
+        {% if is_admin %}<a href="/admin">Admin</a>{% endif %}
+        {% if user %}
+          <a href="/account">My profile</a>
+          <a href="/submit">Add profile</a>
+          <form method="post" action="/logout"><button class="menu-link-btn" type="submit">Log out</button></form>
+        {% else %}
+          <a href="/login">Log in</a>
+          <a href="/register" class="menu-join">Join free</a>
+        {% endif %}
+      </nav>
+    </div>
   </header>
   {% if flash %}<div class="flash">{{ flash }}</div>{% endif %}
   <main>
@@ -40,6 +44,22 @@
       if(sessionStorage.getItem('splashShown')){ s.remove(); return; }
       sessionStorage.setItem('splashShown','1');
       setTimeout(function(){ s.classList.add('hide'); setTimeout(function(){ s.remove(); }, 600); }, 1500);
+    })();
+  </script>
+  <script>
+    (function(){
+      const menuBtn = document.getElementById('menuBtn');
+      const menuDrawer = document.getElementById('menuDrawer');
+      if(!menuBtn || !menuDrawer) return;
+      function closeMenu(){ menuDrawer.classList.remove('open'); menuBtn.classList.remove('open'); menuBtn.setAttribute('aria-expanded','false'); }
+      menuBtn.addEventListener('click', function(e){
+        e.stopPropagation();
+        const open = menuDrawer.classList.toggle('open');
+        menuBtn.classList.toggle('open', open);
+        menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+      document.addEventListener('click', function(e){ if(!menuDrawer.contains(e.target) && e.target !== menuBtn) closeMenu(); });
+      document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeMenu(); });
     })();
   </script>
   <script type="module" src="/static/firebase.js?v={{ settings.static_version }}"></script>

@@ -1,17 +1,16 @@
 {% extends "base.html" %}
 {% block content %}
 <section class="auth-card card">
-  <p class="eyebrow">Create account</p>
-  <h1>Join {{ settings.app_name }}</h1>
-  <p class="auth-sub">A calmer, more honest way to find a spouse. Free to browse — connect with real families.</p>
+  <img class="auth-logo" src="/static/logo.png" alt="{{ settings.app_name }}">
+  <h1>Create account</h1>
+  {% include "google_button.html" %}
   <form method="post" action="/register" class="form compact">
     <input type="hidden" name="next" value="{{ next or '/' }}">
-    <label>Full name <input name="full_name" autocomplete="name" required></label>
-    <label>Email <input name="email" type="email" autocomplete="email" required></label>
-    <label>Password <input name="password" type="password" minlength="8" autocomplete="new-password" required></label>
+    <input name="full_name" autocomplete="name" placeholder="Full name" required>
+    <input name="email" type="email" autocomplete="email" placeholder="Email" required>
+    <input name="password" type="password" minlength="8" autocomplete="new-password" placeholder="Password" required>
     <button class="button full">Create account</button>
   </form>
-  {% include "google_button.html" %}
-  <p class="auth-alt">Already a member? <a href="/login{% if next and next != '/' %}?next={{ next }}{% endif %}">Log in</a></p>
+  <p class="auth-alt"><a href="/login{% if next and next != '/' %}?next={{ next }}{% endif %}">Log in</a></p>
 </section>
 {% endblock %}

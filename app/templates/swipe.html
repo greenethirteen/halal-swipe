@@ -6,34 +6,34 @@
   <title>{{ settings.app_name }}</title>
   <link rel="stylesheet" href="/static/styles.css?v={{ settings.static_version }}">
   <style>
-    html, body { height: 100%; }
+    html, body { height: 100%; overflow: hidden; }
     body { display: flex; flex-direction: column; margin: 0; }
 
     /* Top bar: free-standing logo + actions pill */
     .swipe-top {
       position: relative; z-index: 60; width: min(1180px, calc(100% - 24px));
-      margin: 8px auto 4px; display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      margin: 2px auto 0; display: flex; align-items: center; justify-content: space-between; gap: 8px;
     }
-    .swipe-top .brand img { height: 84px; }
+    .swipe-top .brand img { height: 112px; }
     .top-pill {
-      position: relative; display: flex; align-items: center; gap: 14px;
-      padding: 7px 8px 7px 18px; border: 1px solid var(--line); border-radius: 999px;
+      position: relative; display: flex; align-items: center; gap: 10px;
+      padding: 6px 7px 6px 15px; border: 1px solid var(--line); border-radius: 999px;
       background: rgba(255, 250, 246, .88); backdrop-filter: blur(18px);
       box-shadow: 0 6px 20px rgba(193, 50, 90, .07);
     }
-    .top-link { color: var(--muted); font-weight: 600; font-size: .95rem; }
+    .top-link { color: var(--muted); font-weight: 750; font-size: .9rem; }
     .top-link:hover { color: var(--ink); }
     .filter-btn {
       display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
       border: 1px solid var(--line); background: #fff; color: var(--ink);
-      font: inherit; font-weight: 700; font-size: .92rem; padding: 8px 13px; border-radius: 999px;
+      font: inherit; font-weight: 800; font-size: .88rem; padding: 8px 12px; border-radius: 999px;
       box-shadow: 0 4px 12px rgba(255,138,76,.14); transition: transform .14s ease, box-shadow .14s ease;
     }
     .filter-btn svg { width: 15px; height: 15px; fill: currentColor; }
     .filter-btn:hover { transform: translateY(-1px); }
     .filter-btn:active { transform: scale(.96); }
     .menu-btn {
-      width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--line); background: #fff;
+      width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--line); background: #fff;
       display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px;
       cursor: pointer; box-shadow: 0 4px 12px rgba(255,138,76,.14); transition: transform .14s ease;
     }
@@ -57,9 +57,9 @@
     .menu-join { background: var(--green) !important; color: #fff !important; text-align: center !important; font-weight: 800; margin-top: 4px; }
 
     /* Stage + card */
-    .stage { flex: 1; position: relative; display: flex; align-items: center; justify-content: center; padding: 6px 12px 86px; overflow: hidden; }
+    .stage { flex: 1; min-height: 0; position: relative; display: flex; align-items: flex-start; justify-content: center; padding: 0 12px 86px; overflow: hidden; }
     .card {
-      position: absolute; width: min(440px, 94vw); max-height: min(100%, 760px); overflow: hidden;
+      position: absolute; width: min(470px, 94vw); max-height: calc(100dvh - 220px); overflow: hidden;
       background: #fff; border-radius: 24px; display: flex; flex-direction: column;
       box-shadow: 0 26px 54px -22px rgba(120,40,70,.5), 0 6px 16px rgba(120,40,70,.12);
       will-change: transform; touch-action: pan-y; animation: card-in .4s cubic-bezier(.2,.9,.3,1.12) both;
@@ -70,10 +70,10 @@
     .card-accent { height: 5px; flex-shrink: 0; background: linear-gradient(90deg, #ff8a5b, #ff6f61); }
     .card-accent.groom { background: linear-gradient(90deg, #2fae8f, #12876a); }
 
-    .card-inner { flex: 0 1 auto; min-height: 0; overflow: auto; padding: 18px 20px 8px; touch-action: pan-y; }
+    .card-inner { flex: 0 1 auto; min-height: 0; overflow: auto; padding: 20px 22px 14px; touch-action: pan-y; }
     .card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
-    .card-head h2 { margin: 0; font-size: 1.5rem; letter-spacing: -.02em; color: var(--ink); line-height: 1.15; }
-    .card-head h2 .age { color: var(--muted); font-weight: 600; font-size: 1.15rem; }
+    .card-head h2 { margin: 0; font-size: 1.95rem; letter-spacing: -.03em; color: var(--ink); line-height: 1.05; }
+    .card-head h2 .age { color: var(--muted); font-weight: 700; font-size: 1.28rem; }
     .card-tools { display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0; }
     .card .chip { flex-shrink: 0; display: inline-flex; align-items: center; border-radius: 999px; padding: 6px 11px;
       font-size: .76rem; font-weight: 800; background: rgba(255,111,97,.16); color: var(--coral); }
@@ -87,12 +87,12 @@
     .more-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(255,138,76,.2); }
     .loc { display: flex; align-items: center; gap: 6px; color: var(--muted); margin-top: 6px; font-weight: 600; font-size: .92rem; }
     .loc svg { width: 13px; height: 13px; fill: var(--coral); flex-shrink: 0; }
-    .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
-    .fact { background: var(--bg); border: 1px solid var(--line); border-radius: 14px; padding: 10px 13px; min-width: 0; }
+    .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 12px; }
+    .fact { background: var(--bg); border: 1px solid var(--line); border-radius: 13px; padding: 9px 12px; min-width: 0; }
     .fact.wide { grid-column: 1 / -1; }
     .fact .fl { display: block; font-size: .66rem; text-transform: uppercase; letter-spacing: .09em; color: var(--coral); font-weight: 800; }
     .fact .fv {
-      display: -webkit-box; margin-top: 3px; font-size: .94rem; color: var(--ink); font-weight: 600; line-height: 1.35;
+      display: -webkit-box; margin-top: 3px; font-size: .92rem; color: var(--ink); font-weight: 650; line-height: 1.3;
       -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
     }
     .summary {
@@ -100,8 +100,8 @@
       display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
     }
 
-    .card-actions { display: flex; gap: 10px; margin-top: 16px; }
-    .card-actions .ic { flex: 1; height: 46px; border-radius: 14px; display: flex; align-items: center; justify-content: center; gap: 8px;
+    .card-actions { display: flex; gap: 10px; margin-top: 12px; }
+    .card-actions .ic { flex: 1; height: 44px; border-radius: 13px; display: flex; align-items: center; justify-content: center; gap: 8px;
       color: #fff; font-weight: 800; font-size: .92rem; cursor: pointer; transition: transform .14s ease, filter .14s ease; }
     .card-actions .ic svg { width: 19px; height: 19px; fill: currentColor; }
     .card-actions .ic:hover { transform: translateY(-2px); filter: brightness(1.04); }
@@ -115,15 +115,15 @@
     .stamp.nope { right: 18px; color: var(--coral); border-color: var(--coral); transform: rotate(14deg); }
 
     /* Thin controls */
-    .controls { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 50;
-      display: flex; justify-content: center; align-items: center; gap: 16px; }
+    .controls { position: fixed; left: 50%; bottom: max(10px, env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 50;
+      display: flex; justify-content: center; align-items: center; gap: 14px; }
     .controls button { border-radius: 50%; border: 0; cursor: pointer; display: grid; place-items: center; background: #fff; transition: transform .14s ease, box-shadow .14s ease; }
     .controls button svg { fill: currentColor; }
-    .controls #rewind { width: 44px; height: 44px; color: var(--gold-dark); box-shadow: 0 6px 16px rgba(240,169,59,.26); }
+    .controls #rewind { width: 42px; height: 42px; color: var(--gold-dark); box-shadow: 0 6px 16px rgba(240,169,59,.26); }
     .controls #rewind svg { width: 18px; height: 18px; }
-    .controls #no { width: 56px; height: 56px; color: var(--coral); box-shadow: 0 8px 20px rgba(255,111,97,.28); }
+    .controls #no { width: 52px; height: 52px; color: var(--coral); box-shadow: 0 8px 20px rgba(255,111,97,.28); }
     .controls #no svg { width: 23px; height: 23px; }
-    .controls #yes { width: 64px; height: 64px; color: #fff; background: linear-gradient(135deg, #ff8a5b, #ff6f61); box-shadow: 0 10px 26px rgba(255,111,97,.5); }
+    .controls #yes { width: 60px; height: 60px; color: #fff; background: linear-gradient(135deg, #ff8a5b, #ff6f61); box-shadow: 0 10px 26px rgba(255,111,97,.5); }
     .controls #yes svg { width: 27px; height: 27px; }
     .controls button:hover { transform: translateY(-2px) scale(1.05); }
     .controls button:active { transform: scale(.9); }
@@ -193,11 +193,20 @@
     .info-field dd { margin: 5px 0 0; color: var(--ink); line-height: 1.5; white-space: pre-line; }
 
     @media (max-width: 600px) {
-      .swipe-top { padding: 5px 7px 5px 12px; }
-      .swipe-top .brand img { height: 52px; }
-      .stage { padding: 4px 10px 0; }
-      .card-inner { padding: 16px 16px 6px; }
-      .card-head h2 { font-size: 1.35rem; }
+      .swipe-top { width: calc(100% - 14px); padding: 0; }
+      .swipe-top .brand img { height: 78px; }
+      .top-pill { gap: 6px; padding: 5px 6px 5px 12px; }
+      .top-link { font-size: .84rem; }
+      .filter-btn { font-size: .84rem; padding: 7px 10px; }
+      .menu-btn { width: 36px; height: 36px; }
+      .stage { padding: 0 8px 78px; }
+      .card { width: min(508px, calc(100vw - 16px)); max-height: calc(100dvh - 176px); border-radius: 22px; }
+      .card-inner { padding: 18px 18px 12px; }
+      .card-head h2 { font-size: 1.62rem; }
+      .card-head h2 .age { font-size: 1.1rem; }
+      .facts { gap: 8px; }
+      .fact { padding: 8px 10px; }
+      .card-actions .ic { height: 42px; }
       .info-grid { grid-template-columns: 1fr; }
     }
   </style>

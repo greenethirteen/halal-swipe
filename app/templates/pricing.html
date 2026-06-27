@@ -2,16 +2,13 @@
 {% block content %}
 <section class="pricing">
   <div class="card price-card">
-    <p class="eyebrow">Membership</p>
     <h1>$5<span>/month</span></h1>
-    <p>Browsing is free. Membership unlocks unlimited contacts.</p>
-    <ul>
-      <li>Free: open {{ settings.free_contact_limit }} contacts</li>
-      <li>Member: unlimited contacts</li>
-      <li>Reach the family directly</li>
-      <li>Real, reviewed profiles</li>
-      <li>Cancel anytime</li>
-    </ul>
+    <p>Unlimited WhatsApp and call access.</p>
+    <div class="price-points">
+      <span>{{ settings.free_contact_limit }} free contacts</span>
+      <span>Unlimited as a member</span>
+      <span>Cancel anytime</span>
+    </div>
     {% if user and is_subscribed %}
       <div class="unlock-box">You have an active membership. Manage it from <a href="/account">My profile</a>.</div>
     {% elif user %}
