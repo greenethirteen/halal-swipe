@@ -5,3 +5,6 @@ __pycache__/
 app.db
 uploads/imports/*
 uploads/profile_images/*
+
+# Local production DB backups (contain phone numbers)
+prod_profiles_backup_*.json
