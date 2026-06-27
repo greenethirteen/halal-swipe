@@ -106,24 +106,18 @@
     .card.liking { box-shadow: 0 0 0 3px var(--green), 0 30px 60px -20px rgba(47,158,126,.5); }
     .card.noping { box-shadow: 0 0 0 3px var(--coral), 0 30px 60px -20px rgba(255,111,97,.5); }
 
-    .cover { position: relative; height: 188px; flex-shrink: 0; display: grid; place-items: center; }
-    .cover::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,.22), transparent 60%); }
-    .monogram {
-      width: 104px; height: 104px; border-radius: 50%; z-index: 1;
-      background: rgba(255,255,255,.22); border: 2px solid rgba(255,255,255,.65); backdrop-filter: blur(4px);
-      display: grid; place-items: center; font-size: 2.8rem; font-weight: 800; color: #fff;
-      text-shadow: 0 2px 8px rgba(0,0,0,.18); box-shadow: 0 12px 30px rgba(0,0,0,.18);
-    }
-    .ctype { position: absolute; top: 14px; right: 14px; z-index: 2; background: rgba(255,255,255,.92);
-      color: var(--ink); border-radius: 999px; padding: 6px 13px; font-size: .74rem; font-weight: 800; box-shadow: 0 4px 12px rgba(0,0,0,.12); }
-
-    .card-body { flex: 1; overflow: auto; padding: 18px 22px 18px; display: flex; flex-direction: column; }
+    .card-accent { height: 6px; flex-shrink: 0; background: linear-gradient(90deg, #ff8a5b, #ff6f61); }
+    .card-accent.groom { background: linear-gradient(90deg, #2fae8f, #12876a); }
+    .card-body { flex: 1; overflow: auto; padding: 24px 22px 20px; display: flex; flex-direction: column; }
+    .card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
     .name-row { display: flex; align-items: baseline; gap: 9px; flex-wrap: wrap; }
-    .name-row h2 { margin: 0; font-size: 1.65rem; letter-spacing: -.02em; color: var(--ink); line-height: 1.1; }
-    .name-row .age { font-size: 1.35rem; font-weight: 600; color: var(--muted); }
-    .loc { display: flex; align-items: center; gap: 6px; color: var(--muted); margin-top: 7px; font-weight: 600; font-size: .94rem; }
+    .name-row h2 { margin: 0; font-size: 1.7rem; letter-spacing: -.02em; color: var(--ink); line-height: 1.12; }
+    .name-row .age { font-size: 1.4rem; font-weight: 600; color: var(--muted); }
+    .card .chip { flex-shrink: 0; background: rgba(255,111,97,.16); color: var(--coral); }
+    .card .chip.groom { background: rgba(18,135,106,.16); color: var(--green); }
+    .loc { display: flex; align-items: center; gap: 6px; color: var(--muted); margin-top: 8px; font-weight: 600; font-size: .96rem; }
     .loc svg { width: 14px; height: 14px; fill: var(--coral); flex-shrink: 0; }
-    .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+    .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
     .fact { background: var(--bg); border: 1px solid var(--line); border-radius: 14px; padding: 9px 12px; min-width: 0; }
     .fact.wide { grid-column: 1 / -1; }
     .fact .fl { display: block; font-size: .66rem; text-transform: uppercase; letter-spacing: .09em; color: var(--coral); font-weight: 800; }
@@ -324,16 +318,17 @@
         c.className='card';
         c.style.zIndex = String(10-(i-idx));
         if(i>idx){ c.style.animation='none'; c.style.transform='scale(0.94) translateY(14px)'; c.style.filter='brightness(.98)'; }
+        const groom = p.profile_type === 'Groom';
         c.innerHTML = `
           <div class="stamp like">♥ Yes</div><div class="stamp nope">✕ No</div>
-          <div class="cover" style="background:${gradientFor(p)}">
-            <span class="ctype">${esc(p.profile_type || 'Profile')}</span>
-            <div class="monogram">${esc(initialFor(p))}</div>
-          </div>
+          <div class="card-accent${groom ? ' groom' : ''}"></div>
           <div class="card-body">
-            <div class="name-row">
-              <h2>${esc(p.title)}</h2>
-              ${p.age ? `<span class="age">${esc(p.age)}</span>` : ''}
+            <div class="card-head">
+              <div class="name-row">
+                <h2>${esc(p.title)}</h2>
+                ${p.age ? `<span class="age">${esc(p.age)}</span>` : ''}
+              </div>
+              <span class="chip${groom ? ' groom' : ''}">${esc(p.profile_type || 'Profile')}</span>
             </div>
             ${p.location ? `<div class="loc">${PIN}${esc(tidy(p.location, 38))}</div>` : ''}
             <div class="facts">
