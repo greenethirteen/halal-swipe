@@ -175,16 +175,16 @@ label { display: grid; gap: 8px; font-weight: 750; color: var(--ink); }
 .auth-alt a { color: var(--green); font-weight: 800; }
 
 /* About page */
-.about { max-width: 920px; margin: 0 auto; padding-top: 8px; }
-.about .eyebrow { margin-bottom: 10px; }
-.about h1 { margin: 0; }
-.about .lead { font-size: 1.15rem; color: var(--muted); line-height: 1.55; max-width: 620px; margin: 14px 0 0; }
-.about-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 30px 0 26px; }
-.feature { padding: 18px 16px; border: 1px solid var(--line); border-radius: 14px; background: rgba(255,255,255,.55); }
-.feature .idx { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .7rem; font-weight: 700; color: var(--coral); letter-spacing: .1em; }
-.feature strong { display: block; margin: 10px 0 4px; font-size: 1rem; letter-spacing: -.005em; }
-.feature p { margin: 0; color: var(--muted); font-size: .88rem; line-height: 1.45; }
-@media (max-width: 720px) { .about-grid { grid-template-columns: 1fr 1fr; } }
+.about { max-width: 960px; margin: 0 auto; padding-top: 8px; }
+.about .eyebrow { margin-bottom: 12px; }
+.about h1 { margin: 0; font-weight: 900; font-size: clamp(3rem, 8vw, 6.2rem); line-height: .96; letter-spacing: -.03em; }
+.about .lead { font-size: 1.4rem; color: var(--ink); font-weight: 500; line-height: 1.45; max-width: 720px; margin: 18px 0 0; }
+.about-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin: 36px 0 30px; }
+.feature { padding: 26px; border: 2px solid var(--ink); border-radius: 18px; background: #fff; box-shadow: 6px 6px 0 rgba(42,32,24,.9); }
+.feature .idx { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 1.7rem; font-weight: 800; color: var(--coral); letter-spacing: -.02em; }
+.feature strong { display: block; margin: 8px 0 6px; font-size: 1.35rem; font-weight: 800; letter-spacing: -.02em; }
+.feature p { margin: 0; color: var(--muted); font-size: 1rem; line-height: 1.5; }
+@media (max-width: 720px) { .about-grid { grid-template-columns: 1fr; } }
 .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 18px 0 8px; }
 .compare .card h3 { margin: 0 0 10px; font-size: 1.1rem; }
 .compare ul { margin: 0; padding-left: 18px; color: var(--muted); line-height: 1.7; }

@@ -4,13 +4,13 @@
   <div class="card price-card">
     <p class="eyebrow">Membership</p>
     <h1>$5<span>/month</span></h1>
-    <p>Browsing is free. Membership unlocks unlimited contact details so you can reach serious families directly.</p>
+    <p>Browsing is free. Membership unlocks unlimited contacts.</p>
     <ul>
-      <li><strong>Free:</strong> browse every profile and open {{ settings.free_contact_limit }} contacts</li>
-      <li><strong>Member:</strong> unlimited WhatsApp &amp; phone contacts</li>
-      <li>Reach the parent / guardian directly — no middlemen</li>
-      <li>Admin-reviewed, consent-first, real profiles only</li>
-      <li>Cancel anytime — no lock-in</li>
+      <li>Free: open {{ settings.free_contact_limit }} contacts</li>
+      <li>Member: unlimited contacts</li>
+      <li>Reach the family directly</li>
+      <li>Real, reviewed profiles</li>
+      <li>Cancel anytime</li>
     </ul>
     {% if user and is_subscribed %}
       <div class="unlock-box">You have an active membership. Manage it from <a href="/account">My profile</a>.</div>
