@@ -70,7 +70,7 @@
     .card-accent { height: 5px; flex-shrink: 0; background: linear-gradient(90deg, #ff8a5b, #ff6f61); }
     .card-accent.groom { background: linear-gradient(90deg, #2fae8f, #12876a); }
 
-    .card-inner { flex: 0 1 auto; min-height: 0; overflow: auto; padding: 18px 20px 8px; }
+    .card-inner { flex: 0 1 auto; min-height: 0; overflow: auto; padding: 18px 20px 8px; touch-action: pan-y; }
     .card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
     .card-head h2 { margin: 0; font-size: 1.5rem; letter-spacing: -.02em; color: var(--ink); line-height: 1.15; }
     .card-head h2 .age { color: var(--muted); font-weight: 600; font-size: 1.15rem; }
@@ -304,6 +304,7 @@
               <a class="ic ic-call" href="/profiles/${p.id}/call" title="Call" aria-label="Call"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.62 10.79a15.5 15.5 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.24.2 2.45.57 3.57a1 1 0 0 1-.24 1.02l-2.21 2.2Z"/></svg>Call</a>
             </div>
           </div>`;
+        c.addEventListener('animationend', ()=>{ c.style.animation='none'; }, {once:true});
         stage.appendChild(c);
         if(i===idx) attachDrag(c);
       }
@@ -315,7 +316,7 @@
       card.addEventListener('pointerdown', e=>{
         if(animating || e.target.closest('.ic')) return;
         down=true; decided=false; horiz=false; dx=0; sx=e.clientX; sy=e.clientY;
-        card.style.transition='none';
+        card.style.animation='none'; card.style.transition='none';
         try { card.setPointerCapture(e.pointerId); } catch(_){}
       });
       card.addEventListener('pointermove', e=>{
@@ -357,6 +358,7 @@
       const stamp = card.querySelector(dir>0 ? '.stamp.like' : '.stamp.nope');
       if(stamp) stamp.style.opacity='1';
       card.classList.add(dir>0 ? 'liking' : 'noping');
+      card.style.animation='none';
       card.style.transition='transform .15s ease';
       card.style.transform=`translate(${dir*40}px,0) rotate(${dir*4}deg)`;
       setTimeout(()=>fly(card, dir), 130);
