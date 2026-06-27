@@ -96,7 +96,7 @@
     .gate-pick:active { transform: scale(.97); }
     .stage { flex: 1; position: relative; display: flex; align-items: center; justify-content: center; padding: 8px 16px 0; overflow: hidden; }
     .card {
-      position: absolute; width: min(412px, 92vw); height: min(600px, 74dvh); overflow: hidden;
+      position: absolute; width: min(412px, 92vw); height: 100%; max-height: 600px; overflow: hidden;
       background: #fff; border-radius: 30px;
       box-shadow: 0 30px 60px -22px rgba(120,40,70,.5), 0 6px 18px rgba(120,40,70,.12);
       display: flex; flex-direction: column; will-change: transform; touch-action: pan-y;
@@ -156,6 +156,31 @@
     .empty { color: var(--muted); text-align: center; max-width: 320px; line-height: 1.6; }
     .empty h3 { font-size: 1.5rem; color: var(--ink); margin: 0 0 6px; letter-spacing: -.02em; }
     .empty a { color: var(--coral); font-weight: 800; }
+
+    @media (max-width: 600px) {
+      .swipe-top { margin: 8px auto 2px; padding: 6px 10px 6px 12px; border-radius: 18px; }
+      .brand img { height: 40px; }
+      .swipe-links { gap: 10px; font-size: .9rem; }
+      .filter-btn { padding: 7px 11px; }
+      .stage { padding: 6px 12px 0; }
+      .card { border-radius: 24px; max-height: none; }
+      .cover { height: 140px; }
+      .monogram { width: 78px; height: 78px; font-size: 2rem; }
+      .card-body { padding: 14px 16px 14px; }
+      .name-row h2 { font-size: 1.45rem; }
+      .facts { gap: 8px; margin-top: 12px; }
+      .controls { gap: 14px; padding: 10px 0 12px; }
+      .controls #yes { width: 62px; height: 62px; }
+      .controls #yes svg { width: 26px; height: 26px; }
+      .controls #no { width: 54px; height: 54px; }
+      .controls #rewind { width: 46px; height: 46px; }
+      .card-contacts .ic { width: 42px; height: 42px; }
+      .swipe-footer { padding-bottom: 10px; }
+    }
+    @media (max-height: 720px) {
+      .cover { height: 132px; }
+      .monogram { width: 72px; height: 72px; font-size: 1.9rem; }
+    }
   </style>
 </head>
 <body>
