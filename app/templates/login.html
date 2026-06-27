@@ -10,6 +10,7 @@
     <label>Password <input name="password" type="password" autocomplete="current-password" required></label>
     <button class="button full">Log in</button>
   </form>
+  {% include "google_button.html" %}
   <p class="auth-alt">New here? <a href="/register{% if next and next != '/' %}?next={{ next }}{% endif %}">Create an account</a></p>
 </section>
 {% endblock %}

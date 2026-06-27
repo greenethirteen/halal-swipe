@@ -416,6 +416,51 @@ def about(request: Request) -> HTMLResponse:
     return render(request, "about.html")
 
 
+@app.post("/auth/google")
+async def auth_google(request: Request):
+    """Verify a Google Identity Services credential and sign the user in."""
+    if not settings.google_client_id:
+        flash(request, "Google sign-in is not configured.")
+        return redirect("/login")
+    form = await request.form()
+    credential = form.get("credential", "")
+    # CSRF: the g_csrf_token cookie must match the posted token (Google double-submit)
+    cookie_token = request.cookies.get("g_csrf_token")
+    if not cookie_token or cookie_token != form.get("g_csrf_token"):
+        flash(request, "Google sign-in failed (security check). Please try again.")
+        return redirect("/login")
+    try:
+        from google.auth.transport import requests as google_requests
+        from google.oauth2 import id_token as google_id_token
+
+        info = google_id_token.verify_oauth2_token(
+            credential, google_requests.Request(), settings.google_client_id
+        )
+    except Exception:
+        flash(request, "Google sign-in failed. Please try again.")
+        return redirect("/login")
+
+    email = (info.get("email") or "").lower().strip()
+    if not email or not info.get("email_verified"):
+        flash(request, "Your Google account email could not be verified.")
+        return redirect("/login")
+
+    row = one("SELECT * FROM users WHERE email = ?", (email,))
+    if row:
+        user_id = row["id"]
+    else:
+        import secrets as _secrets
+
+        name = info.get("name") or email.split("@")[0]
+        user_id = execute(
+            "INSERT INTO users (email, full_name, password_hash, role) VALUES (?, ?, ?, ?)",
+            (email, name, hash_password(_secrets.token_urlsafe(32)), role_for_email(email)),
+        )
+    request.session["user_id"] = user_id
+    flash(request, "Signed in with Google.")
+    return redirect("/")
+
+
 @app.post("/logout")
 def logout(request: Request):
     request.session.clear()

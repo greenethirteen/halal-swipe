@@ -11,6 +11,7 @@
     <label>Password <input name="password" type="password" minlength="8" autocomplete="new-password" required></label>
     <button class="button full">Create account</button>
   </form>
+  {% include "google_button.html" %}
   <p class="auth-alt">Already a member? <a href="/login{% if next and next != '/' %}?next={{ next }}{% endif %}">Log in</a></p>
 </section>
 {% endblock %}

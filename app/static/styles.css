@@ -173,6 +173,9 @@ label { display: grid; gap: 8px; font-weight: 750; color: var(--ink); }
 .auth-sub { color: var(--muted); line-height: 1.55; margin: 6px 0 18px; }
 .auth-alt { color: var(--muted); margin-top: 16px; text-align: center; }
 .auth-alt a { color: var(--green); font-weight: 800; }
+.google-auth { display: grid; justify-items: center; gap: 14px; margin-top: 18px; }
+.or-divider { width: 100%; display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: .82rem; }
+.or-divider::before, .or-divider::after { content: ""; flex: 1; height: 1px; background: var(--line); }
 
 /* About page */
 .about { max-width: 960px; margin: 0 auto; padding-top: 8px; }
