@@ -224,6 +224,8 @@ th { color: var(--muted); font-size: .82rem; text-transform: uppercase; letter-s
 .raw { white-space: pre-wrap; background: #fff1e6; color: #5a4634; border: 1px solid var(--line); border-radius: 22px; padding: 18px; overflow-x: auto; line-height: 1.55; }
 .empty { color: var(--muted); }
 .footer { width: min(1180px, calc(100% - 32px)); margin: 60px auto 24px; color: var(--muted); display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; font-size: .9rem; }
+.footer-links a { color: var(--muted); font-weight: 700; }
+.footer-links a:hover { color: var(--ink); }
 @media (max-width: 900px) {
   .hero, .detail-layout, .admin-grid { grid-template-columns: 1fr; }
   .grid { grid-template-columns: 1fr 1fr; }

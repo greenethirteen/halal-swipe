@@ -126,6 +126,9 @@
     .controls button:active { transform: scale(0.92); }
     .controls #no { color: var(--coral); }
     .controls #yes { color: #fff; background: linear-gradient(135deg, #ff8a5b, #ff6f61); border: 0; }
+    .swipe-footer { display: flex; justify-content: center; align-items: center; gap: 10px; padding: 0 0 18px; font-size: .85rem; color: var(--muted); }
+    .swipe-footer a { color: var(--muted); }
+    .swipe-footer a:hover { color: var(--ink); }
     .empty { color: var(--muted); text-align: center; max-width: 320px; line-height: 1.6; }
     .empty a { color: var(--green); font-weight: 800; }
   </style>
@@ -149,8 +152,6 @@
     <a class="brand" href="/"><img src="/static/logo.png" alt="{{ settings.app_name }}"></a>
     <span class="swipe-links">
       <a href="/profiles">Browse</a>
-      <a href="/pricing">Pricing</a>
-      <a href="/about">About</a>
       {% if user %}<a href="/account">My profile</a>{% else %}<a href="/login">Log in</a>{% endif %}
       <button class="filter-btn" id="filterBtn" type="button" aria-label="Filter">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18l-7 8v6l-4-2v-4L3 5Z"/></svg>
@@ -163,6 +164,11 @@
     <button id="no" title="Pass">✕</button>
     <button id="yes" title="Interested">♥</button>
   </div>
+  <footer class="swipe-footer">
+    <a href="/about">About</a>
+    <span>·</span>
+    <a href="/pricing">Pricing</a>
+  </footer>
 
   <div class="filter-overlay" id="filterOverlay">
     <div class="filter-sheet" role="dialog" aria-label="Filter profiles">
