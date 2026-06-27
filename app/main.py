@@ -107,6 +107,7 @@ PUBLIC_TEXT_FIELDS = {
     "bio_summary",
     "raw_text",
 }
+PLACEHOLDER_VALUES = {"", "not specified", "upon request", "available upon request", "n/a", "na", "none", "null", "nil", "-"}
 QUALIFICATION_RE = re.compile(
     r"\b(?:o/l|a/l|acca|hnd|hnda|bsc|ba|bcom|llb|mbbs|msc|mba|phd|diplomas?|dip\.?|degrees?|"
     r"graduate|undergraduate|bachelor|master|certificate|nvq)\b",
@@ -130,16 +131,18 @@ QUALIFICATION_CATEGORIES: list[tuple[str, list[str]]] = [
 ]
 # Job/field buckets, checked in order (specific before the generic "business").
 JOB_CATEGORIES: list[tuple[str, list[str]]] = [
-    ("Healthcare / Medical", ["doctor", "nurse", "mbbs", "physio", "medical", "pharmac", "dental", "surgeon", "clinic", "therapist", "health"]),
-    ("Accounting / Finance", ["account", "financ", "audit", "bank", "actuar", "tax", "bookkeep"]),
+    ("Healthcare / Medical", ["doctor", "physician", "nurse", "mbbs", "physio", "medical", "pharmac", "dental", "surgeon", "clinic", "therapist", "pathology", "health", " gp ", "midwife"]),
+    ("Accounting / Finance", ["account", "financ", "audit", "bank", "actuar", "tax", "bookkeep", "controller"]),
     ("IT / Software", ["software", "developer", "programmer", " it ", "information tech", "qa ", "quality assurance", "data ", "network", "system", "devops", "web ", "tech "]),
-    ("Engineering", ["engineer", "engineering"]),
-    ("Education / Teaching", ["teacher", "teaching", "lecturer", "tutor", "education", "academ", "quran", "quraan", "ustad", "moulavi"]),
+    ("Engineering", ["engineer", "engineering", "surveyor"]),
+    ("Education / Teaching", ["teacher", "teaching", "lecturer", "tutor", "educat", "academ", "demonstrator", "quran", "quraan", "ustad", "moulavi"]),
     ("Design / Creative", ["design", "architect", "creative", "graphic", "interior"]),
     ("Aviation", ["pilot", "cabin crew", "aviation", "airline"]),
+    ("Hospitality / Food", ["chef", "cook", "restaurant", "hotel", "catering", "barista", "waiter", "kitchen", "hospitality"]),
+    ("Skilled trade / Technical", ["technician", "fabricator", "mechanic", "electrician", "plumber", "welder", "driver", "tailor", "carpenter", "machinist", "fitter", "labour"]),
     ("Student", ["student", "undergraduate", "studying", "following a", "trainee", "intern"]),
     ("Not working / Homemaker", ["not working", "housewife", "homemaker", "unemployed"]),
-    ("Business / Management", ["business", "manager", "management", "executive", "coordinator", "consultant", "officer", "administ", "marketing", "sales", "human resource", "purchase", "supply", "procurement", "operations", "entrepreneur", "self employed", "clerk", "assistant", "analyst"]),
+    ("Business / Management", ["business", "manager", "management", "executive", "coordinator", "consultant", "officer", "administ", "marketing", "sales", "human resource", "purchase", "supply", "procurement", "operations", "entrepreneur", "self employed", "clerk", "assistant", "analyst", "cashier", "receptionist", "customer service", "supervisor", "chairman", "director", "shop", "grocery", "boutique", "trader", "trading", "store", "private sector", "company"]),
 ]
 ABROAD_KEYWORDS = [
     "qatar", "doha", "uae", "u.a.e", "dubai", "abu dhabi", "sharjah", "saudi", "ksa", "riyadh", "jeddah",
@@ -179,6 +182,28 @@ def clean_place(value: object) -> str:
     if len([p for p in re.split(r"\s*,\s*|\s+", s) if p]) > 4:
         return ""
     return s
+
+
+def normalize_marital_status(value: object) -> str | None:
+    text = re.sub(r"\s+", " ", str(value or "")).strip()
+    if not text:
+        return None
+    low = text.lower()
+    if low in PLACEHOLDER_VALUES or low in {"unknown"}:
+        return None
+    if re.search(r"\b(?:widow|widower|widowed)\b", low):
+        return "Widowed"
+    if re.search(r"\b(?:separated|seperated)\b", low):
+        return "Separated"
+    if re.search(r"\b(?:annulled|annulment)\b", low):
+        return "Annulled"
+    if re.search(r"\b(?:divorc|devorc|devos|devoce|divoce|divors|divos|divoc|dovorc)\w*\b", low):
+        return "Divorced"
+    if re.search(r"\b(?:never\s*married|unmarried|single|not\s*married)\b", low):
+        return "Never married"
+    if re.fullmatch(r"married", low):
+        return "Married"
+    return None
 
 
 def is_abroad(profile: dict) -> bool:
@@ -232,10 +257,12 @@ def short_join(pieces: list[str], limit: int) -> str | None:
 
 
 def compact_public_education(value: object) -> str | None:
-    pieces = [
-        p for p in public_pieces(value)
-        if QUALIFICATION_RE.search(p) and not PUBLIC_FIELD_NOISE_RE.search(p)
-    ]
+    clean = [p for p in public_pieces(value) if not PUBLIC_FIELD_NOISE_RE.search(p)]
+    qualifications = [p for p in clean if QUALIFICATION_RE.search(p)]
+    # Prefer recognised qualifications (drops noise in long messy blobs), but
+    # fall back to the clean value so tidy entries like AAT / CIMA / Islamic
+    # studies still show instead of disappearing.
+    pieces = qualifications or [p for p in clean if len(p) <= 60]
     return short_join(pieces[:3], 140)
 
 
@@ -247,7 +274,7 @@ def compact_public_work(value: object) -> str | None:
             continue
         if QUALIFICATION_RE.search(piece):
             continue
-        if re.search(r"\b(?:completed\s+o/l|completed\s+a/l|qualification|schools?|college|passed away)\b", low):
+        if re.search(r"\b(?:completed\s+o/l|completed\s+a/l|qualification|passed away)\b", low):
             continue
         piece = re.sub(r"^(?:currently\s+)?(?:working\s+)?(?:as\s+)?", "", piece, flags=re.IGNORECASE).strip()
         piece = re.sub(r"^(?:al|a/l)\s+background\s*", "", piece, flags=re.IGNORECASE).strip()
@@ -319,6 +346,7 @@ def public_profile(row) -> dict:
     for field in PUBLIC_TEXT_FIELDS:
         if field in profile:
             profile[field] = strip_public_contact_text(profile[field])
+    profile["marital_status"] = normalize_marital_status(profile.get("marital_status"))
     profile["full_name"] = public_title(profile)
     profile["education"] = compact_public_education(profile.get("education"))
     profile["profession"] = compact_public_work(profile.get("profession"))
