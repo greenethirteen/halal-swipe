@@ -35,6 +35,15 @@ app.mount("/uploads", StaticFiles(directory=settings.upload_dir), name="uploads"
 templates = Jinja2Templates(directory="app/templates")
 
 
+@app.middleware("http")
+async def no_store_html(request: Request, call_next):
+    response = await call_next(request)
+    content_type = response.headers.get("content-type", "")
+    if "text/html" in content_type:
+        response.headers["Cache-Control"] = "no-store, max-age=0"
+    return response
+
+
 @app.on_event("startup")
 def startup() -> None:
     init_db()
@@ -134,11 +143,14 @@ def home(request: Request) -> HTMLResponse:
     cards = []
     for r in rows:
         location = ", ".join(filter(None, [r["city"], r["district"]])) or None
+        title = r["full_name"] or f"{r['profile_type'] or 'Nikah'} profile"
+        if (title or "").strip().lower() in {"bride profile", "groom profile", "profile"} and r["city"]:
+            title = f"{r['profile_type'] or 'Profile'} from {r['city']}"
         cards.append(
             {
                 "id": r["id"],
                 "reference_code": r["reference_code"],
-                "title": r["full_name"] or f"{r['profile_type'] or 'Nikah'} profile",
+                "title": title,
                 "profile_type": r["profile_type"],
                 "age": r["age"],
                 "location": location,

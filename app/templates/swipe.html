@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ settings.app_name }}</title>
-  <link rel="stylesheet" href="/static/styles.css">
+  <link rel="stylesheet" href="/static/styles.css?v={{ settings.static_version }}">
   <style>
     html, body { height: 100%; }
     body { display: flex; flex-direction: column; margin: 0; }
@@ -91,7 +91,10 @@
     .fact { background: var(--bg); border: 1px solid var(--line); border-radius: 14px; padding: 10px 13px; min-width: 0; }
     .fact.wide { grid-column: 1 / -1; }
     .fact .fl { display: block; font-size: .66rem; text-transform: uppercase; letter-spacing: .09em; color: var(--coral); font-weight: 800; }
-    .fact .fv { display: block; margin-top: 3px; font-size: .94rem; color: var(--ink); font-weight: 600; line-height: 1.42; }
+    .fact .fv {
+      display: -webkit-box; margin-top: 3px; font-size: .94rem; color: var(--ink); font-weight: 600; line-height: 1.35;
+      -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
     .summary { margin-top: 14px; color: var(--muted); line-height: 1.5; font-weight: 600; font-size: .96rem; }
 
     .card-actions { display: flex; gap: 10px; margin-top: 16px; }
@@ -309,6 +312,28 @@
         .replace(/^&\s*Profession:?\s*/i, '').replace(/^·\s*/, '').trim();
       return s.length > n ? s.slice(0, n).trim() + '…' : s;
     }
+    function normalized(v){ return String(v || '').toLowerCase().replace(/[^a-z0-9]+/g, ''); }
+    function noisy(v){
+      const s = String(v || '');
+      return /[\u0600-\u06ff]/.test(s) ||
+        /\b(?:bride|groom)\s+details\b/i.test(s) ||
+        /\bname:\s*\[?available/i.test(s) ||
+        /\b(?:contact|whatsapp|phone|call)\b/i.test(s);
+    }
+    function brief(v, n){
+      if(v == null) return '';
+      let s = String(v).replace(/\s*\n+\s*/g, ' · ').replace(/\s+/g, ' ').trim()
+        .replace(/^&\s*Profession:?\s*/i, '').replace(/^·\s*/, '').trim();
+      if(!s || noisy(s)) return '';
+      const pieces = s.split(/\s*[;•|]\s*/).map(p => p.trim()).filter(Boolean);
+      if(pieces.length > 1) s = pieces.find(p => p.length <= n && !noisy(p)) || pieces[0];
+      return tidy(s, n);
+    }
+    function sameEnough(a, b){
+      const x = normalized(a), y = normalized(b);
+      if(!x || !y) return false;
+      return x === y || x.startsWith(y) || y.startsWith(x);
+    }
     function factHtml(label, v, wide){ return v ? `<div class="fact${wide ? ' wide' : ''}"><span class="fl">${label}</span><span class="fv">${esc(v)}</span></div>` : ''; }
     function infoField(label, value, wide){
       return value ? `<div class="info-field${wide ? ' wide' : ''}"><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>` : '';
@@ -331,6 +356,11 @@
       for(let i=Math.min(idx+1, deck.length-1); i>=idx; i--){
         const p = deck[i];
         const groom = p.profile_type === 'Groom';
+        const height = brief(p.height, 18);
+        const marital = brief(p.marital_status, 24);
+        const education = brief(p.education, 44);
+        let profession = brief(p.profession, 44);
+        if(sameEnough(education, profession)) profession = '';
         const c = document.createElement('div');
         c.className='card';
         c.style.zIndex = String(10-(i-idx));
@@ -348,12 +378,11 @@
             </div>
             ${p.location ? `<div class="loc">${PIN}${esc(tidy(p.location, 40))}</div>` : ''}
             <div class="facts">
-              ${factHtml('Height', tidy(p.height, 24))}
-              ${factHtml('Marital status', tidy(p.marital_status, 30))}
-              ${factHtml('Education', tidy(p.education, 80), true)}
-              ${factHtml('Work', tidy(p.profession, 90), true)}
+              ${factHtml('Height', height)}
+              ${factHtml('Marital status', marital)}
+              ${factHtml('Education', education, true)}
+              ${factHtml('Work', profession, true)}
             </div>
-            ${p.bio ? `<p class="summary">${esc(tidy(p.bio, 150))}</p>` : ''}
             <div class="card-actions">
               <a class="ic ic-wa" href="/profiles/${p.id}/whatsapp" title="WhatsApp" aria-label="WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 1.67c2.2 0 4.27.86 5.83 2.42a8.2 8.2 0 0 1 2.42 5.82c0 4.54-3.7 8.24-8.25 8.24-1.5 0-2.96-.4-4.24-1.16l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.37c0-4.54 3.7-8.24 8.24-8.24Zm-4.5 4.43c-.21 0-.55.08-.84.39-.29.31-1.1 1.08-1.1 2.62 0 1.55 1.13 3.04 1.29 3.25.16.21 2.2 3.36 5.33 4.58 2.6 1.02 3.13.81 3.7.76.57-.05 1.83-.75 2.09-1.47.26-.72.26-1.34.18-1.47-.08-.13-.29-.21-.6-.37-.31-.16-1.83-.9-2.11-1-.28-.1-.49-.16-.7.16-.21.31-.8 1-.98 1.21-.18.21-.36.23-.67.08-.31-.16-1.31-.48-2.5-1.54-.92-.82-1.54-1.84-1.72-2.15-.18-.31-.02-.48.14-.63.14-.14.31-.36.47-.54.16-.18.21-.31.31-.52.1-.21.05-.39-.03-.54-.08-.16-.7-1.69-.96-2.31-.25-.61-.51-.53-.7-.54l-.6-.01Z"/></svg>WhatsApp</a>
               <a class="ic ic-call" href="/profiles/${p.id}/call" title="Call" aria-label="Call"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.62 10.79a15.5 15.5 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.24.2 2.45.57 3.57a1 1 0 0 1-.24 1.02l-2.21 2.2Z"/></svg>Call</a>
@@ -512,6 +541,6 @@
     const chosen = sessionStorage.getItem('lookingFor');
     if(chosen){ fType.value = chosen; applyFilter(); } else { gate.classList.add('open'); }
   </script>
-  <script type="module" src="/static/firebase.js"></script>
+  <script type="module" src="/static/firebase.js?v={{ settings.static_version }}"></script>
 </body>
 </html>

@@ -19,6 +19,19 @@ from app.parser import normalised_hash, remove_contact_from_summary  # noqa: E40
 
 SEPARATOR_RE = re.compile(r"^-{20,}\s*$", re.MULTILINE)
 PLACEHOLDER = {"", "not specified", "upon request", "available upon request", "n/a", "na", "none", "null"}
+QUAL_RE = re.compile(
+    r"\b(?:o/l|a/l|acca|hnd|hnda|bsc|ba|bcom|b\.?com|llb|ll\.?b|mbbs|md|msc|ma|mba|phd|"
+    r"diploma|dip\.?|degree|graduate|undergraduate|bachelor|master|alim|aalim|hafiz|"
+    r"foundation|certificate|nvq|city\s*&?\s*guilds)\b",
+    re.IGNORECASE,
+)
+SCHOOL_RE = re.compile(r"\b(?:school|college|central\s+college|maha\s+vidyalaya|vidyalaya)\b", re.IGNORECASE)
+WORK_NOISE_RE = re.compile(
+    r"\b(?:completed\s+o/l|completed\s+a/l|^a/l\s+(?:background|qualification|qualifications)$|"
+    r"other\s+qualification|father\b|mother\b|sibling|siblings|family\b|details?:|expecting\s+(?:bride|groom))",
+    re.IGNORECASE,
+)
+FAMILY_NOISE_RE = re.compile(r"\bexpecting\s+(?:bride|groom)\s+details?\b.*", re.IGNORECASE)
 
 
 def clean(value: str | None) -> str | None:
@@ -104,13 +117,90 @@ def contact(value: str | None) -> str | None:
     return "\n".join(pieces) if pieces else None
 
 
+def clean_piece(value: str | None) -> str | None:
+    text = clean(value)
+    if not text:
+        return None
+    text = re.sub(r"[🌻✳️*]+", " ", text)
+    text = re.sub(r"(?:^|[;|]\s*)\d+\.\s*", "; ", text)
+    text = re.sub(r"\s+", " ", text).strip(" ;,")
+    return clean(text)
+
+
+def split_pieces(value: str | None) -> list[str]:
+    text = clean_piece(value)
+    if not text:
+        return []
+    return [p.strip(" ;,") for p in re.split(r"\s*[;|]\s*", text) if clean(p)]
+
+
+def compact_education(value: str | None, block: str) -> str | None:
+    text = clean_piece(value)
+    if not text:
+        return None
+    first = split_pieces(text)[0] if split_pieces(text) else text
+    if SCHOOL_RE.search(first) and not QUAL_RE.search(first):
+        return None
+    if QUAL_RE.search(first):
+        return first[:90]
+    match = QUAL_RE.search(block)
+    return match.group(0).strip() if match else first[:90]
+
+
+def compact_work(value: str | None) -> str | None:
+    pieces = []
+    for piece in split_pieces(value):
+        if WORK_NOISE_RE.search(piece):
+            continue
+        piece = re.sub(r"\s+from\s+.+?(?:teachers?\s+college|school|college)\b.*", "", piece, flags=re.IGNORECASE).strip()
+        if clean(piece):
+            pieces.append(piece)
+    if not pieces:
+        return None
+    work = pieces[0]
+    work = re.sub(r"^currently\s+(?:working\s+)?(?:as\s+)?", "", work, flags=re.IGNORECASE).strip()
+    return clean(work[:110])
+
+
+def compact_family(value: str | None) -> str | None:
+    text = clean_piece(value)
+    if not text:
+        return None
+    text = FAMILY_NOISE_RE.sub("", text)
+    pieces = []
+    for piece in split_pieces(text):
+        if re.search(r"\bexpecting\s+(?:bride|groom)\b", piece, flags=re.IGNORECASE):
+            continue
+        pieces.append(piece)
+    return "; ".join(pieces)[:500] if pieces else None
+
+
+def compact_expectations(value: str | None) -> str | None:
+    pieces = split_pieces(value)
+    useful = [p for p in pieces if not re.search(r"\bcontacts?\b|\bwhatsapp\b|\bphone\b", p, flags=re.IGNORECASE)]
+    return "; ".join(useful[:4])[:420] if useful else None
+
+
+def profile_summary(profile_type: str, age: object, city: str | None, education: str | None, profession: str | None) -> str:
+    who = (profile_type or "profile").lower()
+    bits = []
+    intro = f"A {age}-year-old {who}" if age else f"A {who}"
+    if city:
+        intro += f" from {city}"
+    bits.append(intro + ".")
+    if education:
+        bits.append(f"Highest qualification: {education}.")
+    if profession:
+        bits.append(f"Work: {profession}.")
+    return " ".join(bits)
+
+
 def parse_profile(block: str, source_name: str) -> dict | None:
     ref = reference_code(block)
     title = field(block, "Title")
     candidate, looking_for = parse_candidate(field(block, "Candidate"))
     basic = parse_basic(field(block, "Basic details"))
     expectations = field(block, "Looking for")
-    summary = field(block, "Profile summary")
     raw_contact = field(block, "Contact details")
     gender_confidence = field(block, "Gender confidence")
 
@@ -118,6 +208,8 @@ def parse_profile(block: str, source_name: str) -> dict | None:
     if gender_confidence:
         faith_notes = "\n".join([p for p in [faith_notes, f"Gender confidence: {gender_confidence}"] if p])
 
+    education = compact_education(field(block, "Highest qualification"), block)
+    profession = compact_work(field(block, "Work"))
     profile = {
         "reference_code": ref,
         "profile_type": candidate,
@@ -128,12 +220,12 @@ def parse_profile(block: str, source_name: str) -> dict | None:
         "district": None,
         "country": "Sri Lanka",
         "marital_status": basic.get("marital_status"),
-        "education": field(block, "Highest qualification"),
-        "profession": field(block, "Work"),
-        "family_background": field(block, "Family"),
+        "education": education,
+        "profession": profession,
+        "family_background": compact_family(field(block, "Family")),
         "faith_notes": faith_notes,
-        "expectations": expectations or (f"Looking for: {looking_for}" if looking_for else None),
-        "bio_summary": remove_contact_from_summary(summary or block)[:1200],
+        "expectations": compact_expectations(expectations) or (f"Looking for: {looking_for}" if looking_for else None),
+        "bio_summary": remove_contact_from_summary(profile_summary(candidate, basic.get("age"), field(block, "Location"), education, profession)),
         "contact_details": contact(raw_contact),
         "raw_text": block,
         "source_name": source_name,

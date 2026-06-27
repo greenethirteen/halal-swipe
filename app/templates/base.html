@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ settings.app_name }}</title>
-  <link rel="stylesheet" href="/static/styles.css">
+  <link rel="stylesheet" href="/static/styles.css?v={{ settings.static_version }}">
 </head>
 <body>
   <div class="splash" id="splash"><img src="/static/logo.png" alt="{{ settings.app_name }}"></div>
@@ -42,6 +42,6 @@
       setTimeout(function(){ s.classList.add('hide'); setTimeout(function(){ s.remove(); }, 600); }, 1500);
     })();
   </script>
-  <script type="module" src="/static/firebase.js"></script>
+  <script type="module" src="/static/firebase.js?v={{ settings.static_version }}"></script>
 </body>
 </html>
