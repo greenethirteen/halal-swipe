@@ -57,14 +57,14 @@
     .menu-join { background: var(--green) !important; color: #fff !important; text-align: center !important; font-weight: 800; margin-top: 4px; }
 
     /* Stage + card */
-    .stage { flex: 1; min-height: 0; position: relative; display: flex; align-items: flex-start; justify-content: center; padding: 0 12px 86px; overflow: hidden; }
+    .stage { flex: 1; min-height: 0; position: relative; display: flex; align-items: center; justify-content: center; padding: 0 12px 86px; overflow: hidden; }
     .card {
-      position: absolute; width: min(470px, 94vw); max-height: calc(100dvh - 220px); overflow: hidden;
+      position: absolute; left: 50%; top: 50%; width: min(470px, 94vw); max-height: calc(100dvh - 220px); overflow: hidden;
       background: #fff; border-radius: 24px; display: flex; flex-direction: column;
       box-shadow: 0 26px 54px -22px rgba(120,40,70,.5), 0 6px 16px rgba(120,40,70,.12);
       will-change: transform; touch-action: pan-y; animation: card-in .4s cubic-bezier(.2,.9,.3,1.12) both;
     }
-    @keyframes card-in { from { opacity: 0; transform: scale(.9) translateY(20px); } to { opacity: 1; transform: none; } }
+    @keyframes card-in { from { opacity: 0; transform: translate(-50%, -50%) scale(.92) translateY(18px); } to { opacity: 1; transform: translate(-50%, -50%); } }
     .card.liking { box-shadow: 0 0 0 3px var(--green), 0 26px 54px -20px rgba(47,158,126,.5); }
     .card.noping { box-shadow: 0 0 0 3px var(--coral), 0 26px 54px -20px rgba(255,111,97,.5); }
     .card-accent { height: 5px; flex-shrink: 0; background: linear-gradient(90deg, #ff8a5b, #ff6f61); }
@@ -127,6 +127,15 @@
     .controls #yes svg { width: 27px; height: 27px; }
     .controls button:hover { transform: translateY(-2px) scale(1.05); }
     .controls button:active { transform: scale(.9); }
+    .swipe-hint {
+      position: fixed; left: 50%; bottom: max(82px, calc(env(safe-area-inset-bottom) + 82px)); transform: translateX(-50%);
+      z-index: 52; display: none; align-items: center; gap: 9px; padding: 8px 13px; border-radius: 999px;
+      color: var(--ink); background: rgba(255,255,255,.92); border: 1px solid var(--line);
+      box-shadow: 0 10px 24px rgba(120,40,70,.14); font-weight: 850; font-size: .9rem;
+    }
+    .swipe-hint.show { display: inline-flex; animation: hint-pop .25s ease both; }
+    .swipe-hint svg { width: 16px; height: 16px; fill: currentColor; }
+    @keyframes hint-pop { from { opacity: 0; transform: translateX(-50%) translateY(8px) scale(.94); } to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); } }
 
     .empty { color: var(--muted); text-align: center; max-width: 320px; line-height: 1.6; }
     .empty h3 { font-size: 1.4rem; color: var(--ink); margin: 0 0 6px; letter-spacing: -.02em; }
@@ -249,6 +258,12 @@
 
   <div class="stage" id="stage"></div>
 
+  <div class="swipe-hint" id="swipeHint">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 12 3 8l4-4 1.4 1.4L6.8 7H17a4 4 0 0 1 0 8H6.8l1.6 1.6L7 18l-4-4 4-4 1.4 1.4L6.8 13H17a2 2 0 0 0 0-4H6.8l1.6 1.6L7 12Z"/></svg>
+    Swipe
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m17 12 4 4-4 4-1.4-1.4 1.6-1.6H7a4 4 0 0 1 0-8h10.2l-1.6-1.6L17 6l4 4-4 4-1.4-1.4 1.6-1.6H7a2 2 0 0 0 0 4h10.2l-1.6-1.6L17 12Z"/></svg>
+  </div>
+
   <div class="controls">
     <button id="rewind" title="Undo" aria-label="Undo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5V1L7 6l5 5V7a6 6 0 1 1-6 6H4a8 8 0 1 0 8-8Z"/></svg></button>
     <button id="no" title="Pass" aria-label="Pass"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.3 5.71 12 12l6.3 6.29-1.42 1.42L10.59 13.4 4.3 19.7 2.88 18.3 9.17 12 2.88 5.71 4.3 4.29l6.29 6.3 6.29-6.3z"/></svg></button>
@@ -310,6 +325,7 @@
   <script>
     const PROFILES = {{ profiles_json | safe }};
     const stage = document.getElementById('stage');
+    const swipeHint = document.getElementById('swipeHint');
     let deck = PROFILES.slice();
     let idx = 0;
     let filterActive = false;
@@ -344,6 +360,27 @@
       if(!x || !y) return false;
       return x === y || x.startsWith(y) || y.startsWith(x);
     }
+    function baseTransform(extra){ return `translate(-50%, -50%)${extra ? ' ' + extra : ''}`; }
+    function hideSwipeHint(){
+      if(swipeHint) swipeHint.classList.remove('show');
+      sessionStorage.setItem('swipeHintSeen', '1');
+    }
+    function maybeShowSwipeHint(){
+      if(!swipeHint || sessionStorage.getItem('swipeHintSeen') || document.getElementById('gateOverlay').classList.contains('open')) return;
+      const card = stage.querySelector('.card:last-child');
+      if(!card || idx > 0) return;
+      setTimeout(() => {
+        if(sessionStorage.getItem('swipeHintSeen')) return;
+        swipeHint.classList.add('show');
+        card.animate([
+          { transform: baseTransform('translateX(0) rotate(0deg)') },
+          { transform: baseTransform('translateX(-18px) rotate(-2deg)') },
+          { transform: baseTransform('translateX(20px) rotate(2deg)') },
+          { transform: baseTransform('translateX(0) rotate(0deg)') }
+        ], { duration: 1150, easing: 'ease-in-out' });
+        setTimeout(() => swipeHint.classList.remove('show'), 3600);
+      }, 650);
+    }
     function factHtml(label, v, wide){ return v ? `<div class="fact${wide ? ' wide' : ''}"><span class="fl">${label}</span><span class="fv">${esc(v)}</span></div>` : ''; }
     function infoField(label, value, wide){
       return value ? `<div class="info-field${wide ? ' wide' : ''}"><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>` : '';
@@ -377,7 +414,7 @@
         const c = document.createElement('div');
         c.className='card';
         c.style.zIndex = String(10-(i-idx));
-        if(i>idx){ c.style.animation='none'; c.style.transform='scale(0.94) translateY(14px)'; c.style.filter='brightness(.98)'; }
+        if(i>idx){ c.style.animation='none'; c.style.transform=baseTransform('scale(0.94) translateY(14px)'); c.style.filter='brightness(.98)'; }
         c.innerHTML = `
           <div class="stamp like">♥ Yes</div><div class="stamp nope">✕ No</div>
           <div class="card-accent${groom ? ' groom' : ''}"></div>
@@ -404,12 +441,13 @@
               <a class="ic ic-call" href="/profiles/${p.id}/call" title="Call" aria-label="Call"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.62 10.79a15.5 15.5 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.24.2 2.45.57 3.57a1 1 0 0 1-.24 1.02l-2.21 2.2Z"/></svg>Call</a>
             </div>
           </div>`;
-        c.addEventListener('animationend', ()=>{ c.style.animation='none'; }, {once:true});
+        c.addEventListener('animationend', ()=>{ c.style.animation='none'; if(i===idx) c.style.transform=baseTransform(); }, {once:true});
         const more = c.querySelector('.more-btn');
         if(more) more.onclick = (e)=>{ e.preventDefault(); e.stopPropagation(); openInfo(p); };
         stage.appendChild(c);
         if(i===idx) attachDrag(c);
       }
+      maybeShowSwipeHint();
     }
 
     const infoOverlay = document.getElementById('infoOverlay');
@@ -441,6 +479,7 @@
       const like=card.querySelector('.stamp.like'), nope=card.querySelector('.stamp.nope');
       card.addEventListener('pointerdown', e=>{
         if(animating || e.target.closest('.ic, .more-btn')) return;
+        hideSwipeHint();
         down=true; decided=false; horiz=false; dx=0; sx=e.clientX; sy=e.clientY;
         card.style.animation='none'; card.style.transition='none';
         try { card.setPointerCapture(e.pointerId); } catch(_){}
@@ -454,7 +493,7 @@
         }
         if(!horiz) return;
         if(e.cancelable) e.preventDefault();
-        card.style.transform=`translate(${dx}px,0) rotate(${dx/18}deg)`;
+        card.style.transform=baseTransform(`translateX(${dx}px) rotate(${dx/18}deg)`);
         like.style.opacity = dx>0 ? Math.min(dx/100,1) : 0;
         nope.style.opacity = dx<0 ? Math.min(-dx/100,1) : 0;
         card.classList.toggle('liking', dx>45);
@@ -464,7 +503,7 @@
         if(!down) return; down=false;
         card.style.transition='transform .32s ease';
         if(horiz && Math.abs(dx) > 110){ animating=true; fly(card, dx>0?1:-1); }
-        else { card.style.transform=''; like.style.opacity=nope.style.opacity=0; card.classList.remove('liking','noping'); }
+        else { card.style.transform=baseTransform(); like.style.opacity=nope.style.opacity=0; card.classList.remove('liking','noping'); }
       };
       card.addEventListener('pointerup', finish);
       card.addEventListener('pointercancel', finish);
@@ -472,7 +511,7 @@
 
     function fly(card, dir){
       card.style.transition='transform .42s cubic-bezier(.4,0,.6,1), opacity .42s ease';
-      card.style.transform=`translate(${dir*700}px, -40px) rotate(${dir*30}deg)`;
+      card.style.transform=baseTransform(`translate(${dir*700}px, -40px) rotate(${dir*30}deg)`);
       card.style.opacity='0';
       setTimeout(()=>{ idx++; animating=false; render(); }, 380);
     }
@@ -480,13 +519,14 @@
       if(animating) return;
       const card = stage.querySelector('.card:last-child');
       if(!card) return;
+      hideSwipeHint();
       animating = true;
       const stamp = card.querySelector(dir>0 ? '.stamp.like' : '.stamp.nope');
       if(stamp) stamp.style.opacity='1';
       card.classList.add(dir>0 ? 'liking' : 'noping');
       card.style.animation='none';
       card.style.transition='transform .15s ease';
-      card.style.transform=`translate(${dir*40}px,0) rotate(${dir*4}deg)`;
+      card.style.transform=baseTransform(`translateX(${dir*40}px) rotate(${dir*4}deg)`);
       setTimeout(()=>fly(card, dir), 130);
     }
     function rewind(){ if(animating || idx===0) return; idx--; render(); }

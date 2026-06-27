@@ -132,6 +132,7 @@ def strip_public_contact_text(value: object) -> object:
     text = re.sub(r"\[[^\]]*\d{4}[^\]]*\]\s*[^:]+:\s*", "", text)
     text = re.sub(r"<attached:[^>]+>", "", text, flags=re.IGNORECASE)
     text = re.sub(r"\b[\w .'-]+\.(?:pdf|jpe?g|png|webp)\b", "", text, flags=re.IGNORECASE)
+    text = text.replace("[Passed away]", "Passed away").replace("[passed away]", "passed away")
     return text
 
 
@@ -190,6 +191,20 @@ def compact_public_long_text(value: object, limit: int = 420) -> str | None:
     return short_join(pieces, limit)
 
 
+def compact_public_expectations(value: object, profile_type: str | None = None) -> str | None:
+    pieces = []
+    for piece in public_pieces(value):
+        cleaned = re.sub(r"^looking\s+for\s*:?\s*", "", piece, flags=re.IGNORECASE).strip(" :")
+        if cleaned.lower() in {"bride", "groom", "suitable partner", "partner"}:
+            continue
+        if profile_type and cleaned.lower() == str(profile_type).lower():
+            continue
+        if re.search(r"\b(?:contact|whatsapp|phone|attached:|bride\s+details|groom\s+details)\b", cleaned, flags=re.IGNORECASE):
+            continue
+        pieces.append(cleaned)
+    return short_join(pieces, 360)
+
+
 def public_title(profile: dict) -> str:
     title = str(profile.get("full_name") or "").strip()
     low = title.lower()
@@ -234,7 +249,7 @@ def public_profile(row) -> dict:
     profile["education"] = compact_public_education(profile.get("education"))
     profile["profession"] = compact_public_work(profile.get("profession"))
     profile["family_background"] = compact_public_long_text(profile.get("family_background")) or profile.get("family_background")
-    profile["expectations"] = compact_public_long_text(profile.get("expectations")) or profile.get("expectations")
+    profile["expectations"] = compact_public_expectations(profile.get("expectations"), profile.get("profile_type"))
     profile["bio_summary"] = public_summary(profile)
     return profile
 
