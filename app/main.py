@@ -195,6 +195,7 @@ def compact_public_expectations(value: object, profile_type: str | None = None) 
     pieces = []
     for piece in public_pieces(value):
         cleaned = re.sub(r"^looking\s+for\s*:?\s*", "", piece, flags=re.IGNORECASE).strip(" :")
+        cleaned = re.sub(r"^for\s+(?:a\s+)?", "", cleaned, flags=re.IGNORECASE).strip(" :")
         if cleaned.lower() in {"bride", "groom", "suitable partner", "partner"}:
             continue
         if profile_type and cleaned.lower() == str(profile_type).lower():
