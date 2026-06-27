@@ -4,10 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ settings.app_name }}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&display=swap">
   <link rel="stylesheet" href="/static/styles.css?v={{ settings.static_version }}">
   <style>
     html, body { height: 100%; overflow: hidden; }
-    body { display: flex; flex-direction: column; margin: 0; }
+    body { display: flex; flex-direction: column; margin: 0; height: 100dvh; }
 
     /* Top bar: free-standing logo + actions pill */
     .swipe-top {
@@ -57,9 +60,9 @@
     .menu-join { background: var(--green) !important; color: #fff !important; text-align: center !important; font-weight: 800; margin-top: 4px; }
 
     /* Stage + card */
-    .stage { flex: 1; min-height: 0; position: relative; display: flex; align-items: center; justify-content: center; padding: 0 12px 8px; overflow: hidden; }
+    .stage { flex: 1; min-height: 0; position: relative; display: flex; align-items: center; justify-content: center; padding: 6px 12px 6px; overflow: hidden; }
     .card {
-      position: absolute; left: 50%; top: 50%; width: min(470px, 94vw); max-height: min(640px, calc(100% - 14px)); overflow: hidden;
+      position: absolute; left: 50%; top: 50%; width: min(470px, 94vw); height: min(660px, 100%); overflow: hidden;
       background: #fff; border-radius: 24px; display: flex; flex-direction: column;
       box-shadow: 0 26px 54px -22px rgba(120,40,70,.5), 0 6px 16px rgba(120,40,70,.12);
       will-change: transform; touch-action: pan-y; animation: card-in .4s cubic-bezier(.2,.9,.3,1.12) both;
@@ -70,7 +73,7 @@
     .card-accent { height: 5px; flex-shrink: 0; background: linear-gradient(90deg, #ff8a5b, #ff6f61); }
     .card-accent.groom { background: linear-gradient(90deg, #2fae8f, #12876a); }
 
-    .card-inner { flex: 0 1 auto; min-height: 0; overflow: auto; padding: 20px 22px 14px; touch-action: pan-y; }
+    .card-inner { flex: 1 1 auto; min-height: 0; overflow: auto; padding: 20px 22px 16px; touch-action: pan-y; display: flex; flex-direction: column; }
     .card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
     .card-head h2 { margin: 0; font-size: 1.95rem; letter-spacing: -.03em; color: var(--ink); line-height: 1.05; }
     .card-head h2 .age { color: var(--muted); font-weight: 700; font-size: 1.28rem; }
@@ -100,7 +103,7 @@
       display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
     }
 
-    .card-actions { display: flex; gap: 10px; margin-top: 12px; }
+    .card-actions { display: flex; gap: 10px; margin-top: auto; padding-top: 14px; }
     .card-actions .ic { flex: 1; height: 44px; border-radius: 13px; display: flex; align-items: center; justify-content: center; gap: 8px;
       color: #fff; font-weight: 800; font-size: .92rem; cursor: pointer; transition: transform .14s ease, filter .14s ease; }
     .card-actions .ic svg { width: 19px; height: 19px; fill: currentColor; }
@@ -115,8 +118,8 @@
     .stamp.nope { right: 18px; color: var(--coral); border-color: var(--coral); transform: rotate(14deg); }
 
     /* Thin controls */
-    .controls { position: relative; z-index: 50; flex-shrink: 0; margin: 0 auto max(10px, env(safe-area-inset-bottom));
-      display: flex; justify-content: center; align-items: center; gap: 14px; }
+    .controls { position: relative; z-index: 50; flex-shrink: 0; margin: 4px auto max(12px, env(safe-area-inset-bottom));
+      min-height: 64px; display: flex; justify-content: center; align-items: center; gap: 14px; }
     .controls button { border-radius: 50%; border: 0; cursor: pointer; display: grid; place-items: center; background: #fff; transition: transform .14s ease, box-shadow .14s ease; }
     .controls button svg { fill: currentColor; }
     .controls #rewind { width: 42px; height: 42px; color: var(--gold-dark); box-shadow: 0 6px 16px rgba(240,169,59,.26); }
@@ -208,8 +211,8 @@
       .top-link { font-size: .84rem; }
       .filter-btn { font-size: .84rem; padding: 7px 10px; }
       .menu-btn { width: 36px; height: 36px; }
-      .stage { padding: 0 8px 6px; }
-      .card { width: min(508px, calc(100vw - 16px)); max-height: calc(100% - 12px); border-radius: 22px; }
+      .stage { padding: 6px 8px 4px; }
+      .card { width: min(508px, calc(100vw - 16px)); height: min(640px, 100%); border-radius: 22px; }
       .card-inner { padding: 18px 18px 12px; }
       .card-head h2 { font-size: 1.62rem; }
       .card-head h2 .age { font-size: 1.1rem; }
@@ -219,15 +222,58 @@
       .info-grid { grid-template-columns: 1fr; }
     }
     @media (min-width: 900px) {
+      html, body { overflow: auto; }
       .gate-overlay, .stage, .controls, .swipe-hint { display: none !important; }
       .desktop-home {
-        flex: 1; width: min(760px, calc(100% - 32px)); margin: 8vh auto 0; display: grid;
-        grid-template-columns: 1fr auto; align-items: center; gap: 22px; padding: 28px;
-        border-radius: 24px; background: rgba(255,255,255,.82); border: 1px solid rgba(255,255,255,.8);
-        box-shadow: var(--shadow); backdrop-filter: blur(16px);
+        flex: 1; width: min(1100px, calc(100% - 48px)); margin: 3vh auto 6vh;
+        display: grid; grid-template-columns: 1.08fr .92fr; align-items: stretch; gap: 30px;
       }
-      .desktop-home h1 { margin: 0; font-size: clamp(3rem, 6vw, 5rem); line-height: .92; letter-spacing: -.04em; }
-      .desktop-home p { margin: 10px 0 0; color: var(--muted); font-weight: 700; }
+      .dh-inner { display: flex; flex-direction: column; justify-content: center; padding: 6px 2px; }
+      .dh-eyebrow {
+        display: inline-flex; align-self: flex-start; align-items: center; gap: 8px;
+        color: var(--gold-dark); text-transform: uppercase; letter-spacing: .16em;
+        font-weight: 850; font-size: .74rem; margin: 0 0 18px;
+        padding: 7px 13px; border-radius: 999px; background: rgba(255,169,59,.16);
+      }
+      .dh-title { margin: 0; font-size: clamp(2.7rem, 4.8vw, 4.4rem); line-height: .98; letter-spacing: -.038em; color: var(--ink); }
+      .dh-title em { font-style: normal; color: var(--coral); }
+      .dh-lead { margin: 18px 0 0; color: var(--muted); font-weight: 650; font-size: 1.14rem; max-width: 34ch; line-height: 1.5; }
+      .dh-actions { display: flex; gap: 14px; margin: 28px 0 0; flex-wrap: wrap; }
+      .dh-btn {
+        display: inline-flex; align-items: center; gap: 11px; padding: 15px 24px; border-radius: 16px;
+        font-weight: 850; font-size: 1.04rem; color: #fff; cursor: pointer;
+        transition: transform .16s ease, box-shadow .16s ease, filter .16s ease;
+      }
+      .dh-btn svg { width: 21px; height: 21px; fill: currentColor; }
+      .dh-btn:hover { transform: translateY(-3px); filter: brightness(1.05); }
+      .dh-btn:active { transform: scale(.97); }
+      .dh-groom { background: linear-gradient(135deg, #2fae8f, #12876a); box-shadow: 0 16px 34px rgba(18,135,106,.34); }
+      .dh-bride { background: linear-gradient(135deg, #ff9a8b, #ff6a88); box-shadow: 0 16px 34px rgba(255,111,97,.32); }
+      .dh-all { margin: 22px 0 0; align-self: flex-start; color: var(--muted); font-weight: 800; font-size: .95rem; }
+      .dh-all:hover { color: var(--ink); }
+      .dh-verse {
+        position: relative; margin: 0; display: flex; flex-direction: column; justify-content: center;
+        padding: 40px 38px; border-radius: 30px; overflow: hidden; color: #f6fffb;
+        background: linear-gradient(155deg, #11362e 0%, #0f5d49 55%, #14785d 100%);
+        box-shadow: 0 30px 70px rgba(15,77,61,.36);
+      }
+      .dh-verse::before {
+        content: ""; position: absolute; inset: 0; pointer-events: none;
+        background: radial-gradient(circle at 86% 10%, rgba(255,212,128,.22), transparent 42%),
+                    radial-gradient(circle at 8% 96%, rgba(255,154,139,.16), transparent 40%);
+      }
+      .dh-verse > * { position: relative; }
+      .dh-verse-mark { font-family: "Amiri", serif; font-size: 2.6rem; line-height: 1; color: rgba(255,212,128,.9); margin-bottom: 12px; }
+      .dh-arabic {
+        margin: 0 0 20px; font-family: "Amiri", "Scheherazade New", serif;
+        font-size: 1.85rem; line-height: 1.95; font-weight: 400; color: #fffdf6;
+      }
+      .dh-trans { margin: 0; font-size: 1.05rem; line-height: 1.62; color: rgba(246,255,251,.93); font-weight: 500; }
+      .dh-cite { margin: 18px 0 0; font-size: .8rem; letter-spacing: .15em; text-transform: uppercase; font-weight: 850; color: rgba(255,212,128,.95); }
+    }
+    @media (min-width: 900px) and (max-width: 1040px) {
+      .desktop-home { grid-template-columns: 1fr; gap: 24px; }
+      .dh-verse { order: -1; }
     }
   </style>
 </head>
@@ -269,11 +315,28 @@
   </header>
 
   <section class="desktop-home">
-    <div>
-      <h1>Browse profiles</h1>
-      <p>Use the focused browse view on desktop. Swipe is available on mobile.</p>
+    <div class="dh-inner">
+      <span class="dh-eyebrow">Halal · Private · Serious intentions</span>
+      <h1 class="dh-title">Find your <em>other half</em>, the right way.</h1>
+      <p class="dh-lead">Browse serious Sri Lankan Nikah profiles. Tell us who you're looking for to begin.</p>
+      <div class="dh-actions">
+        <a class="dh-btn dh-groom" href="/profiles?profile_type=Groom">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm0 2c-3.3 0-6 1.8-6 4v3h12v-3c0-2.2-2.7-4-6-4Zm9.5-9.5L21 6l-2.5 2.5L17 7l1-1h-3V4h3l-1-1 1.5-.5ZM20 11v4h2v-4h-2Z"/></svg>
+          Find a groom
+        </a>
+        <a class="dh-btn dh-bride" href="/profiles?profile_type=Bride">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm0 2c-3.3 0-6 1.8-6 4v3h12v-3c0-2.2-2.7-4-6-4ZM7 13l1.4 1.4L7 15.8 5.6 14.4 4.2 15.8 2.8 14.4 4.2 13 2.8 11.6 4.2 10.2 5.6 11.6 7 10.2 8.4 11.6 7 13Z"/></svg>
+          Find a bride
+        </a>
+      </div>
+      <a class="dh-all" href="/profiles">Or browse everyone →</a>
     </div>
-    <a class="button" href="/profiles">Open Browse</a>
+    <figure class="dh-verse">
+      <span class="dh-verse-mark">﴾﴿</span>
+      <p class="dh-arabic" dir="rtl" lang="ar">وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُم مِّنْ أَنفُسِكُمْ أَزْوَاجًا لِّتَسْكُنُوا إِلَيْهَا وَجَعَلَ بَيْنَكُم مَّوَدَّةً وَرَحْمَةً</p>
+      <p class="dh-trans">"And among His signs is that He created for you mates from among yourselves, that you may find tranquillity in them; and He placed between you affection and mercy."</p>
+      <figcaption class="dh-cite">Qur'an · Surah Ar-Rum 30:21</figcaption>
+    </figure>
   </section>
 
   <div class="stage" id="stage"></div>
@@ -375,6 +438,20 @@
       if(pieces.length > 1) s = pieces.find(p => p.length <= n && !noisy(p)) || pieces[0];
       return tidy(s, n);
     }
+    // The imported "city" field is noisy: it often holds full addresses,
+    // sentences, age-limit notes or country lists. Only let through values
+    // that actually look like a place name.
+    function placeName(v){
+      if(v == null) return '';
+      let s = String(v).replace(/\s+/g, ' ').trim().replace(/^[\[\(\{]+|[\]\)\}\.,;:\s]+$/g, '').trim();
+      if(!s || noisy(s)) return '';
+      if(s.length > 30) return '';
+      if(/\d/.test(s)) return '';                 // street numbers, age limits
+      if(/[.;:/]/.test(s)) return '';             // sentences / addresses
+      if(/\b(age|limit|family|residing|reside|qualification|qualified|mannered|oriented|salary|height|seeking|looking|education|diploma|degree|officer|company|agency|background|hearted|respectable|currently|street|road|no)\b/i.test(s)) return '';
+      if(s.split(/\s*,\s*|\s+/).filter(Boolean).length > 4) return '';   // too many tokens for a place
+      return s;
+    }
     function sameEnough(a, b){
       const x = normalized(a), y = normalized(b);
       if(!x || !y) return false;
@@ -429,6 +506,7 @@
         let profession = brief(p.profession, 44);
         if(sameEnough(education, profession)) profession = '';
         const summary = brief(p.bio, 135);
+        const place = placeName(p.location);
         const c = document.createElement('div');
         c.className='card';
         c.style.zIndex = String(10-(i-idx));
@@ -444,7 +522,7 @@
                 <button class="more-btn" type="button" data-profile-id="${p.id}" title="More info" aria-label="More info">${INFO}</button>
               </div>
             </div>
-            ${p.location ? `<div class="loc">${PIN}${esc(tidy(p.location, 40))}</div>` : ''}
+            ${place ? `<div class="loc">${PIN}${esc(place)}</div>` : ''}
             ${summary ? `<p class="summary">${esc(summary)}</p>` : ''}
             <div class="facts">
               ${factHtml('Height', height)}
@@ -472,7 +550,7 @@
     const infoGrid = document.getElementById('infoGrid');
     function openInfo(p){
       infoTitle.textContent = p.title || 'Profile details';
-      const meta = [p.reference_code, p.profile_type, p.age ? `${p.age} yrs` : '', p.location].filter(Boolean);
+      const meta = [p.reference_code, p.profile_type, p.age ? `${p.age} yrs` : '', placeName(p.location)].filter(Boolean);
       infoMeta.innerHTML = meta.map(v => `<span>${esc(v)}</span>`).join('');
       infoGrid.innerHTML = [
         infoField('Height', p.height),
@@ -564,8 +642,9 @@
     const fCity=document.getElementById('fCity'), fHeight=document.getElementById('fHeight'), fEducation=document.getElementById('fEducation');
     const fProfession=document.getElementById('fProfession'), fMarital=document.getElementById('fMarital');
     function uniqueValues(key){ return [...new Set(PROFILES.map(p => (p[key]||'').toString().trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b, undefined, {numeric:true})); }
+    function uniquePlaces(){ return [...new Set(PROFILES.map(p => placeName(p.city)).filter(Boolean))].sort((a,b)=>a.localeCompare(b, undefined, {numeric:true})); }
     function fillSelect(sel, values){ for(const v of values){ const o=document.createElement('option'); o.value=v; o.textContent=v; sel.appendChild(o); } }
-    fillSelect(fCity, uniqueValues('city')); fillSelect(fHeight, uniqueValues('height'));
+    fillSelect(fCity, uniquePlaces()); fillSelect(fHeight, uniqueValues('height'));
     fillSelect(fEducation, uniqueValues('education')); fillSelect(fProfession, uniqueValues('profession'));
     fillSelect(fMarital, uniqueValues('marital_status'));
     function openFilter(){ overlay.classList.add('open'); }
@@ -577,7 +656,7 @@
         if(type && p.profile_type !== type) return false;
         if(!isNaN(min) && (!p.age || p.age < min)) return false;
         if(!isNaN(max) && (!p.age || p.age > max)) return false;
-        if(city && p.city !== city) return false;
+        if(city && placeName(p.city) !== city) return false;
         if(height && p.height !== height) return false;
         if(education && p.education !== education) return false;
         if(profession && p.profession !== profession) return false;

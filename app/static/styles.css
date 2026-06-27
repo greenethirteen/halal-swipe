@@ -156,17 +156,21 @@ main { width: min(1180px, calc(100% - 24px)); margin: 0 auto 28px; }
   background: linear-gradient(145deg, rgba(255,255,255,.92), rgba(255,245,238,.82));
   transition: transform .15s ease, box-shadow .15s ease;
 }
-.profile-card:nth-child(4n+1) { background: linear-gradient(145deg, #fff, #fff0e6); }
-.profile-card:nth-child(4n+2) { background: linear-gradient(145deg, #fff, #eefaf5); }
-.profile-card:nth-child(4n+3) { background: linear-gradient(145deg, #fff, #f7f0ff); }
-.profile-card:nth-child(4n+4) { background: linear-gradient(145deg, #fff, #fff7d8); }
+/* 5-tone cycle: coprime with the 4/2/1 column counts so colours shift
+   diagonally row-to-row instead of locking one colour per column. */
+.profile-card:nth-child(5n+1) { background: linear-gradient(145deg, #fff, #fff0e6); }
+.profile-card:nth-child(5n+2) { background: linear-gradient(145deg, #fff, #eefaf5); }
+.profile-card:nth-child(5n+3) { background: linear-gradient(145deg, #fff, #f7f0ff); }
+.profile-card:nth-child(5n+4) { background: linear-gradient(145deg, #fff, #fff7d8); }
+.profile-card:nth-child(5n+5) { background: linear-gradient(145deg, #fff, #e9f3ff); }
 .profile-card::before {
   content: ""; position: absolute; inset: 0 0 auto; height: 4px;
   background: linear-gradient(90deg, #ff8a5b, #ff6f61);
 }
-.profile-card:nth-child(4n+2)::before { background: linear-gradient(90deg, #2fae8f, #12876a); }
-.profile-card:nth-child(4n+3)::before { background: linear-gradient(90deg, #8e68ff, #ff6f91); }
-.profile-card:nth-child(4n+4)::before { background: linear-gradient(90deg, #f0a93b, #ff8a5b); }
+.profile-card:nth-child(5n+2)::before { background: linear-gradient(90deg, #2fae8f, #12876a); }
+.profile-card:nth-child(5n+3)::before { background: linear-gradient(90deg, #8e68ff, #ff6f91); }
+.profile-card:nth-child(5n+4)::before { background: linear-gradient(90deg, #f0a93b, #ff8a5b); }
+.profile-card:nth-child(5n+5)::before { background: linear-gradient(90deg, #4f9bff, #6f6cff); }
 .profile-card:hover { transform: translateY(-2px); box-shadow: 0 18px 46px rgba(72,49,21,.14); }
 .card-topline { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
 .chip, .pill { display: inline-flex; align-items: center; border-radius: 999px; padding: 7px 11px; font-size: .8rem; font-weight: 800; background: rgba(255,169,59,.2); color: var(--gold-dark); }
