@@ -20,7 +20,7 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from .auth import current_user, hash_password, has_active_subscription, is_admin, role_for_email, verify_password
 from .database import all_rows, db, execute, init_db, one
-from .parser import first_phone, import_zip_to_db, normalised_hash, remove_contact_from_summary, to_wa_number
+from .parser import EMAIL_RE, PHONE_RE, first_phone, import_zip_to_db, normalised_hash, remove_contact_from_summary, to_wa_number
 from .settings import get_settings
 
 load_dotenv()
@@ -92,11 +92,41 @@ def allowed_image(filename: str) -> bool:
 
 
 WHATSAPP_INTRO = "Assalamualaikum. I came across your profile regarding marriage."
+PUBLIC_TEXT_FIELDS = {
+    "full_name",
+    "city",
+    "district",
+    "country",
+    "marital_status",
+    "education",
+    "profession",
+    "family_background",
+    "faith_notes",
+    "expectations",
+    "bio_summary",
+    "raw_text",
+}
 
 
 def contact_view_count(user_id: int) -> int:
     row = one("SELECT COUNT(*) AS c FROM contact_views WHERE user_id = ?", (user_id,))
     return int(row["c"]) if row else 0
+
+
+def strip_public_contact_text(value: object) -> object:
+    if not isinstance(value, str):
+        return value
+    text = PHONE_RE.sub("[contact hidden]", value)
+    text = EMAIL_RE.sub("[email hidden]", text)
+    return text
+
+
+def public_profile(row) -> dict:
+    profile = dict(row)
+    for field in PUBLIC_TEXT_FIELDS:
+        if field in profile:
+            profile[field] = strip_public_contact_text(profile[field])
+    return profile
 
 
 def has_viewed_contact(user_id: int, profile_id: int) -> bool:
@@ -141,7 +171,8 @@ def home(request: Request) -> HTMLResponse:
         """
     )
     cards = []
-    for r in rows:
+    for row in rows:
+        r = public_profile(row)
         location = ", ".join(filter(None, [r["city"], r["district"]])) or None
         title = r["full_name"] or f"{r['profile_type'] or 'Nikah'} profile"
         if (title or "").strip().lower() in {"bride profile", "groom profile", "profile"} and r["city"]:
@@ -210,7 +241,7 @@ def profiles(
         request,
         "profiles.html",
         {
-            "profiles": rows,
+            "profiles": [public_profile(r) for r in rows],
             "filters": {"q": q, "profile_type": profile_type, "city": city, "min_age": min_age or "", "max_age": max_age or ""},
         },
     )
@@ -221,6 +252,7 @@ def profile_detail(request: Request, profile_id: int) -> HTMLResponse:
     row = one("SELECT * FROM profiles WHERE id = ? AND status = 'approved'", (profile_id,))
     if not row:
         raise HTTPException(404, "Profile not found")
+    public_row = public_profile(row)
     user = current_user(request)
     has_contact = bool(to_wa_number(first_phone(row["contact_details"])))
     contact_unlocked = bool(
@@ -229,7 +261,7 @@ def profile_detail(request: Request, profile_id: int) -> HTMLResponse:
     return render(
         request,
         "profile_detail.html",
-        {"profile": row, "has_contact": has_contact, "contact_unlocked": contact_unlocked},
+        {"profile": public_row, "has_contact": has_contact, "contact_unlocked": contact_unlocked},
     )
 
 

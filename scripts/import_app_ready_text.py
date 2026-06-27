@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from app.database import db, init_db  # noqa: E402
-from app.parser import normalised_hash, remove_contact_from_summary  # noqa: E402
+from app.parser import PHONE_RE, EMAIL_RE, extract_contact, normalised_hash, remove_contact_from_summary  # noqa: E402
 
 SEPARATOR_RE = re.compile(r"^-{20,}\s*$", re.MULTILINE)
 PLACEHOLDER = {"", "not specified", "upon request", "available upon request", "n/a", "na", "none", "null"}
@@ -28,7 +28,7 @@ QUAL_RE = re.compile(
 SCHOOL_RE = re.compile(r"\b(?:school|college|central\s+college|maha\s+vidyalaya|vidyalaya)\b", re.IGNORECASE)
 WORK_NOISE_RE = re.compile(
     r"\b(?:completed\s+o/l|completed\s+a/l|^a/l\s+(?:background|qualification|qualifications)$|"
-    r"other\s+qualification|father\b|mother\b|sibling|siblings|family\b|details?:|expecting\s+(?:bride|groom))",
+    r"other\s+qualification|passed\s+away|father\b|mother\b|sibling|siblings|family\b|details?:|expecting\s+(?:bride|groom))",
     re.IGNORECASE,
 )
 FAMILY_NOISE_RE = re.compile(r"\bexpecting\s+(?:bride|groom)\s+details?\b.*", re.IGNORECASE)
@@ -117,8 +117,32 @@ def contact(value: str | None) -> str | None:
     return "\n".join(pieces) if pieces else None
 
 
-def clean_piece(value: str | None) -> str | None:
+def merge_contact(*values: str | None) -> str | None:
+    pieces = []
+    for value in values:
+        cleaned = contact(value)
+        if cleaned:
+            pieces.append(cleaned)
+    unique = list(dict.fromkeys(pieces))
+    return "\n".join(unique) if unique else None
+
+
+def strip_contact_text(value: str | None) -> str | None:
     text = clean(value)
+    if not text:
+        return None
+    text = PHONE_RE.sub("", text)
+    text = EMAIL_RE.sub("", text)
+    text = re.sub(r"\[[^\]]*\d{4}[^\]]*\]\s*[^:]+:\s*", "", text)
+    text = re.sub(r"<attached:[^>]+>", "", text, flags=re.IGNORECASE)
+    text = re.sub(r"\b[\w .'-]+\.(?:pdf|jpe?g|png|webp)\b", "", text, flags=re.IGNORECASE)
+    text = re.sub(r"\b(?:contact|contect|phone|whatsapp|whats\s*app|call|number)\s*(?:no|only)?\s*[:\-]?\s*", "", text, flags=re.IGNORECASE)
+    text = re.sub(r"\s+", " ", text).strip(" ;,")
+    return clean(text)
+
+
+def clean_piece(value: str | None) -> str | None:
+    text = strip_contact_text(value)
     if not text:
         return None
     text = re.sub(r"[🌻✳️*]+", " ", text)
@@ -226,7 +250,7 @@ def parse_profile(block: str, source_name: str) -> dict | None:
         "faith_notes": faith_notes,
         "expectations": compact_expectations(expectations) or (f"Looking for: {looking_for}" if looking_for else None),
         "bio_summary": remove_contact_from_summary(profile_summary(candidate, basic.get("age"), field(block, "Location"), education, profession)),
-        "contact_details": contact(raw_contact),
+        "contact_details": merge_contact(raw_contact, extract_contact(block)),
         "raw_text": block,
         "source_name": source_name,
     }
