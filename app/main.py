@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import shutil
 import uuid
 from pathlib import Path
@@ -106,6 +107,16 @@ PUBLIC_TEXT_FIELDS = {
     "bio_summary",
     "raw_text",
 }
+QUALIFICATION_RE = re.compile(
+    r"\b(?:o/l|a/l|acca|hnd|hnda|bsc|ba|bcom|llb|mbbs|msc|mba|phd|diploma|dip\.?|degree|"
+    r"graduate|undergraduate|bachelor|master|certificate|nvq)\b",
+    re.IGNORECASE,
+)
+PUBLIC_FIELD_NOISE_RE = re.compile(
+    r"\b(?:father|mother|sibling|siblings|expected\s+(?:bride|groom)|bride\s+details|groom\s+details|"
+    r"contact|whatsapp|phone|attached:)\b",
+    re.IGNORECASE,
+)
 
 
 def contact_view_count(user_id: int) -> int:
@@ -118,7 +129,63 @@ def strip_public_contact_text(value: object) -> object:
         return value
     text = PHONE_RE.sub("[contact hidden]", value)
     text = EMAIL_RE.sub("[email hidden]", text)
+    text = re.sub(r"\[[^\]]*\d{4}[^\]]*\]\s*[^:]+:\s*", "", text)
+    text = re.sub(r"<attached:[^>]+>", "", text, flags=re.IGNORECASE)
+    text = re.sub(r"\b[\w .'-]+\.(?:pdf|jpe?g|png|webp)\b", "", text, flags=re.IGNORECASE)
     return text
+
+
+def public_pieces(value: object) -> list[str]:
+    if not isinstance(value, str):
+        return []
+    text = strip_public_contact_text(value)
+    text = re.sub(r"^&\s*Profession:?\s*", "", text, flags=re.IGNORECASE)
+    text = re.sub(r"^[^\w]*(?:educational\s*&\s*professional\s+qualifications?|occupational\s+background)\s*:?", "", text, flags=re.IGNORECASE)
+    text = re.sub(r"\s+", " ", text.replace("\n", "; ")).strip(" ;,")
+    return [p.strip(" ;,•▪") for p in re.split(r"\s*[;|]\s*", text) if p.strip(" ;,•▪")]
+
+
+def short_join(pieces: list[str], limit: int) -> str | None:
+    out = []
+    for piece in pieces:
+        if not piece or piece in out:
+            continue
+        out.append(piece)
+        if len("; ".join(out)) >= limit:
+            break
+    text = "; ".join(out).strip()
+    return text[:limit].rstrip(" ;,") if text else None
+
+
+def compact_public_education(value: object) -> str | None:
+    pieces = [
+        p for p in public_pieces(value)
+        if QUALIFICATION_RE.search(p) and not PUBLIC_FIELD_NOISE_RE.search(p)
+    ]
+    return short_join(pieces[:3], 140)
+
+
+def compact_public_work(value: object) -> str | None:
+    pieces = []
+    for piece in public_pieces(value):
+        low = piece.lower()
+        if PUBLIC_FIELD_NOISE_RE.search(piece):
+            continue
+        if re.search(r"\b(?:completed\s+o/l|completed\s+a/l|diploma|degree|qualification|school|college|passed away)\b", low):
+            continue
+        piece = re.sub(r"^(?:currently\s+)?(?:working\s+)?(?:as\s+)?", "", piece, flags=re.IGNORECASE).strip()
+        piece = re.sub(r"^(?:al|a/l)\s+background\s*", "", piece, flags=re.IGNORECASE).strip()
+        if piece:
+            pieces.append(piece)
+    return short_join(pieces[:2], 140)
+
+
+def compact_public_long_text(value: object, limit: int = 420) -> str | None:
+    pieces = [
+        p for p in public_pieces(value)
+        if not re.search(r"\b(?:contact|whatsapp|phone|attached:|bride\s+details|groom\s+details)\b", p, flags=re.IGNORECASE)
+    ]
+    return short_join(pieces, limit)
 
 
 def public_profile(row) -> dict:
@@ -126,6 +193,11 @@ def public_profile(row) -> dict:
     for field in PUBLIC_TEXT_FIELDS:
         if field in profile:
             profile[field] = strip_public_contact_text(profile[field])
+    profile["education"] = compact_public_education(profile.get("education")) or profile.get("education")
+    profile["profession"] = compact_public_work(profile.get("profession")) or profile.get("profession")
+    profile["family_background"] = compact_public_long_text(profile.get("family_background")) or profile.get("family_background")
+    profile["expectations"] = compact_public_long_text(profile.get("expectations")) or profile.get("expectations")
+    profile["bio_summary"] = compact_public_long_text(profile.get("bio_summary"), 300) or profile.get("bio_summary")
     return profile
 
 
