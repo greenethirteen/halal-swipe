@@ -1,38 +1,22 @@
 {% extends "base.html" %}
 {% block content %}
 <section class="about">
-  <p class="eyebrow">Our purpose</p>
-  <h1>Marriage, made simple.</h1>
-  <p class="lead">
-    Real, serious profiles and a simple, respectful way to reach the family.
-  </p>
-
-  <div class="about-grid">
-    <div class="feature">
-      <span class="idx">01</span>
-      <strong>Serious only</strong>
-      <p>Built for marriage — never casual.</p>
-    </div>
-    <div class="feature">
-      <span class="idx">02</span>
-      <strong>Real, reviewed profiles</strong>
-      <p>Every profile is checked before it goes live.</p>
-    </div>
-    <div class="feature">
-      <span class="idx">03</span>
-      <strong>Direct to the family</strong>
-      <p>Reach the parent or guardian, the proper way.</p>
-    </div>
-    <div class="feature">
-      <span class="idx">04</span>
-      <strong>Simple &amp; fast</strong>
-      <p>Modern and clean, with none of the clutter.</p>
+  <div class="about-intro">
+    <span class="about-eyebrow">Our purpose</span>
+    <h1>Marriage, <em>made simple</em>.</h1>
+    <p class="lead">Real, serious Sri Lankan Nikah profiles — and a calm, respectful way to reach the family. None of the noise.</p>
+    <div class="about-actions">
+      <a class="button" href="/register">Create a free account</a>
+      <a class="button ghost" href="/profiles">Browse profiles</a>
     </div>
   </div>
-
-  <div class="actions">
-    <a class="button" href="/register">Create a free account</a>
-    <a class="button ghost" href="/profiles">Browse profiles</a>
-  </div>
+  <aside class="about-panel">
+    <ol class="about-features">
+      <li><span class="af-idx">01</span><div><strong>Serious only</strong><p>Built for marriage — never casual.</p></div></li>
+      <li><span class="af-idx">02</span><div><strong>Real, reviewed profiles</strong><p>Every profile is checked before it goes live.</p></div></li>
+      <li><span class="af-idx">03</span><div><strong>Direct to the family</strong><p>Reach the parent or guardian, the proper way.</p></div></li>
+      <li><span class="af-idx">04</span><div><strong>Simple &amp; fast</strong><p>Modern and clean, with none of the clutter.</p></div></li>
+    </ol>
+  </aside>
 </section>
 {% endblock %}

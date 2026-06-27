@@ -1,5 +1,13 @@
 {% macro profile_card(profile, is_subscribed=False) %}
-<article class="card profile-card">
+<article class="card profile-card"
+  data-type="{{ profile.profile_type or '' }}"
+  data-age="{{ profile.age or '' }}"
+  data-location="{{ profile.location or '' }}"
+  data-marital="{{ profile.marital_status or '' }}"
+  data-qual="{{ profile.qual_category or '' }}"
+  data-job="{{ profile.job_category or '' }}"
+  data-abroad="{{ '1' if profile.abroad else '0' }}"
+  data-search="{{ profile.search_blob or '' }}">
   <div class="card-topline">
     <span class="chip">{{ profile.profile_type or 'Profile' }}</span>
     <span class="ref">{{ profile.reference_code }}</span>

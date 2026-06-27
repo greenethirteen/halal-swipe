@@ -118,6 +118,79 @@ PUBLIC_FIELD_NOISE_RE = re.compile(
     re.IGNORECASE,
 )
 
+# --- Browse filter helpers ----------------------------------------------------
+# Qualification buckets, checked in order (first match wins).
+QUALIFICATION_CATEGORIES: list[tuple[str, list[str]]] = [
+    ("Master's / Postgrad", ["msc", "m.sc", "mba", "m.a", "mphil", "master", "postgrad", "pgd", "phd", "doctorate"]),
+    ("Professional (ACCA, CIMA…)", ["acca", "cima", "cma", "aat", "charter", "icasl", "cfa"]),
+    ("Medical (MBBS, Nursing…)", ["mbbs", "bds", "md ", "nursing", "nurse", "pharmac", "dental"]),
+    ("Bachelor's degree", ["bsc", "b.sc", "ba ", "b.a", "bcom", "b.com", "bba", "bit", "bed", "b.ed", "llb", "bachelor", "degree", "hons", "honours", "graduate"]),
+    ("Diploma / HND", ["diploma", "hnd", "hnda", "dip.", "dip ", "higher national", "certificate", "nvq"]),
+    ("School (O/L, A/L)", ["o/l", "a/l", "o level", "a level", "ol ", "al ", "g.c.e", "gce", "school", "grade"]),
+]
+# Job/field buckets, checked in order (specific before the generic "business").
+JOB_CATEGORIES: list[tuple[str, list[str]]] = [
+    ("Healthcare / Medical", ["doctor", "nurse", "mbbs", "physio", "medical", "pharmac", "dental", "surgeon", "clinic", "therapist", "health"]),
+    ("Accounting / Finance", ["account", "financ", "audit", "bank", "actuar", "tax", "bookkeep"]),
+    ("IT / Software", ["software", "developer", "programmer", " it ", "information tech", "qa ", "quality assurance", "data ", "network", "system", "devops", "web ", "tech "]),
+    ("Engineering", ["engineer", "engineering"]),
+    ("Education / Teaching", ["teacher", "teaching", "lecturer", "tutor", "education", "academ", "quran", "quraan", "ustad", "moulavi"]),
+    ("Design / Creative", ["design", "architect", "creative", "graphic", "interior"]),
+    ("Aviation", ["pilot", "cabin crew", "aviation", "airline"]),
+    ("Student", ["student", "undergraduate", "studying", "following a", "trainee", "intern"]),
+    ("Not working / Homemaker", ["not working", "housewife", "homemaker", "unemployed"]),
+    ("Business / Management", ["business", "manager", "management", "executive", "coordinator", "consultant", "officer", "administ", "marketing", "sales", "human resource", "purchase", "supply", "procurement", "operations", "entrepreneur", "self employed", "clerk", "assistant", "analyst"]),
+]
+ABROAD_KEYWORDS = [
+    "qatar", "doha", "uae", "u.a.e", "dubai", "abu dhabi", "sharjah", "saudi", "ksa", "riyadh", "jeddah",
+    "middle east", "gulf", "kuwait", "bahrain", "oman", "muscat", "australia", "sydney", "melbourne",
+    "uk", "u.k", "united kingdom", "london", "england", "britain", "scotland", "usa", "u.s.a",
+    "united states", "america", "canada", "toronto", "germany", "france", "italy", "europe", "norway",
+    "sweden", "switzerland", "netherlands", "new zealand", "singapore", "malaysia", "japan", "korea",
+    "maldives", "south africa", "ireland", "spain", "denmark", "finland", "austria", "belgium",
+]
+ABROAD_RE = re.compile(r"\b(?:" + "|".join(re.escape(k) for k in ABROAD_KEYWORDS) + r")\b", re.IGNORECASE)
+PLACE_BAD_WORDS_RE = re.compile(
+    r"\b(?:age|limit|family|residing|reside|qualification|qualified|mannered|oriented|salary|height|"
+    r"seeking|looking|education|diploma|degree|officer|company|agency|background|hearted|respectable|"
+    r"currently|street|road|no)\b",
+    re.IGNORECASE,
+)
+
+
+def categorize(value: object, categories: list[tuple[str, list[str]]]) -> str:
+    text = f" {str(value or '').lower()} "
+    for label, keywords in categories:
+        if any(kw in text for kw in keywords):
+            return label
+    return ""
+
+
+def clean_place(value: object) -> str:
+    """Return a tidy place name, or '' if the value looks like noise/an address."""
+    s = re.sub(r"\s+", " ", str(value or "")).strip()
+    s = re.sub(r"^[\[\(\{]+|[\]\)\}\.,;:\s]+$", "", s).strip()
+    if not s or len(s) > 30:
+        return ""
+    if re.search(r"\d", s) or re.search(r"[.;:/]", s):
+        return ""
+    if re.search(r"[؀-ۿ]", s) or PLACE_BAD_WORDS_RE.search(s):
+        return ""
+    if len([p for p in re.split(r"\s*,\s*|\s+", s) if p]) > 4:
+        return ""
+    return s
+
+
+def is_abroad(profile: dict) -> bool:
+    blob = " ".join(
+        str(profile.get(f) or "")
+        for f in ("city", "district", "country", "profession", "bio_summary", "family_background")
+    )
+    if re.search(r"\bsri\s*lanka\b", blob, re.IGNORECASE):
+        # Only count as abroad if a foreign place is also mentioned.
+        return bool(ABROAD_RE.search(blob))
+    return bool(ABROAD_RE.search(blob))
+
 
 def contact_view_count(user_id: int) -> int:
     row = one("SELECT COUNT(*) AS c FROM contact_views WHERE user_id = ?", (user_id,))
@@ -328,47 +401,51 @@ def home(request: Request) -> HTMLResponse:
 
 
 @app.get("/profiles", response_class=HTMLResponse)
-def profiles(
-    request: Request,
-    q: str = "",
-    profile_type: str = "",
-    city: str = "",
-    min_age: int | None = None,
-    max_age: int | None = None,
-) -> HTMLResponse:
-    clauses = ["status = 'approved'"]
-    params: list[object] = []
-    if q:
-        clauses.append("(bio_summary LIKE ? OR education LIKE ? OR profession LIKE ? OR expectations LIKE ?)")
-        like = f"%{q}%"
-        params.extend([like, like, like, like])
-    if profile_type in {"Bride", "Groom", "Unknown"}:
-        clauses.append("profile_type = ?")
-        params.append(profile_type)
-    if city:
-        clauses.append("(city LIKE ? OR district LIKE ?)")
-        params.extend([f"%{city}%", f"%{city}%"])
-    if min_age is not None:
-        clauses.append("age >= ?")
-        params.append(min_age)
-    if max_age is not None:
-        clauses.append("age <= ?")
-        params.append(max_age)
+def profiles(request: Request) -> HTMLResponse:
+    # All filtering happens live in the browser, so just hand over every
+    # approved profile (enriched with the metadata the filters key off).
     rows = all_rows(
-        f"""
+        """
         SELECT * FROM profiles
-        WHERE {' AND '.join(clauses)}
+        WHERE status = 'approved'
         ORDER BY created_at DESC
-        LIMIT 120
-        """,
-        tuple(params),
+        LIMIT 600
+        """
     )
+    profiles_out: list[dict] = []
+    locations: set[str] = set()
+    marital_statuses: set[str] = set()
+    for row in rows:
+        p = public_profile(row)
+        p["qual_category"] = categorize(row["education"], QUALIFICATION_CATEGORIES)
+        p["job_category"] = categorize(row["profession"], JOB_CATEGORIES)
+        p["abroad"] = is_abroad(dict(row))
+        place = clean_place(row["city"]) or clean_place(row["district"])
+        p["location"] = place
+        if place:
+            locations.add(place)
+        marital = (p.get("marital_status") or "").strip()
+        if marital and len(marital) <= 24:
+            marital_statuses.add(marital)
+        search_blob = " ".join(
+            str(v or "") for v in (
+                p.get("full_name"), p.get("city"), p.get("district"),
+                row["education"], row["profession"], p.get("bio_summary"),
+                p.get("reference_code"),
+            )
+        ).lower()
+        p["search_blob"] = search_blob
+        profiles_out.append(p)
+
     return render(
         request,
         "profiles.html",
         {
-            "profiles": [public_profile(r) for r in rows],
-            "filters": {"q": q, "profile_type": profile_type, "city": city, "min_age": min_age or "", "max_age": max_age or ""},
+            "profiles": profiles_out,
+            "locations": sorted(locations, key=str.lower),
+            "marital_statuses": sorted(marital_statuses, key=str.lower),
+            "qual_categories": [c[0] for c in QUALIFICATION_CATEGORIES],
+            "job_categories": [c[0] for c in JOB_CATEGORIES],
         },
     )
 

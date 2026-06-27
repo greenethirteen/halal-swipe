@@ -2,28 +2,133 @@
 {% from "components.html" import profile_card %}
 {% block content %}
 <section class="browse-shell">
-<form class="filters browse-filters" method="get" action="/profiles">
-  <input name="q" placeholder="Search profiles" value="{{ filters.q }}">
-  <select name="profile_type">
-    <option value="">All</option>
-    <option value="Bride" {% if filters.profile_type == 'Bride' %}selected{% endif %}>Bride</option>
-    <option value="Groom" {% if filters.profile_type == 'Groom' %}selected{% endif %}>Groom</option>
-  </select>
-  <input name="city" placeholder="City or district" value="{{ filters.city }}">
-  <input name="min_age" type="number" min="18" placeholder="Min age" value="{{ filters.min_age }}">
-  <input name="max_age" type="number" min="18" placeholder="Max age" value="{{ filters.max_age }}">
-  <button class="button">Filter</button>
-</form>
-<div class="browse-head">
-  <h1>Browse</h1>
-  <span>{{ profiles|length }} shown</span>
-</div>
-<div class="browse-grid">
-  {% for profile in profiles %}
-    {{ profile_card(profile, is_subscribed) }}
-  {% else %}
-    <div class="empty card">No profiles match your filters.</div>
-  {% endfor %}
-</div>
+  <div class="browse-filters" id="browseFilters">
+    <div class="bf-search">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 2a8 8 0 1 0 4.9 14.3l5.4 5.4 1.4-1.4-5.4-5.4A8 8 0 0 0 10 2Zm0 2a6 6 0 1 1 0 12 6 6 0 0 1 0-12Z"/></svg>
+      <input id="fq" type="search" placeholder="Search by name, place, work, study…" autocomplete="off">
+    </div>
+    <div class="bf-row">
+      <label class="bf-field">Looking for
+        <select id="fType">
+          <option value="">Anyone</option>
+          <option value="Bride">Bride</option>
+          <option value="Groom">Groom</option>
+        </select>
+      </label>
+      <label class="bf-field">Location
+        <select id="fLocation">
+          <option value="">Anywhere</option>
+          {% for loc in locations %}<option value="{{ loc }}">{{ loc }}</option>{% endfor %}
+        </select>
+      </label>
+      <label class="bf-field">Qualification
+        <select id="fQual">
+          <option value="">Any qualification</option>
+          {% for q in qual_categories %}<option value="{{ q }}">{{ q }}</option>{% endfor %}
+        </select>
+      </label>
+      <label class="bf-field">Job field
+        <select id="fJob">
+          <option value="">Any field</option>
+          {% for j in job_categories %}<option value="{{ j }}">{{ j }}</option>{% endfor %}
+        </select>
+      </label>
+      <label class="bf-field">Marital status
+        <select id="fMarital">
+          <option value="">Any status</option>
+          {% for m in marital_statuses %}<option value="{{ m }}">{{ m }}</option>{% endfor %}
+        </select>
+      </label>
+      <label class="bf-field bf-age">Min age
+        <input id="fMin" type="number" min="18" max="99" inputmode="numeric" placeholder="18">
+      </label>
+      <label class="bf-field bf-age">Max age
+        <input id="fMax" type="number" min="18" max="99" inputmode="numeric" placeholder="60">
+      </label>
+    </div>
+    <div class="bf-actions">
+      <label class="bf-toggle">
+        <input id="fAbroad" type="checkbox">
+        <span class="bf-switch"></span>
+        Living abroad
+      </label>
+      <button class="button ghost mini" type="button" id="fReset">Reset filters</button>
+    </div>
+  </div>
+
+  <div class="browse-head">
+    <h1>Browse</h1>
+    <span id="browseCount">{{ profiles|length }} shown</span>
+  </div>
+
+  <div class="browse-grid" id="browseGrid">
+    {% for profile in profiles %}
+      {{ profile_card(profile, is_subscribed) }}
+    {% else %}
+      <div class="empty card">No approved profiles yet.</div>
+    {% endfor %}
+  </div>
+  <div class="empty card browse-empty" id="browseEmpty" hidden>No profiles match your filters. <a href="#" id="browseClear">Clear filters</a></div>
 </section>
+
+<script>
+(function(){
+  const grid = document.getElementById('browseGrid');
+  if(!grid) return;
+  const cards = Array.from(grid.querySelectorAll('.profile-card'));
+  const fq = document.getElementById('fq');
+  const fType = document.getElementById('fType');
+  const fLocation = document.getElementById('fLocation');
+  const fQual = document.getElementById('fQual');
+  const fJob = document.getElementById('fJob');
+  const fMarital = document.getElementById('fMarital');
+  const fMin = document.getElementById('fMin');
+  const fMax = document.getElementById('fMax');
+  const fAbroad = document.getElementById('fAbroad');
+  const countEl = document.getElementById('browseCount');
+  const emptyEl = document.getElementById('browseEmpty');
+
+  function tokens(){ return (fq.value || '').toLowerCase().split(/\s+/).filter(Boolean); }
+
+  function apply(){
+    const terms = tokens();
+    const type = fType.value, loc = fLocation.value, qual = fQual.value;
+    const job = fJob.value, marital = fMarital.value;
+    const min = parseInt(fMin.value, 10), max = parseInt(fMax.value, 10);
+    const abroad = fAbroad.checked;
+    let shown = 0;
+    for(const c of cards){
+      const age = parseInt(c.dataset.age, 10);
+      let ok = true;
+      if(type && c.dataset.type !== type) ok = false;
+      else if(loc && c.dataset.location !== loc) ok = false;
+      else if(qual && c.dataset.qual !== qual) ok = false;
+      else if(job && c.dataset.job !== job) ok = false;
+      else if(marital && c.dataset.marital !== marital) ok = false;
+      else if(abroad && c.dataset.abroad !== '1') ok = false;
+      else if(!isNaN(min) && (isNaN(age) || age < min)) ok = false;
+      else if(!isNaN(max) && (isNaN(age) || age > max)) ok = false;
+      else if(terms.length){
+        const blob = c.dataset.search;
+        if(!terms.every(t => blob.includes(t))) ok = false;
+      }
+      c.hidden = !ok;
+      if(ok) shown++;
+    }
+    countEl.textContent = shown + ' shown';
+    emptyEl.hidden = shown !== 0;
+  }
+
+  function reset(){
+    fq.value=''; fType.value=''; fLocation.value=''; fQual.value='';
+    fJob.value=''; fMarital.value=''; fMin.value=''; fMax.value=''; fAbroad.checked=false;
+    apply();
+  }
+
+  [fq, fMin, fMax].forEach(el => el.addEventListener('input', apply));
+  [fType, fLocation, fQual, fJob, fMarital, fAbroad].forEach(el => el.addEventListener('change', apply));
+  document.getElementById('fReset').addEventListener('click', reset);
+  document.getElementById('browseClear').addEventListener('click', e => { e.preventDefault(); reset(); });
+})();
+</script>
 {% endblock %}
