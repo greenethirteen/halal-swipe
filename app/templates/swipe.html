@@ -6,174 +6,156 @@
   <title>{{ settings.app_name }}</title>
   <link rel="stylesheet" href="/static/styles.css">
   <style>
-    /* Swipe-only mechanics, themed from the shared palette in styles.css */
     html, body { height: 100%; }
     body { display: flex; flex-direction: column; margin: 0; }
-    .swipe-top {
-      position: relative;
-      width: min(1180px, calc(100% - 32px));
-      margin: 14px auto 6px;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 10px 14px;
-      border: 1px solid var(--line);
-      border-radius: 22px;
-      background: rgba(255, 250, 242, .82);
-      backdrop-filter: blur(18px);
-      box-shadow: 0 8px 26px rgba(193, 50, 90, .07);
-    }
-    .swipe-links { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; justify-content: flex-end; font-weight: 600; }
-    .swipe-top a { color: var(--muted); }
-    .swipe-top .swipe-links a:hover { color: var(--ink); }
-    .card-contacts { display: flex; justify-content: center; gap: 14px; margin-top: auto; padding-top: 18px; }
-    .card-contacts .ic {
-      width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center;
-      color: #fff; cursor: pointer; transition: transform .14s ease, box-shadow .14s ease, filter .14s ease;
-    }
-    .card-contacts .ic svg { width: 22px; height: 22px; fill: currentColor; }
-    .card-contacts .ic:hover { transform: translateY(-2px) scale(1.06); filter: brightness(1.05); }
-    .card-contacts .ic:active { transform: scale(.92); }
-    .ic-wa { background: #25d366; box-shadow: 0 10px 22px rgba(37,211,102,.35); }
-    .ic-call { background: var(--coral); box-shadow: 0 10px 22px rgba(255,111,97,.35); }
 
+    /* Thin top bar */
+    .swipe-top {
+      position: relative; width: min(1180px, calc(100% - 24px));
+      margin: 10px auto 4px; display: flex; align-items: center; justify-content: space-between;
+      padding: 6px 8px 6px 14px; border: 1px solid var(--line); border-radius: 18px;
+      background: rgba(255, 250, 246, .85); backdrop-filter: blur(18px);
+      box-shadow: 0 6px 20px rgba(193, 50, 90, .06);
+    }
+    .swipe-top .brand img { height: 40px; }
+    .top-actions { display: flex; align-items: center; gap: 8px; }
     .filter-btn {
       display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
       border: 1px solid var(--line); background: #fff; color: var(--ink);
-      font: inherit; font-weight: 700; padding: 8px 14px; border-radius: 999px;
-      box-shadow: 0 6px 16px rgba(255,138,76,.14); transition: transform .14s ease, box-shadow .14s ease;
+      font: inherit; font-weight: 700; font-size: .92rem; padding: 8px 13px; border-radius: 999px;
+      box-shadow: 0 4px 12px rgba(255,138,76,.14); transition: transform .14s ease, box-shadow .14s ease;
     }
-    .filter-btn svg { width: 16px; height: 16px; fill: currentColor; }
-    .filter-btn:hover { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(255,138,76,.22); }
+    .filter-btn svg { width: 15px; height: 15px; fill: currentColor; }
+    .filter-btn:hover { transform: translateY(-1px); }
     .filter-btn:active { transform: scale(.96); }
+    .menu-btn {
+      width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--line); background: #fff;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px;
+      cursor: pointer; box-shadow: 0 4px 12px rgba(255,138,76,.14); transition: transform .14s ease;
+    }
+    .menu-btn span { width: 18px; height: 2px; background: var(--ink); border-radius: 2px; transition: transform .25s ease, opacity .2s ease; }
+    .menu-btn:active { transform: scale(.94); }
+    .menu-btn.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .menu-btn.open span:nth-child(2) { opacity: 0; }
+    .menu-btn.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    .menu-drawer {
+      position: absolute; top: calc(100% + 8px); right: 6px; z-index: 40; display: none;
+      flex-direction: column; gap: 2px; min-width: 200px; background: var(--bg-2);
+      border: 1px solid var(--line); border-radius: 16px; padding: 8px; box-shadow: var(--shadow);
+      animation: pop-in .16s ease both;
+    }
+    .menu-drawer.open { display: flex; }
+    .menu-drawer a, .menu-drawer .menu-link-btn {
+      padding: 11px 13px; border-radius: 11px; color: var(--ink); font-weight: 600; text-align: left;
+      background: transparent; border: 0; font: inherit; cursor: pointer; width: 100%;
+    }
+    .menu-drawer a:hover, .menu-drawer .menu-link-btn:hover { background: rgba(255,138,76,.12); }
+    .menu-join { background: var(--green) !important; color: #fff !important; text-align: center !important; font-weight: 800; margin-top: 4px; }
 
-    .filter-overlay {
-      position: fixed; inset: 0; z-index: 60; display: none;
-      align-items: center; justify-content: center; padding: 16px;
-      background: rgba(42,32,24,.38); backdrop-filter: blur(3px);
+    /* Stage + card */
+    .stage { flex: 1; position: relative; display: flex; align-items: center; justify-content: center; padding: 6px 12px 86px; overflow: hidden; }
+    .card {
+      position: absolute; width: min(440px, 94vw); max-height: min(100%, 760px); overflow: hidden;
+      background: #fff; border-radius: 24px; display: flex; flex-direction: column;
+      box-shadow: 0 26px 54px -22px rgba(120,40,70,.5), 0 6px 16px rgba(120,40,70,.12);
+      will-change: transform; touch-action: pan-y; animation: card-in .4s cubic-bezier(.2,.9,.3,1.12) both;
     }
-    .filter-overlay.open { display: flex; }
-    .filter-sheet {
-      width: min(420px, 100%); max-height: 88dvh; overflow-y: auto;
-      background: var(--bg-2); border-radius: 26px;
-      padding: 24px; box-shadow: var(--shadow); display: grid; gap: 14px;
-      animation: pop-in .25s ease both;
-    }
-    @keyframes pop-in { from { transform: scale(.94) translateY(8px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
-    .filter-sheet h3 { margin: 0 0 2px; font-size: 1.3rem; letter-spacing: -.02em; }
-    .filter-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .filter-sheet label { min-width: 0; }
-    .filter-sheet select, .filter-sheet input { width: 100%; }
-    .filter-buttons { display: grid; grid-template-columns: 1fr 1.4fr; gap: 12px; margin-top: 6px; position: sticky; bottom: -24px; background: var(--bg-2); padding-bottom: 2px; }
-    .filter-buttons .button { margin-top: 0; }
+    @keyframes card-in { from { opacity: 0; transform: scale(.9) translateY(20px); } to { opacity: 1; transform: none; } }
+    .card.liking { box-shadow: 0 0 0 3px var(--green), 0 26px 54px -20px rgba(47,158,126,.5); }
+    .card.noping { box-shadow: 0 0 0 3px var(--coral), 0 26px 54px -20px rgba(255,111,97,.5); }
+    .card-accent { height: 5px; flex-shrink: 0; background: linear-gradient(90deg, #ff8a5b, #ff6f61); }
+    .card-accent.groom { background: linear-gradient(90deg, #2fae8f, #12876a); }
+
+    .card-inner { flex: 0 1 auto; min-height: 0; overflow: auto; padding: 18px 20px 8px; }
+    .card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+    .card-head h2 { margin: 0; font-size: 1.5rem; letter-spacing: -.02em; color: var(--ink); line-height: 1.15; }
+    .card-head h2 .age { color: var(--muted); font-weight: 600; font-size: 1.15rem; }
+    .card .chip { flex-shrink: 0; display: inline-flex; align-items: center; border-radius: 999px; padding: 6px 11px;
+      font-size: .76rem; font-weight: 800; background: rgba(255,111,97,.16); color: var(--coral); }
+    .card .chip.groom { background: rgba(18,135,106,.16); color: var(--green); }
+    .loc { display: flex; align-items: center; gap: 6px; color: var(--muted); margin-top: 6px; font-weight: 600; font-size: .92rem; }
+    .loc svg { width: 13px; height: 13px; fill: var(--coral); flex-shrink: 0; }
+    .rows { margin-top: 12px; }
+    .row { display: flex; gap: 12px; padding: 9px 0; border-top: 1px solid var(--line); font-size: .95rem; }
+    .row:first-child { border-top: 0; }
+    .row .k { color: var(--muted); font-weight: 700; min-width: 96px; flex-shrink: 0; }
+    .row .v { color: var(--ink); }
+    .bio { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); color: var(--muted); line-height: 1.5; font-size: .9rem; }
+
+    .card-actions { display: flex; gap: 10px; margin-top: 16px; }
+    .card-actions .ic { flex: 1; height: 46px; border-radius: 14px; display: flex; align-items: center; justify-content: center; gap: 8px;
+      color: #fff; font-weight: 800; font-size: .92rem; cursor: pointer; transition: transform .14s ease, filter .14s ease; }
+    .card-actions .ic svg { width: 19px; height: 19px; fill: currentColor; }
+    .card-actions .ic:hover { transform: translateY(-2px); filter: brightness(1.04); }
+    .card-actions .ic:active { transform: scale(.97); }
+    .ic-wa { background: #25d366; box-shadow: 0 8px 18px rgba(37,211,102,.32); }
+    .ic-call { background: var(--coral); box-shadow: 0 8px 18px rgba(255,111,97,.32); }
+
+    .stamp { position: absolute; top: 18px; z-index: 4; font-size: 1.2rem; font-weight: 900; letter-spacing: 1px;
+      padding: 5px 14px; border: 3px solid; border-radius: 10px; opacity: 0; background: rgba(255,255,255,.75); backdrop-filter: blur(2px); }
+    .stamp.like { left: 18px; color: var(--green); border-color: var(--green); transform: rotate(-14deg); }
+    .stamp.nope { right: 18px; color: var(--coral); border-color: var(--coral); transform: rotate(14deg); }
+
+    /* Thin controls */
+    .controls { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 50;
+      display: flex; justify-content: center; align-items: center; gap: 16px; }
+    .controls button { border-radius: 50%; border: 0; cursor: pointer; display: grid; place-items: center; background: #fff; transition: transform .14s ease, box-shadow .14s ease; }
+    .controls button svg { fill: currentColor; }
+    .controls #rewind { width: 44px; height: 44px; color: var(--gold-dark); box-shadow: 0 6px 16px rgba(240,169,59,.26); }
+    .controls #rewind svg { width: 18px; height: 18px; }
+    .controls #no { width: 56px; height: 56px; color: var(--coral); box-shadow: 0 8px 20px rgba(255,111,97,.28); }
+    .controls #no svg { width: 23px; height: 23px; }
+    .controls #yes { width: 64px; height: 64px; color: #fff; background: linear-gradient(135deg, #ff8a5b, #ff6f61); box-shadow: 0 10px 26px rgba(255,111,97,.5); }
+    .controls #yes svg { width: 27px; height: 27px; }
+    .controls button:hover { transform: translateY(-2px) scale(1.05); }
+    .controls button:active { transform: scale(.9); }
+
+    .empty { color: var(--muted); text-align: center; max-width: 320px; line-height: 1.6; }
+    .empty h3 { font-size: 1.4rem; color: var(--ink); margin: 0 0 6px; letter-spacing: -.02em; }
+    .empty a { color: var(--coral); font-weight: 800; }
 
     /* Bride / Groom gate */
     .gate-overlay {
-      position: fixed; inset: 0; z-index: 70; display: none;
-      align-items: center; justify-content: center; padding: 16px;
-      background:
-        radial-gradient(circle at 30% 20%, rgba(255,154,170,.5), transparent 26rem),
-        radial-gradient(circle at 75% 80%, rgba(255,169,59,.4), transparent 26rem),
-        rgba(255,247,240,.96);
+      position: fixed; inset: 0; z-index: 70; display: none; align-items: center; justify-content: center; padding: 16px;
+      background: radial-gradient(circle at 30% 20%, rgba(255,154,170,.5), transparent 26rem),
+                  radial-gradient(circle at 75% 80%, rgba(255,169,59,.4), transparent 26rem), rgba(255,247,240,.96);
       backdrop-filter: blur(6px);
     }
     .gate-overlay.open { display: flex; }
     .gate-card { text-align: center; max-width: 460px; animation: pop-in .35s ease both; }
-    .gate-logo { width: 210px; max-width: 72%; height: auto; margin-bottom: 4px; }
-    .gate-card h2 { font-size: 1.9rem; letter-spacing: -.03em; margin: 8px 0 4px; color: var(--ink); }
-    .gate-card p { color: var(--muted); margin: 0 0 24px; }
+    .gate-logo { width: 200px; max-width: 70%; height: auto; margin-bottom: 4px; }
+    .gate-card h2 { font-size: 1.8rem; letter-spacing: -.03em; margin: 8px 0 4px; color: var(--ink); }
+    .gate-card p { color: var(--muted); margin: 0 0 22px; }
     .gate-options { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    .gate-pick {
-      display: flex; flex-direction: column; align-items: center; gap: 10px;
-      padding: 26px 16px; border-radius: 24px; border: 1.5px solid var(--line);
-      background: #fff; cursor: pointer; font: inherit; color: var(--ink);
-      box-shadow: 0 14px 30px rgba(120,40,70,.1); transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
-    }
-    .gate-pick strong { font-size: 1.15rem; font-weight: 800; letter-spacing: -.01em; }
+    .gate-pick { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 24px 16px; border-radius: 22px;
+      border: 1.5px solid var(--line); background: #fff; cursor: pointer; font: inherit; color: var(--ink);
+      box-shadow: 0 12px 28px rgba(120,40,70,.1); transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease; }
+    .gate-pick strong { font-size: 1.1rem; font-weight: 800; }
     .gate-pick small { color: var(--muted); font-weight: 600; font-size: .82rem; }
-    .gp-orb { width: 60px; height: 60px; border-radius: 50%; box-shadow: 0 10px 24px rgba(120,40,70,.18); }
+    .gp-orb { width: 56px; height: 56px; border-radius: 50%; box-shadow: 0 10px 24px rgba(120,40,70,.18); }
     .gp-bride { background: linear-gradient(135deg, #ff9a8b, #ff6a88); }
     .gp-groom { background: linear-gradient(135deg, #2fae8f, #12876a); }
-    .gate-pick:hover { transform: translateY(-4px); border-color: var(--coral); box-shadow: 0 22px 42px rgba(255,111,97,.24); }
+    .gate-pick:hover { transform: translateY(-4px); border-color: var(--coral); box-shadow: 0 20px 40px rgba(255,111,97,.24); }
     .gate-pick:active { transform: scale(.97); }
-    .stage { flex: 1; position: relative; display: flex; align-items: center; justify-content: center; padding: 8px 16px 0; overflow: hidden; }
-    .card {
-      position: absolute; width: min(412px, 92vw); height: 100%; max-height: 600px; overflow: hidden;
-      background: #fff; border-radius: 30px;
-      box-shadow: 0 30px 60px -22px rgba(120,40,70,.5), 0 6px 18px rgba(120,40,70,.12);
-      display: flex; flex-direction: column; will-change: transform; touch-action: pan-y;
-      animation: card-in .42s cubic-bezier(.2,.9,.3,1.12) both;
-    }
-    @keyframes card-in { from { opacity: 0; transform: scale(.9) translateY(22px); } to { opacity: 1; transform: none; } }
-    .card.liking { box-shadow: 0 0 0 3px var(--green), 0 30px 60px -20px rgba(47,158,126,.5); }
-    .card.noping { box-shadow: 0 0 0 3px var(--coral), 0 30px 60px -20px rgba(255,111,97,.5); }
 
-    .card-accent { height: 6px; flex-shrink: 0; background: linear-gradient(90deg, #ff8a5b, #ff6f61); }
-    .card-accent.groom { background: linear-gradient(90deg, #2fae8f, #12876a); }
-    .card-body { flex: 1; overflow: auto; padding: 24px 22px 20px; display: flex; flex-direction: column; }
-    .card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
-    .name-row { display: flex; align-items: baseline; gap: 9px; flex-wrap: wrap; }
-    .name-row h2 { margin: 0; font-size: 1.7rem; letter-spacing: -.02em; color: var(--ink); line-height: 1.12; }
-    .name-row .age { font-size: 1.4rem; font-weight: 600; color: var(--muted); }
-    .card .chip { flex-shrink: 0; background: rgba(255,111,97,.16); color: var(--coral); }
-    .card .chip.groom { background: rgba(18,135,106,.16); color: var(--green); }
-    .loc { display: flex; align-items: center; gap: 6px; color: var(--muted); margin-top: 8px; font-weight: 600; font-size: .96rem; }
-    .loc svg { width: 14px; height: 14px; fill: var(--coral); flex-shrink: 0; }
-    .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
-    .fact { background: var(--bg); border: 1px solid var(--line); border-radius: 14px; padding: 9px 12px; min-width: 0; }
-    .fact.wide { grid-column: 1 / -1; }
-    .fact .fl { display: block; font-size: .66rem; text-transform: uppercase; letter-spacing: .09em; color: var(--coral); font-weight: 800; }
-    .fact .fv { display: block; margin-top: 3px; font-size: .94rem; color: var(--ink); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-
-    .stamp {
-      position: absolute; top: 22px; z-index: 4; font-size: 1.25rem; font-weight: 900; letter-spacing: 1px;
-      padding: 6px 16px; border: 3px solid; border-radius: 12px; opacity: 0;
-      background: rgba(255,255,255,.72); backdrop-filter: blur(2px);
-    }
-    .stamp.like { left: 22px; color: var(--green); border-color: var(--green); transform: rotate(-14deg); }
-    .stamp.nope { right: 22px; color: var(--coral); border-color: var(--coral); transform: rotate(14deg); }
-
-    .controls { display: flex; justify-content: center; align-items: center; gap: 18px; padding: 16px 0 22px; }
-    .controls button { border-radius: 50%; border: 0; cursor: pointer; display: grid; place-items: center;
-      background: #fff; transition: transform .14s ease, box-shadow .14s ease; }
-    .controls button svg { fill: currentColor; }
-    .controls #rewind { width: 50px; height: 50px; color: var(--gold-dark); box-shadow: 0 8px 20px rgba(240,169,59,.26); }
-    .controls #rewind svg { width: 20px; height: 20px; }
-    .controls #no { width: 64px; height: 64px; color: var(--coral); box-shadow: 0 10px 26px rgba(255,111,97,.28); }
-    .controls #no svg { width: 26px; height: 26px; }
-    .controls #yes { width: 74px; height: 74px; color: #fff; background: linear-gradient(135deg, #ff8a5b, #ff6f61); box-shadow: 0 14px 32px rgba(255,111,97,.5); }
-    .controls #yes svg { width: 30px; height: 30px; }
-    .controls button:hover { transform: translateY(-3px) scale(1.05); }
-    .controls button:active { transform: scale(.9); }
-
-    .swipe-footer { display: flex; justify-content: center; align-items: center; gap: 10px; padding: 0 0 16px; font-size: .85rem; color: var(--muted); }
-    .swipe-footer a { color: var(--muted); }
-    .swipe-footer a:hover { color: var(--ink); }
-    .empty { color: var(--muted); text-align: center; max-width: 320px; line-height: 1.6; }
-    .empty h3 { font-size: 1.5rem; color: var(--ink); margin: 0 0 6px; letter-spacing: -.02em; }
-    .empty a { color: var(--coral); font-weight: 800; }
+    /* Filter sheet */
+    .filter-overlay { position: fixed; inset: 0; z-index: 60; display: none; align-items: center; justify-content: center; padding: 16px; background: rgba(42,32,24,.38); backdrop-filter: blur(3px); }
+    .filter-overlay.open { display: flex; }
+    .filter-sheet { width: min(420px, 100%); max-height: 88dvh; overflow-y: auto; background: var(--bg-2); border-radius: 24px; padding: 22px; box-shadow: var(--shadow); display: grid; gap: 13px; animation: pop-in .25s ease both; }
+    @keyframes pop-in { from { transform: scale(.94) translateY(8px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+    .filter-sheet h3 { margin: 0 0 2px; font-size: 1.25rem; letter-spacing: -.02em; }
+    .filter-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .filter-sheet label { min-width: 0; }
+    .filter-sheet select, .filter-sheet input { width: 100%; }
+    .filter-buttons { display: grid; grid-template-columns: 1fr 1.4fr; gap: 12px; margin-top: 4px; }
+    .filter-buttons .button { margin-top: 0; }
 
     @media (max-width: 600px) {
-      .swipe-top { margin: 8px auto 2px; padding: 6px 10px 6px 12px; border-radius: 18px; }
-      .brand img { height: 40px; }
-      .swipe-links { gap: 10px; font-size: .9rem; }
-      .filter-btn { padding: 7px 11px; }
-      .stage { padding: 6px 12px 0; }
-      .card { border-radius: 24px; max-height: none; }
-      .cover { height: 140px; }
-      .monogram { width: 78px; height: 78px; font-size: 2rem; }
-      .card-body { padding: 14px 16px 14px; }
-      .name-row h2 { font-size: 1.45rem; }
-      .facts { gap: 8px; margin-top: 12px; }
-      .controls { gap: 14px; padding: 10px 0 12px; }
-      .controls #yes { width: 62px; height: 62px; }
-      .controls #yes svg { width: 26px; height: 26px; }
-      .controls #no { width: 54px; height: 54px; }
-      .controls #rewind { width: 46px; height: 46px; }
-      .card-contacts .ic { width: 42px; height: 42px; }
-      .swipe-footer { padding-bottom: 10px; }
-    }
-    @media (max-height: 720px) {
-      .cover { height: 132px; }
-      .monogram { width: 72px; height: 72px; font-size: 1.9rem; }
+      .swipe-top { padding: 5px 7px 5px 12px; }
+      .swipe-top .brand img { height: 36px; }
+      .stage { padding: 4px 10px 0; }
+      .card-inner { padding: 16px 16px 6px; }
+      .card-head h2 { font-size: 1.35rem; }
     }
   </style>
 </head>
@@ -186,79 +168,63 @@
       <h2>Who are you looking for?</h2>
       <p>Find a serious, marriage-minded match.</p>
       <div class="gate-options">
-        <button type="button" class="gate-pick" data-type="Bride">
-          <span class="gp-orb gp-bride"></span><strong>A Bride</strong><small>Find a bride</small>
-        </button>
-        <button type="button" class="gate-pick" data-type="Groom">
-          <span class="gp-orb gp-groom"></span><strong>A Groom</strong><small>Find a groom</small>
-        </button>
+        <button type="button" class="gate-pick" data-type="Bride"><span class="gp-orb gp-bride"></span><strong>A Bride</strong><small>Find a bride</small></button>
+        <button type="button" class="gate-pick" data-type="Groom"><span class="gp-orb gp-groom"></span><strong>A Groom</strong><small>Find a groom</small></button>
       </div>
     </div>
   </div>
 
   <div class="swipe-top">
     <a class="brand" href="/"><img src="/static/logo.png" alt="{{ settings.app_name }}"></a>
-    <span class="swipe-links">
-      <a href="/profiles">Browse</a>
-      {% if user %}<a href="/account">My profile</a>{% else %}<a href="/login">Log in</a>{% endif %}
+    <div class="top-actions">
       <button class="filter-btn" id="filterBtn" type="button" aria-label="Filter">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18l-7 8v6l-4-2v-4L3 5Z"/></svg>
         Filter
       </button>
-    </span>
+      <button class="menu-btn" id="menuBtn" type="button" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    </div>
+    <nav class="menu-drawer" id="menuDrawer">
+      <a href="/profiles">Browse</a>
+      <a href="/about">About</a>
+      <a href="/pricing">Pricing</a>
+      {% if user %}
+        <a href="/account">My profile</a>
+        <form method="post" action="/logout"><button class="menu-link-btn" type="submit">Log out</button></form>
+      {% else %}
+        <a href="/login">Log in</a>
+        <a href="/register" class="menu-join">Join free</a>
+      {% endif %}
+    </nav>
   </div>
+
   <div class="stage" id="stage"></div>
+
   <div class="controls">
-    <button id="rewind" title="Undo" aria-label="Undo">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5V1L7 6l5 5V7a6 6 0 1 1-6 6H4a8 8 0 1 0 8-8Z"/></svg>
-    </button>
-    <button id="no" title="Pass" aria-label="Pass">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.3 5.71 12 12l6.3 6.29-1.42 1.42L10.59 13.4 4.3 19.7 2.88 18.3 9.17 12 2.88 5.71 4.3 4.29l6.29 6.3 6.29-6.3z"/></svg>
-    </button>
-    <button id="yes" title="Interested" aria-label="Interested">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.9-10-9.2C.2 8.4 1.7 4.8 5 4.1c2-.4 3.9.5 5 2 1.1-1.5 3-2.4 5-2 3.3.7 4.8 4.3 3 7.7C19.5 16.1 12 21 12 21z"/></svg>
-    </button>
+    <button id="rewind" title="Undo" aria-label="Undo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5V1L7 6l5 5V7a6 6 0 1 1-6 6H4a8 8 0 1 0 8-8Z"/></svg></button>
+    <button id="no" title="Pass" aria-label="Pass"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.3 5.71 12 12l6.3 6.29-1.42 1.42L10.59 13.4 4.3 19.7 2.88 18.3 9.17 12 2.88 5.71 4.3 4.29l6.29 6.3 6.29-6.3z"/></svg></button>
+    <button id="yes" title="Interested" aria-label="Interested"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.9-10-9.2C.2 8.4 1.7 4.8 5 4.1c2-.4 3.9.5 5 2 1.1-1.5 3-2.4 5-2 3.3.7 4.8 4.3 3 7.7C19.5 16.1 12 21 12 21z"/></svg></button>
   </div>
-  <footer class="swipe-footer">
-    <a href="/about">About</a>
-    <span>·</span>
-    <a href="/pricing">Pricing</a>
-  </footer>
 
   <div class="filter-overlay" id="filterOverlay">
     <div class="filter-sheet" role="dialog" aria-label="Filter profiles">
       <h3>Filter profiles</h3>
       <div class="filter-row">
         <label>Looking for
-          <select id="fType">
-            <option value="">Anyone</option>
-            <option value="Bride">Bride</option>
-            <option value="Groom">Groom</option>
-          </select>
+          <select id="fType"><option value="">Anyone</option><option value="Bride">Bride</option><option value="Groom">Groom</option></select>
         </label>
-        <label>Marital status
-          <select id="fMarital"><option value="">Any</option></select>
-        </label>
+        <label>Marital status <select id="fMarital"><option value="">Any</option></select></label>
       </div>
       <div class="filter-row">
         <label>Min age <input id="fMin" type="number" min="18" max="99" inputmode="numeric" placeholder="18"></label>
         <label>Max age <input id="fMax" type="number" min="18" max="99" inputmode="numeric" placeholder="60"></label>
       </div>
       <div class="filter-row">
-        <label>City / district
-          <select id="fCity"><option value="">Any</option></select>
-        </label>
-        <label>Height
-          <select id="fHeight"><option value="">Any</option></select>
-        </label>
+        <label>City / district <select id="fCity"><option value="">Any</option></select></label>
+        <label>Height <select id="fHeight"><option value="">Any</option></select></label>
       </div>
       <div class="filter-row">
-        <label>Qualification
-          <select id="fEducation"><option value="">Any</option></select>
-        </label>
-        <label>Job title
-          <select id="fProfession"><option value="">Any</option></select>
-        </label>
+        <label>Qualification <select id="fEducation"><option value="">Any</option></select></label>
+        <label>Job title <select id="fProfession"><option value="">Any</option></select></label>
       </div>
       <div class="filter-buttons">
         <button class="button ghost" type="button" id="fReset">Reset</button>
@@ -281,28 +247,22 @@
     const stage = document.getElementById('stage');
     let deck = PROFILES.slice();
     let idx = 0;
+    let filterActive = false;
+    let animating = false;
 
     function esc(s){ const d=document.createElement('div'); d.textContent=s==null?'':s; return d.innerHTML; }
     function tidy(v, n){
       if(v == null) return '';
-      let s = String(v).split('\n')[0].replace(/\s+/g, ' ').trim();
-      s = s.replace(/^&\s*Profession:?\s*/i, '');
+      let s = String(v).split('\n')[0].replace(/\s+/g, ' ').trim().replace(/^&\s*Profession:?\s*/i, '');
       return s.length > n ? s.slice(0, n).trim() + '…' : s;
     }
-    function factHtml(label, v, wide){ return v ? `<div class="fact${wide?' wide':''}"><span class="fl">${label}</span><span class="fv">${esc(v)}</span></div>` : ''; }
+    function rowHtml(k, v){ return v ? `<div class="row"><span class="k">${k}</span><span class="v">${esc(v)}</span></div>` : ''; }
     const PIN = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5Z"/></svg>';
-    const BRIDE_GRADS = ['linear-gradient(135deg,#ff9a8b,#ff6a88)','linear-gradient(135deg,#f6a93b,#ff6f61)','linear-gradient(135deg,#ff7eb3,#ff758c)','linear-gradient(135deg,#c1325a,#ff6f61)','linear-gradient(135deg,#ffb56b,#fd8a85)','linear-gradient(135deg,#ff6f91,#c1325a)'];
-    const GROOM_GRADS = ['linear-gradient(135deg,#2fae8f,#12876a)','linear-gradient(135deg,#5b7cfa,#3a5bd0)','linear-gradient(135deg,#6a5acd,#8e7cff)','linear-gradient(135deg,#0f9b8e,#3aa6b9)','linear-gradient(135deg,#496fad,#2f4f7a)','linear-gradient(135deg,#3a8dde,#2563a8)'];
-    function gradientFor(p){ const a = p.profile_type === 'Groom' ? GROOM_GRADS : BRIDE_GRADS; return a[(p.id || 0) % a.length]; }
-    function initialFor(p){ const t = (p.title || p.profile_type || '?').trim(); return (t[0] || '?').toUpperCase(); }
 
-    let filterActive = false;
     function showEmpty(){
       stage.innerHTML = filterActive
-        ? `<div class="empty"><h3>No matches</h3>No profiles match your filter.<br><br>
-            <a href="#" id="clearFilter">Clear filter</a></div>`
-        : `<div class="empty"><h3>That's everyone ✨</h3>You've seen all the profiles for now.<br><br>
-            <a href="/profiles">Browse all profiles</a> &middot; <a href="/register">Join to connect</a></div>`;
+        ? `<div class="empty"><h3>No matches</h3>No profiles match your filter.<br><br><a href="#" id="clearFilter">Clear filter</a></div>`
+        : `<div class="empty"><h3>That's everyone ✨</h3>You've seen all the profiles for now.<br><br><a href="/profiles">Browse all profiles</a></div>`;
       document.querySelector('.controls').style.visibility='hidden';
       const cf = document.getElementById('clearFilter');
       if(cf) cf.onclick = (e)=>{ e.preventDefault(); resetFilter(); };
@@ -311,40 +271,33 @@
     function render(){
       stage.innerHTML='';
       if(idx >= deck.length){ showEmpty(); return; }
-      // render up to 2 cards (top + one behind) for depth, top last so it's on top
-      for(let i=Math.min(idx+1,deck.length-1); i>=idx; i--){
+      for(let i=Math.min(idx+1, deck.length-1); i>=idx; i--){
         const p = deck[i];
+        const groom = p.profile_type === 'Groom';
         const c = document.createElement('div');
         c.className='card';
         c.style.zIndex = String(10-(i-idx));
         if(i>idx){ c.style.animation='none'; c.style.transform='scale(0.94) translateY(14px)'; c.style.filter='brightness(.98)'; }
-        const groom = p.profile_type === 'Groom';
         c.innerHTML = `
           <div class="stamp like">♥ Yes</div><div class="stamp nope">✕ No</div>
           <div class="card-accent${groom ? ' groom' : ''}"></div>
-          <div class="card-body">
+          <div class="card-inner">
             <div class="card-head">
-              <div class="name-row">
-                <h2>${esc(p.title)}</h2>
-                ${p.age ? `<span class="age">${esc(p.age)}</span>` : ''}
-              </div>
+              <h2>${esc(p.title)}${p.age ? ` <span class="age">${esc(p.age)}</span>` : ''}</h2>
               <span class="chip${groom ? ' groom' : ''}">${esc(p.profile_type || 'Profile')}</span>
             </div>
-            ${p.location ? `<div class="loc">${PIN}${esc(tidy(p.location, 38))}</div>` : ''}
-            <div class="facts">
-              ${factHtml('Height', tidy(p.height, 18))}
-              ${factHtml('Status', tidy(p.marital_status, 22))}
-              ${factHtml('Education', tidy(p.education, 60), true)}
-              ${factHtml('Profession', tidy(p.profession, 60), true)}
+            ${p.location ? `<div class="loc">${PIN}${esc(tidy(p.location, 40))}</div>` : ''}
+            <div class="rows">
+              ${rowHtml('Height', tidy(p.height, 24))}
+              ${rowHtml('Education', tidy(p.education, 90))}
+              ${rowHtml('Profession', tidy(p.profession, 90))}
+              ${rowHtml('Marital status', tidy(p.marital_status, 40))}
+              ${rowHtml('Looking for', tidy(p.expectations, 120))}
             </div>
-          <div class="card-contacts">
-            <a class="ic ic-wa" href="/profiles/${p.id}/whatsapp" title="WhatsApp" aria-label="WhatsApp">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 1.67c2.2 0 4.27.86 5.83 2.42a8.2 8.2 0 0 1 2.42 5.82c0 4.54-3.7 8.24-8.25 8.24-1.5 0-2.96-.4-4.24-1.16l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.37c0-4.54 3.7-8.24 8.24-8.24Zm-4.5 4.43c-.21 0-.55.08-.84.39-.29.31-1.1 1.08-1.1 2.62 0 1.55 1.13 3.04 1.29 3.25.16.21 2.2 3.36 5.33 4.58 2.6 1.02 3.13.81 3.7.76.57-.05 1.83-.75 2.09-1.47.26-.72.26-1.34.18-1.47-.08-.13-.29-.21-.6-.37-.31-.16-1.83-.9-2.11-1-.28-.1-.49-.16-.7.16-.21.31-.8 1-.98 1.21-.18.21-.36.23-.67.08-.31-.16-1.31-.48-2.5-1.54-.92-.82-1.54-1.84-1.72-2.15-.18-.31-.02-.48.14-.63.14-.14.31-.36.47-.54.16-.18.21-.31.31-.52.1-.21.05-.39-.03-.54-.08-.16-.7-1.69-.96-2.31-.25-.61-.51-.53-.7-.54l-.6-.01Z"/></svg>
-            </a>
-            <a class="ic ic-call" href="/profiles/${p.id}/call" title="Call" aria-label="Call">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.62 10.79a15.5 15.5 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.24.2 2.45.57 3.57a1 1 0 0 1-.24 1.02l-2.21 2.2Z"/></svg>
-            </a>
-          </div>
+            <div class="card-actions">
+              <a class="ic ic-wa" href="/profiles/${p.id}/whatsapp" title="WhatsApp" aria-label="WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 1.67c2.2 0 4.27.86 5.83 2.42a8.2 8.2 0 0 1 2.42 5.82c0 4.54-3.7 8.24-8.25 8.24-1.5 0-2.96-.4-4.24-1.16l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.37c0-4.54 3.7-8.24 8.24-8.24Zm-4.5 4.43c-.21 0-.55.08-.84.39-.29.31-1.1 1.08-1.1 2.62 0 1.55 1.13 3.04 1.29 3.25.16.21 2.2 3.36 5.33 4.58 2.6 1.02 3.13.81 3.7.76.57-.05 1.83-.75 2.09-1.47.26-.72.26-1.34.18-1.47-.08-.13-.29-.21-.6-.37-.31-.16-1.83-.9-2.11-1-.28-.1-.49-.16-.7.16-.21.31-.8 1-.98 1.21-.18.21-.36.23-.67.08-.31-.16-1.31-.48-2.5-1.54-.92-.82-1.54-1.84-1.72-2.15-.18-.31-.02-.48.14-.63.14-.14.31-.36.47-.54.16-.18.21-.31.31-.52.1-.21.05-.39-.03-.54-.08-.16-.7-1.69-.96-2.31-.25-.61-.51-.53-.7-.54l-.6-.01Z"/></svg>WhatsApp</a>
+              <a class="ic ic-call" href="/profiles/${p.id}/call" title="Call" aria-label="Call"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.62 10.79a15.5 15.5 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.24.2 2.45.57 3.57a1 1 0 0 1-.24 1.02l-2.21 2.2Z"/></svg>Call</a>
+            </div>
           </div>`;
         stage.appendChild(c);
         if(i===idx) attachDrag(c);
@@ -352,100 +305,71 @@
     }
 
     function attachDrag(card){
-      let sx=0, sy=0, dx=0, dy=0, down=false;
+      let sx=0, dx=0, down=false;
       const like=card.querySelector('.stamp.like'), nope=card.querySelector('.stamp.nope');
-      const start=(x,y)=>{down=true; sx=x; sy=y; card.style.transition='none';};
-      const move=(x,y)=>{ if(!down) return; dx=x-sx; dy=y-sy;
-        card.style.transform=`translate(${dx}px,${dy}px) rotate(${dx/18}deg)`;
+      const start=(x)=>{ down=true; sx=x; card.style.transition='none'; };
+      const move=(x)=>{ if(!down) return; dx=x-sx;
+        card.style.transform=`translate(${dx}px,0) rotate(${dx/18}deg)`;
         like.style.opacity = dx>0 ? Math.min(dx/100,1) : 0;
         nope.style.opacity = dx<0 ? Math.min(-dx/100,1) : 0;
-        card.classList.toggle('liking', dx > 45);
-        card.classList.toggle('noping', dx < -45); };
+        card.classList.toggle('liking', dx>45); card.classList.toggle('noping', dx<-45); };
       const end=()=>{ if(!down) return; down=false; card.style.transition='transform .3s ease';
         if(Math.abs(dx)>110){ fly(card, dx>0?1:-1); }
         else { card.style.transform=''; like.style.opacity=nope.style.opacity=0; card.classList.remove('liking','noping'); } };
-      card.addEventListener('mousedown',e=>{ if(e.target.closest('.ic')) return; start(e.clientX,e.clientY); });
-      window.addEventListener('mousemove',e=>move(e.clientX,e.clientY));
+      card.addEventListener('mousedown',e=>{ if(e.target.closest('.ic')) return; start(e.clientX); });
+      window.addEventListener('mousemove',e=>move(e.clientX));
       window.addEventListener('mouseup',end);
-      card.addEventListener('touchstart',e=>{ if(e.target.closest('.ic')) return; start(e.touches[0].clientX,e.touches[0].clientY); },{passive:true});
-      card.addEventListener('touchmove',e=>move(e.touches[0].clientX,e.touches[0].clientY),{passive:true});
+      card.addEventListener('touchstart',e=>{ if(e.target.closest('.ic')) return; start(e.touches[0].clientX); },{passive:true});
+      card.addEventListener('touchmove',e=>move(e.touches[0].clientX),{passive:true});
       card.addEventListener('touchend',end);
     }
 
-    let animating = false;
     function fly(card, dir){
-      card.style.transition='transform .4s cubic-bezier(.4,0,.6,1), opacity .4s ease';
+      card.style.transition='transform .42s cubic-bezier(.4,0,.6,1), opacity .42s ease';
       card.style.transform=`translate(${dir*700}px, -40px) rotate(${dir*30}deg)`;
       card.style.opacity='0';
-      setTimeout(()=>{ idx++; animating=false; render(); }, 360);
+      setTimeout(()=>{ idx++; animating=false; render(); }, 380);
     }
     function swipeTop(dir){
       if(animating) return;
       const card = stage.querySelector('.card:last-child');
       if(!card) return;
       animating = true;
-      // reveal the matching stamp, give a little nudge, then fling it off
       const stamp = card.querySelector(dir>0 ? '.stamp.like' : '.stamp.nope');
       if(stamp) stamp.style.opacity='1';
+      card.classList.add(dir>0 ? 'liking' : 'noping');
       card.style.transition='transform .15s ease';
       card.style.transform=`translate(${dir*40}px,0) rotate(${dir*4}deg)`;
-      setTimeout(()=>fly(card, dir), 120);
+      setTimeout(()=>fly(card, dir), 130);
     }
+    function rewind(){ if(animating || idx===0) return; idx--; render(); }
 
-    function rewind(){
-      if(animating || idx === 0) return;
-      idx--; render();
-    }
     document.getElementById('yes').onclick=()=>swipeTop(1);
     document.getElementById('no').onclick=()=>swipeTop(-1);
     document.getElementById('rewind').onclick=rewind;
-    document.addEventListener('keydown',e=>{
-      if(document.getElementById('filterOverlay').classList.contains('open')) return;
-      if(e.key==='ArrowRight')swipeTop(1); if(e.key==='ArrowLeft')swipeTop(-1);
-      if(e.key.toLowerCase()==='z')rewind();
-    });
 
-    // ---- Filter popup ----
+    // Hamburger menu
+    const menuBtn = document.getElementById('menuBtn');
+    const menuDrawer = document.getElementById('menuDrawer');
+    function closeMenu(){ menuDrawer.classList.remove('open'); menuBtn.classList.remove('open'); menuBtn.setAttribute('aria-expanded','false'); }
+    menuBtn.onclick = (e)=>{ e.stopPropagation(); const o=menuDrawer.classList.toggle('open'); menuBtn.classList.toggle('open',o); menuBtn.setAttribute('aria-expanded', o?'true':'false'); };
+    document.addEventListener('click', e=>{ if(!menuDrawer.contains(e.target) && e.target!==menuBtn) closeMenu(); });
+
+    // Filter
     const overlay = document.getElementById('filterOverlay');
-    const fType = document.getElementById('fType');
-    const fMin = document.getElementById('fMin');
-    const fMax = document.getElementById('fMax');
-    const fCity = document.getElementById('fCity');
-    const fHeight = document.getElementById('fHeight');
-    const fEducation = document.getElementById('fEducation');
-    const fProfession = document.getElementById('fProfession');
-    const fMarital = document.getElementById('fMarital');
-
-    // Populate dropdowns from the distinct values present in the deck.
-    function uniqueValues(key){
-      return [...new Set(PROFILES.map(p => (p[key] || '').toString().trim()).filter(Boolean))]
-        .sort((a, b) => a.localeCompare(b, undefined, {numeric: true}));
-    }
-    function fillSelect(sel, values){
-      for(const v of values){
-        const o = document.createElement('option');
-        o.value = v; o.textContent = v;
-        sel.appendChild(o);
-      }
-    }
-    fillSelect(fCity, uniqueValues('city'));
-    fillSelect(fHeight, uniqueValues('height'));
-    fillSelect(fEducation, uniqueValues('education'));
-    fillSelect(fProfession, uniqueValues('profession'));
+    const fType=document.getElementById('fType'), fMin=document.getElementById('fMin'), fMax=document.getElementById('fMax');
+    const fCity=document.getElementById('fCity'), fHeight=document.getElementById('fHeight'), fEducation=document.getElementById('fEducation');
+    const fProfession=document.getElementById('fProfession'), fMarital=document.getElementById('fMarital');
+    function uniqueValues(key){ return [...new Set(PROFILES.map(p => (p[key]||'').toString().trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b, undefined, {numeric:true})); }
+    function fillSelect(sel, values){ for(const v of values){ const o=document.createElement('option'); o.value=v; o.textContent=v; sel.appendChild(o); } }
+    fillSelect(fCity, uniqueValues('city')); fillSelect(fHeight, uniqueValues('height'));
+    fillSelect(fEducation, uniqueValues('education')); fillSelect(fProfession, uniqueValues('profession'));
     fillSelect(fMarital, uniqueValues('marital_status'));
-
     function openFilter(){ overlay.classList.add('open'); }
     function closeFilter(){ overlay.classList.remove('open'); }
-
     function applyFilter(){
-      const type = fType.value;
-      const min = parseInt(fMin.value, 10);
-      const max = parseInt(fMax.value, 10);
-      const city = fCity.value;
-      const height = fHeight.value;
-      const education = fEducation.value;
-      const profession = fProfession.value;
-      const marital = fMarital.value;
+      const type=fType.value, min=parseInt(fMin.value,10), max=parseInt(fMax.value,10);
+      const city=fCity.value, height=fHeight.value, education=fEducation.value, profession=fProfession.value, marital=fMarital.value;
       deck = PROFILES.filter(p => {
         if(type && p.profile_type !== type) return false;
         if(!isNaN(min) && (!p.age || p.age < min)) return false;
@@ -458,46 +382,32 @@
         return true;
       });
       filterActive = !!(type || !isNaN(min) || !isNaN(max) || city || height || education || profession || marital);
-      idx = 0;
-      document.querySelector('.controls').style.visibility = '';
-      render();
-      closeFilter();
+      idx = 0; document.querySelector('.controls').style.visibility=''; render(); closeFilter();
     }
-
     function resetFilter(){
-      // keep the bride/groom preference chosen up front
       fType.value = sessionStorage.getItem('lookingFor') || '';
-      fMin.value = ''; fMax.value = ''; fCity.value = '';
-      fHeight.value = ''; fEducation.value = ''; fProfession.value = ''; fMarital.value = '';
+      fMin.value=''; fMax.value=''; fCity.value=''; fHeight.value=''; fEducation.value=''; fProfession.value=''; fMarital.value='';
       applyFilter();
     }
-
     document.getElementById('filterBtn').onclick = openFilter;
     document.getElementById('fApply').onclick = applyFilter;
     document.getElementById('fReset').onclick = resetFilter;
     overlay.addEventListener('click', e=>{ if(e.target === overlay) closeFilter(); });
-    document.addEventListener('keydown', e=>{ if(e.key === 'Escape') closeFilter(); });
 
-    // ---- Bride / Groom gate ----
-    const gate = document.getElementById('gateOverlay');
-    function startBrowsing(type){
-      sessionStorage.setItem('lookingFor', type);
-      fType.value = type;
-      gate.classList.remove('open');
-      applyFilter();
-    }
-    document.querySelectorAll('.gate-pick').forEach(btn => {
-      btn.onclick = () => startBrowsing(btn.dataset.type);
+    document.addEventListener('keydown', e=>{
+      if(overlay.classList.contains('open')){ if(e.key==='Escape') closeFilter(); return; }
+      if(menuDrawer.classList.contains('open')){ if(e.key==='Escape') closeMenu(); return; }
+      if(e.key==='ArrowRight') swipeTop(1);
+      if(e.key==='ArrowLeft') swipeTop(-1);
+      if(e.key.toLowerCase()==='z') rewind();
     });
 
+    // Bride / Groom gate
+    const gate = document.getElementById('gateOverlay');
+    function startBrowsing(type){ sessionStorage.setItem('lookingFor', type); fType.value = type; gate.classList.remove('open'); applyFilter(); }
+    document.querySelectorAll('.gate-pick').forEach(btn => { btn.onclick = () => startBrowsing(btn.dataset.type); });
     const chosen = sessionStorage.getItem('lookingFor');
-    if(chosen){
-      fType.value = chosen;
-      applyFilter();
-    } else {
-      gate.classList.add('open');
-      // wait for a choice before showing any cards
-    }
+    if(chosen){ fType.value = chosen; applyFilter(); } else { gate.classList.add('open'); }
   </script>
   <script type="module" src="/static/firebase.js"></script>
 </body>
