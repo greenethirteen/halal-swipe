@@ -190,16 +190,52 @@ def compact_public_long_text(value: object, limit: int = 420) -> str | None:
     return short_join(pieces, limit)
 
 
+def public_title(profile: dict) -> str:
+    title = str(profile.get("full_name") or "").strip()
+    low = title.lower()
+    generic = {
+        "",
+        "profile",
+        "marriage profile",
+        "bride profile",
+        "groom profile",
+        "bride details",
+        "groom details",
+        "of the bridal",
+    }
+    if low in generic or "details" in low:
+        profile_type = profile.get("profile_type") or "Profile"
+        city = profile.get("city")
+        return f"{profile_type} from {city}" if city else f"{profile_type} profile"
+    return title
+
+
+def public_summary(profile: dict) -> str:
+    profile_type = str(profile.get("profile_type") or "profile").lower()
+    age = profile.get("age")
+    city = profile.get("city")
+    intro = f"A {age}-year-old {profile_type}" if age else f"A {profile_type}"
+    if city:
+        intro += f" from {city}"
+    bits = [intro + "."]
+    if profile.get("education"):
+        bits.append(f"Highest qualification: {profile['education']}.")
+    if profile.get("profession"):
+        bits.append(f"Work: {profile['profession']}.")
+    return " ".join(bits)
+
+
 def public_profile(row) -> dict:
     profile = dict(row)
     for field in PUBLIC_TEXT_FIELDS:
         if field in profile:
             profile[field] = strip_public_contact_text(profile[field])
+    profile["full_name"] = public_title(profile)
     profile["education"] = compact_public_education(profile.get("education"))
     profile["profession"] = compact_public_work(profile.get("profession"))
     profile["family_background"] = compact_public_long_text(profile.get("family_background")) or profile.get("family_background")
     profile["expectations"] = compact_public_long_text(profile.get("expectations")) or profile.get("expectations")
-    profile["bio_summary"] = compact_public_long_text(profile.get("bio_summary"), 300) or profile.get("bio_summary")
+    profile["bio_summary"] = public_summary(profile)
     return profile
 
 
