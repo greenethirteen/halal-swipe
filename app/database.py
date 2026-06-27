@@ -13,7 +13,12 @@ from .settings import get_settings
 
 
 def _url() -> str:
-    return get_settings().database_url
+    url = (get_settings().database_url or "").strip()
+    # Empty, or an unresolved Railway reference like "${{Postgres.DATABASE_URL}}",
+    # falls back to a local SQLite file so the app boots instead of crashing.
+    if not url or url.startswith("${"):
+        return "app.db"
+    return url
 
 
 def is_postgres() -> bool:
