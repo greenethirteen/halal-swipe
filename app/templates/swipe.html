@@ -23,7 +23,7 @@
     .swipe-links { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; font-weight: 600; }
     .swipe-top a { color: var(--muted); }
     .swipe-top .swipe-links a:hover { color: var(--ink); }
-    .card-contacts { display: flex; gap: 12px; margin-top: 18px; }
+    .card-contacts { display: flex; justify-content: center; gap: 12px; margin-top: 18px; }
     .card-contacts .ic {
       width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center;
       color: #fff; cursor: pointer; transition: transform .14s ease, box-shadow .14s ease, filter .14s ease;
@@ -51,15 +51,42 @@
     }
     .filter-overlay.open { display: flex; }
     .filter-sheet {
-      width: min(420px, 100%); background: var(--bg-2); border-radius: 26px;
+      width: min(420px, 100%); max-height: 88dvh; overflow-y: auto;
+      background: var(--bg-2); border-radius: 26px;
       padding: 24px; box-shadow: var(--shadow); display: grid; gap: 14px;
       animation: pop-in .25s ease both;
     }
     @keyframes pop-in { from { transform: scale(.94) translateY(8px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
     .filter-sheet h3 { margin: 0 0 2px; font-size: 1.3rem; letter-spacing: -.02em; }
     .filter-ages { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .filter-buttons { display: grid; grid-template-columns: 1fr 1.4fr; gap: 12px; margin-top: 6px; }
+    .filter-buttons { display: grid; grid-template-columns: 1fr 1.4fr; gap: 12px; margin-top: 6px; position: sticky; bottom: -24px; background: var(--bg-2); padding-bottom: 2px; }
     .filter-buttons .button { margin-top: 0; }
+
+    /* Bride / Groom gate */
+    .gate-overlay {
+      position: fixed; inset: 0; z-index: 70; display: none;
+      align-items: center; justify-content: center; padding: 16px;
+      background:
+        radial-gradient(circle at 30% 20%, rgba(255,154,170,.5), transparent 26rem),
+        radial-gradient(circle at 75% 80%, rgba(255,169,59,.4), transparent 26rem),
+        rgba(255,247,240,.96);
+      backdrop-filter: blur(6px);
+    }
+    .gate-overlay.open { display: flex; }
+    .gate-card { text-align: center; max-width: 440px; animation: pop-in .35s ease both; }
+    .gate-logo { width: 200px; max-width: 70%; height: auto; margin-bottom: 6px; }
+    .gate-card h2 { font-size: 1.9rem; letter-spacing: -.03em; margin: 8px 0 4px; color: var(--ink); }
+    .gate-card p { color: var(--muted); margin: 0 0 22px; }
+    .gate-options { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .gate-pick {
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      padding: 22px 14px; border-radius: 22px; border: 1.5px solid var(--line);
+      background: #fff; cursor: pointer; font: inherit; font-weight: 800; font-size: 1.05rem; color: var(--ink);
+      box-shadow: 0 12px 26px rgba(255,138,76,.14); transition: transform .14s ease, box-shadow .14s ease, border-color .14s ease;
+    }
+    .gate-pick span { font-size: 2.4rem; }
+    .gate-pick:hover { transform: translateY(-3px); border-color: var(--coral); box-shadow: 0 18px 36px rgba(255,111,97,.26); }
+    .gate-pick:active { transform: scale(.97); }
     .stage { flex: 1; position: relative; display: flex; align-items: center; justify-content: center; padding: 16px; overflow: hidden; }
     .card {
       position: absolute; width: min(440px, 92vw); max-height: 74dvh; overflow: auto;
@@ -102,6 +129,19 @@
 </head>
 <body>
   <div class="splash" id="splash"><img src="/static/logo.png" alt="{{ settings.app_name }}"></div>
+
+  <div class="gate-overlay" id="gateOverlay">
+    <div class="gate-card">
+      <img class="gate-logo" src="/static/logo.png" alt="{{ settings.app_name }}">
+      <h2>Who are you looking for?</h2>
+      <p>Find a serious, marriage-minded match.</p>
+      <div class="gate-options">
+        <button type="button" class="gate-pick" data-type="Bride"><span>👰</span>A Bride</button>
+        <button type="button" class="gate-pick" data-type="Groom"><span>🤵</span>A Groom</button>
+      </div>
+    </div>
+  </div>
+
   <div class="swipe-top">
     <a class="brand" href="/"><img src="/static/logo.png" alt="{{ settings.app_name }}"></a>
     <span class="swipe-links">
@@ -135,7 +175,21 @@
         <label>Min age <input id="fMin" type="number" min="18" max="99" inputmode="numeric" placeholder="18"></label>
         <label>Max age <input id="fMax" type="number" min="18" max="99" inputmode="numeric" placeholder="60"></label>
       </div>
-      <label>City / district <input id="fCity" type="text" placeholder="e.g. Colombo"></label>
+      <label>City / district
+        <select id="fCity"><option value="">Any</option></select>
+      </label>
+      <label>Height
+        <select id="fHeight"><option value="">Any</option></select>
+      </label>
+      <label>Qualification
+        <select id="fEducation"><option value="">Any</option></select>
+      </label>
+      <label>Job title
+        <select id="fProfession"><option value="">Any</option></select>
+      </label>
+      <label>Marital status
+        <select id="fMarital"><option value="">Any</option></select>
+      </label>
       <div class="filter-buttons">
         <button class="button ghost" type="button" id="fReset">Reset</button>
         <button class="button" type="button" id="fApply">Show results</button>
@@ -259,6 +313,28 @@
     const fMin = document.getElementById('fMin');
     const fMax = document.getElementById('fMax');
     const fCity = document.getElementById('fCity');
+    const fHeight = document.getElementById('fHeight');
+    const fEducation = document.getElementById('fEducation');
+    const fProfession = document.getElementById('fProfession');
+    const fMarital = document.getElementById('fMarital');
+
+    // Populate dropdowns from the distinct values present in the deck.
+    function uniqueValues(key){
+      return [...new Set(PROFILES.map(p => (p[key] || '').toString().trim()).filter(Boolean))]
+        .sort((a, b) => a.localeCompare(b, undefined, {numeric: true}));
+    }
+    function fillSelect(sel, values){
+      for(const v of values){
+        const o = document.createElement('option');
+        o.value = v; o.textContent = v;
+        sel.appendChild(o);
+      }
+    }
+    fillSelect(fCity, uniqueValues('city'));
+    fillSelect(fHeight, uniqueValues('height'));
+    fillSelect(fEducation, uniqueValues('education'));
+    fillSelect(fProfession, uniqueValues('profession'));
+    fillSelect(fMarital, uniqueValues('marital_status'));
 
     function openFilter(){ overlay.classList.add('open'); }
     function closeFilter(){ overlay.classList.remove('open'); }
@@ -267,15 +343,23 @@
       const type = fType.value;
       const min = parseInt(fMin.value, 10);
       const max = parseInt(fMax.value, 10);
-      const city = (fCity.value || '').trim().toLowerCase();
+      const city = fCity.value;
+      const height = fHeight.value;
+      const education = fEducation.value;
+      const profession = fProfession.value;
+      const marital = fMarital.value;
       deck = PROFILES.filter(p => {
         if(type && p.profile_type !== type) return false;
         if(!isNaN(min) && (!p.age || p.age < min)) return false;
         if(!isNaN(max) && (!p.age || p.age > max)) return false;
-        if(city && !((p.location || '').toLowerCase().includes(city))) return false;
+        if(city && p.city !== city) return false;
+        if(height && p.height !== height) return false;
+        if(education && p.education !== education) return false;
+        if(profession && p.profession !== profession) return false;
+        if(marital && p.marital_status !== marital) return false;
         return true;
       });
-      filterActive = !!(type || !isNaN(min) || !isNaN(max) || city);
+      filterActive = !!(type || !isNaN(min) || !isNaN(max) || city || height || education || profession || marital);
       idx = 0;
       document.querySelector('.controls').style.visibility = '';
       render();
@@ -283,10 +367,11 @@
     }
 
     function resetFilter(){
-      fType.value = ''; fMin.value = ''; fMax.value = ''; fCity.value = '';
-      deck = PROFILES.slice(); filterActive = false; idx = 0;
-      document.querySelector('.controls').style.visibility = '';
-      render(); closeFilter();
+      // keep the bride/groom preference chosen up front
+      fType.value = sessionStorage.getItem('lookingFor') || '';
+      fMin.value = ''; fMax.value = ''; fCity.value = '';
+      fHeight.value = ''; fEducation.value = ''; fProfession.value = ''; fMarital.value = '';
+      applyFilter();
     }
 
     document.getElementById('filterBtn').onclick = openFilter;
@@ -295,7 +380,26 @@
     overlay.addEventListener('click', e=>{ if(e.target === overlay) closeFilter(); });
     document.addEventListener('keydown', e=>{ if(e.key === 'Escape') closeFilter(); });
 
-    if(!deck.length) showEmpty(); else render();
+    // ---- Bride / Groom gate ----
+    const gate = document.getElementById('gateOverlay');
+    function startBrowsing(type){
+      sessionStorage.setItem('lookingFor', type);
+      fType.value = type;
+      gate.classList.remove('open');
+      applyFilter();
+    }
+    document.querySelectorAll('.gate-pick').forEach(btn => {
+      btn.onclick = () => startBrowsing(btn.dataset.type);
+    });
+
+    const chosen = sessionStorage.getItem('lookingFor');
+    if(chosen){
+      fType.value = chosen;
+      applyFilter();
+    } else {
+      gate.classList.add('open');
+      // wait for a choice before showing any cards
+    }
   </script>
   <script type="module" src="/static/firebase.js"></script>
 </body>
