@@ -216,35 +216,60 @@
     .info-field dd { margin: 5px 0 0; color: var(--ink); line-height: 1.5; white-space: pre-line; }
 
     @media (max-width: 600px) {
-      body { overflow: hidden; }
-      .swipe-top { width: calc(100% - 14px); padding: 0; }
-      .swipe-top .brand img { height: 78px; }
-      .top-pill { gap: 6px; padding: 5px 6px 5px 12px; }
+      html, body { background: #17120f; }
+      body {
+        overflow: hidden;
+        background:
+          radial-gradient(circle at 50% 18%, rgba(255,111,97,.22), transparent 18rem),
+          radial-gradient(circle at 50% 100%, rgba(18,135,106,.3), transparent 22rem),
+          #17120f;
+      }
+      .splash { background: #17120f; }
+      .swipe-top { width: calc(100% - 18px); padding: 0; margin-top: 4px; }
+      .swipe-top .brand img { height: 58px; filter: drop-shadow(0 8px 16px rgba(0,0,0,.28)); }
+      .top-pill {
+        gap: 4px; padding: 5px 6px 5px 10px;
+        background: rgba(255,253,250,.92);
+        box-shadow: 0 10px 26px rgba(0,0,0,.18);
+      }
       .top-link { font-size: .84rem; }
       .filter-btn { font-size: .84rem; padding: 7px 10px; }
       .menu-btn { width: 36px; height: 36px; }
-      .stage { padding: 4px 8px 104px; align-items: center; }
-      .card { width: min(508px, calc(100vw - 16px)); max-height: calc(100% - 26px); border-radius: 22px; }
-      .card-inner { padding: 18px 18px 12px; }
-      .card-head h2 { font-size: 1.62rem; }
+      .stage { padding: 0 8px 98px; align-items: center; }
+      .card {
+        top: 46%;
+        width: min(508px, calc(100vw - 18px));
+        min-height: min(520px, calc(100dvh - 236px));
+        max-height: calc(100% - 16px);
+        border-radius: 22px;
+        box-shadow: 0 26px 54px -18px rgba(0,0,0,.58), 0 8px 20px rgba(0,0,0,.2);
+      }
+      .card-inner { flex: 1; padding: 16px 17px 12px; }
+      .card-head { gap: 8px; }
+      .card-head h2 { font-size: 1.58rem; }
       .card-head h2 .age { font-size: 1.1rem; }
+      .more-btn { height: 34px; padding: 0 12px; }
+      .loc { margin-top: 5px; }
+      .summary { margin-top: 10px; -webkit-line-clamp: 3; }
       .facts { gap: 8px; }
       .fact { padding: 8px 10px; }
+      .fact .fv { -webkit-line-clamp: 1; }
+      .card-actions { margin-top: auto; padding-top: 14px; }
       .card-actions .ic { height: 42px; }
       .controls {
         position: fixed;
         left: 50%;
-        bottom: max(12px, env(safe-area-inset-bottom));
+        bottom: max(14px, env(safe-area-inset-bottom));
         transform: translateX(-50%);
         z-index: 65;
-        width: min(316px, calc(100% - 32px));
-        min-height: 76px;
+        width: min(308px, calc(100% - 44px));
+        min-height: 74px;
         margin: 0;
         padding: 8px 12px;
         border-radius: 999px;
-        background: rgba(255,253,250,.92);
-        border: 1px solid rgba(42,32,24,.08);
-        box-shadow: 0 16px 38px rgba(42,32,24,.18);
+        background: rgba(255,253,250,.95);
+        border: 1px solid rgba(255,255,255,.5);
+        box-shadow: 0 18px 44px rgba(0,0,0,.32);
         backdrop-filter: blur(18px);
       }
       .controls #rewind { width: 46px; height: 46px; }
