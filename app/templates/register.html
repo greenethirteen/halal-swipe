@@ -11,7 +11,7 @@
     <h1>Create account</h1>
     {% include "google_button.html" %}
     <form method="post" action="/register" class="form compact">
-      <input type="hidden" name="next" value="{{ next or '/' }}">
+      <input type="hidden" name="next" value="{{ next or '/account' }}">
       <input name="full_name" autocomplete="name" placeholder="Full name" required>
       <input name="email" type="email" autocomplete="email" placeholder="Email" required>
       <input name="password" type="password" minlength="8" autocomplete="new-password" placeholder="Password" required>

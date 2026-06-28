@@ -384,6 +384,23 @@ label { display: grid; gap: 8px; font-weight: 750; color: var(--ink); }
 .compare .us { border: 1.5px solid rgba(18,135,106,.35); }
 
 /* Account page */
+.account-start {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: center;
+  margin: 16px 0 18px;
+  border-color: rgba(18,135,106,.28);
+  background:
+    linear-gradient(135deg, rgba(18,135,106,.1), rgba(255,169,59,.1)),
+    var(--card);
+}
+.account-start h2 { margin: 2px 0 8px; font-size: clamp(1.65rem, 3vw, 2.35rem); line-height: 1.05; }
+.account-start p { margin: 0; }
+.account-start-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+.account-start-actions .button { min-width: 160px; }
+.account-cta-swipe { background: transparent; color: var(--green); border: 1px solid rgba(15,77,61,.28); box-shadow: none; }
+.account-cta-swipe:hover { background: rgba(15,77,61,.07); box-shadow: none; }
 .account-grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 18px; align-items: start; margin-top: 8px; }
 .status-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 6px 0 14px; }
 .badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; font-weight: 800; font-size: .85rem; }
@@ -397,7 +414,16 @@ label { display: grid; gap: 8px; font-weight: 750; color: var(--ink); }
 .status-tag.approved { background: rgba(18,135,106,.14); color: var(--green); }
 .status-tag.pending { background: rgba(255,169,59,.22); color: var(--gold-dark); }
 .status-tag.hidden { background: rgba(120,120,120,.15); color: var(--muted); }
-@media (max-width: 900px) { .compare, .account-grid { grid-template-columns: 1fr; } }
+@media (max-width: 900px) {
+  .compare, .account-grid { grid-template-columns: 1fr; }
+  .account-start { grid-template-columns: 1fr; }
+  .account-start-actions { justify-content: stretch; }
+  .account-start-actions .button { width: 100%; }
+  .account-cta-swipe { background: var(--green); color: #fff; border: 0; box-shadow: 0 14px 30px rgba(15,77,61,.18); order: 1; }
+  .account-cta-swipe:hover { box-shadow: 0 20px 40px rgba(15,77,61,.28); }
+  .account-cta-browse { background: transparent; color: var(--green); border: 1px solid rgba(15,77,61,.28); box-shadow: none; order: 2; }
+  .account-cta-browse:hover { background: rgba(15,77,61,.07); box-shadow: none; }
+}
 .price-card { text-align: center; display: grid; gap: 12px; padding: 22px; }
 .price-card h1 { font-size: 4rem; margin: 0; letter-spacing: -.02em; }
 .price-card h1 span { font-size: 1.2rem; color: var(--muted); letter-spacing: 0; }

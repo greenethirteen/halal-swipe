@@ -640,7 +640,7 @@ def safe_next(target: str) -> str:
 
 
 @app.get("/register", response_class=HTMLResponse)
-def register_page(request: Request, next: str = "/") -> HTMLResponse:
+def register_page(request: Request, next: str = "/account") -> HTMLResponse:
     return render(request, "register.html", {"next": safe_next(next)})
 
 
@@ -650,7 +650,7 @@ def register(
     email: str = Form(...),
     full_name: str = Form(...),
     password: str = Form(...),
-    next: str = Form("/"),
+    next: str = Form("/account"),
 ):
     email = email.lower().strip()
     if len(password) < 8:
