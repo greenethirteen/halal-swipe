@@ -1,11 +1,11 @@
 :root {
-  --bg: #fff7f0;
-  --bg-2: #fffdfa;
-  --ink: #2a2018;
-  --muted: #7a6f64;
-  --line: rgba(42, 32, 24, .1);
-  --gold: #f0a93b;
-  --gold-dark: #c97d1e;
+  --bg: #f8fbff;
+  --bg-2: #ffffff;
+  --ink: #172033;
+  --muted: #64748b;
+  --line: rgba(23, 32, 51, .1);
+  --gold: #f59e0b;
+  --gold-dark: #b45309;
   --green: #12876a;
   --green-dark: #11362e;
   --green-mid: #0f5d49;
@@ -20,11 +20,7 @@ html, body { min-height: 100%; }
 body {
   margin: 0;
   color: var(--ink);
-  background:
-    radial-gradient(circle at 16% 0%, rgba(240,169,59,.24), transparent 30rem),
-    radial-gradient(circle at 86% 10%, rgba(255,111,97,.14), transparent 26rem),
-    radial-gradient(circle at 50% 100%, rgba(18,135,106,.18), transparent 34rem),
-    var(--bg);
+  background: linear-gradient(180deg, #f8fbff 0%, #eef6f8 52%, #f8fbff 100%);
   min-height: 100vh;
 }
 a { color: inherit; text-decoration: none; }
@@ -168,24 +164,28 @@ main { width: min(1180px, calc(100% - 24px)); margin: 0 auto 28px; }
 .grid, .browse-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
 .profile-card {
   position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 9px; min-height: 218px; padding: 15px;
-  background: #12876a;
+  background: #0f766e;
   color: #fff;
   border: 0;
   transition: transform .15s ease, box-shadow .15s ease;
 }
-/* Brand-tone cycle: enough variation for scanning without leaving the
-   HalalSwipe green/coral/gold/ink system. */
-.profile-card:nth-child(6n+1) { background: linear-gradient(145deg, var(--green-mid), var(--green)); }
-.profile-card:nth-child(6n+2) { background: linear-gradient(145deg, var(--green-dark), var(--green-mid)); }
-.profile-card:nth-child(6n+3) { background: linear-gradient(145deg, var(--coral-dark), var(--coral)); }
-.profile-card:nth-child(6n+4) { background: linear-gradient(145deg, #8a5a1f, var(--gold-dark)); }
-.profile-card:nth-child(6n+5) { background: linear-gradient(145deg, #2a2018, #4f3829); }
-.profile-card:nth-child(6n+6) { background: linear-gradient(145deg, #166a5a, #a65a35); }
+/* Clean mixed tile cycle for Browse: one green, then cooler/clear accents. */
+.profile-card:nth-child(8n+1) { background: linear-gradient(145deg, #0f766e 0%, #14b8a6 100%); }
+.profile-card:nth-child(8n+2) { background: linear-gradient(145deg, #1d4ed8 0%, #38bdf8 100%); }
+.profile-card:nth-child(8n+3) { background: linear-gradient(145deg, #7c3aed 0%, #c084fc 100%); }
+.profile-card:nth-child(8n+4) { background: linear-gradient(145deg, #be123c 0%, #fb7185 100%); }
+.profile-card:nth-child(8n+5) { background: linear-gradient(145deg, #4338ca 0%, #818cf8 100%); }
+.profile-card:nth-child(8n+6) { background: linear-gradient(145deg, #0369a1 0%, #22d3ee 100%); }
+.profile-card:nth-child(8n+7) { background: linear-gradient(145deg, #9d174d 0%, #f472b6 100%); }
+.profile-card:nth-child(8n+8) { background: linear-gradient(145deg, #334155 0%, #64748b 100%); }
 .profile-card::before {
-  content: ""; position: absolute; inset: 0 0 auto; height: 4px;
-  background: rgba(255,255,255,.32);
+  content: ""; position: absolute; inset: 0;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,0) 42%),
+    radial-gradient(circle at 88% 8%, rgba(255,255,255,.2), transparent 36%);
+  pointer-events: none;
 }
-.profile-card:hover { transform: translateY(-2px); box-shadow: 0 20px 46px rgba(42,32,24,.24); }
+.profile-card:hover { transform: translateY(-2px); box-shadow: 0 20px 46px rgba(30,41,59,.18); }
 .profile-card[hidden] { display: none !important; }
 .card-topline { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
 .chip, .pill { display: inline-flex; align-items: center; border-radius: 999px; padding: 7px 11px; font-size: .8rem; font-weight: 800; background: rgba(255,169,59,.2); color: var(--gold-dark); }
@@ -194,7 +194,7 @@ main { width: min(1180px, calc(100% - 24px)); margin: 0 auto 28px; }
 .avatar { width: 78px; height: 78px; border-radius: 26px; object-fit: cover; background: #efe3ce; }
 .avatar.placeholder { display: grid; place-items: center; font-weight: 900; font-size: 2rem; color: var(--gold-dark); }
 .avatar.large { width: 150px; height: 150px; border-radius: 42px; }
-.profile-card .chip { background: rgba(255,255,255,.2); color: #fff; border: 1px solid rgba(255,255,255,.28); }
+.profile-card .chip { background: rgba(255,255,255,.18); color: #fff; border: 1px solid rgba(255,255,255,.32); }
 .profile-card .ref { color: rgba(255,255,255,.72); }
 .profile-card h3 { margin: 0; font-size: 1.05rem; letter-spacing: -.01em; line-height: 1.14; color: #fff; }
 .profile-card p {
@@ -202,9 +202,9 @@ main { width: min(1180px, calc(100% - 24px)); margin: 0 auto 28px; }
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
 .meta { display: flex; gap: 8px; flex-wrap: wrap; color: rgba(255,255,255,.8); font-size: .9rem; }
-.meta span { border: 1px solid rgba(255,255,255,.22); background: rgba(255,255,255,.1); border-radius: 999px; padding: 4px 8px; font-size: .82rem; }
+.meta span { border: 1px solid rgba(255,255,255,.22); background: rgba(255,255,255,.12); border-radius: 999px; padding: 4px 8px; font-size: .82rem; }
 .mini-facts { display: flex; gap: 6px; flex-wrap: wrap; margin-top: auto; }
-.mini-facts span { padding: 5px 8px; border-radius: 999px; background: rgba(255,255,255,.16); color: #fff; font-size: .76rem; font-weight: 750; }
+.mini-facts span { padding: 5px 8px; border-radius: 999px; background: rgba(255,255,255,.14); color: #fff; font-size: .76rem; font-weight: 750; }
 .profile-actions { display: grid; grid-template-columns: 1fr 36px 36px; gap: 7px; align-items: center; margin-top: 2px; }
 .tile-view, .tile-icon {
   min-height: 36px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center;
@@ -471,8 +471,8 @@ label { display: grid; gap: 8px; font-weight: 750; color: var(--ink); }
 .browse-filters {
   position: sticky; top: 4px; z-index: 12; display: grid; gap: 12px;
   padding: 14px; border: 1px solid var(--line); border-radius: 20px;
-  background: rgba(255,250,246,.92); backdrop-filter: blur(16px);
-  box-shadow: 0 10px 30px rgba(193,50,90,.06);
+  background: rgba(255,255,255,.92); backdrop-filter: blur(16px);
+  box-shadow: 0 10px 30px rgba(30,41,59,.06);
 }
 .bf-search { position: relative; display: flex; align-items: center; }
 .bf-search svg { position: absolute; left: 14px; width: 18px; height: 18px; fill: var(--muted); pointer-events: none; }
