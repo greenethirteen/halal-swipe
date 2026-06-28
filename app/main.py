@@ -719,7 +719,12 @@ def healthz() -> dict:
         return {"engine": "postgres" if is_postgres() else "sqlite", "error": str(exc)}
     return {
         "engine": "postgres" if is_postgres() else "sqlite",
-        "google_signin": bool(settings.google_client_id),
+        "base_url_origin": settings.base_url_origin,
+        "google_signin": settings.google_signin_enabled,
+        "google_client_id_configured": bool(settings.google_client_id_clean),
+        "google_client_id_valid_format": settings.google_client_id_valid_format,
+        "stripe_checkout_configured": bool(stripe and settings.stripe_secret_key and settings.stripe_price_id),
+        "stripe_webhook_configured": bool(stripe and settings.stripe_webhook_secret),
         "demo_mode": settings.demo_mode,
         "profiles_total": total,
         "profiles_approved": approved,
@@ -730,8 +735,11 @@ def healthz() -> dict:
 @app.post("/auth/google")
 async def auth_google(request: Request):
     """Verify a Google Identity Services credential and sign the user in."""
-    if not settings.google_client_id:
+    if not settings.google_client_id_clean:
         flash(request, "Google sign-in is not configured.")
+        return redirect("/login")
+    if not settings.google_client_id_valid_format:
+        flash(request, "Google sign-in is misconfigured.")
         return redirect("/login")
     form = await request.form()
     credential = form.get("credential", "")
@@ -745,7 +753,7 @@ async def auth_google(request: Request):
         from google.oauth2 import id_token as google_id_token
 
         info = google_id_token.verify_oauth2_token(
-            credential, google_requests.Request(), settings.google_client_id
+            credential, google_requests.Request(), settings.google_client_id_clean
         )
     except Exception:
         flash(request, "Google sign-in failed. Please try again.")
@@ -793,8 +801,8 @@ def create_checkout(request: Request):
         mode="subscription",
         customer_email=user["email"],
         line_items=[{"price": settings.stripe_price_id, "quantity": 1}],
-        success_url=f"{settings.base_url}/billing/success?session_id={{CHECKOUT_SESSION_ID}}",
-        cancel_url=f"{settings.base_url}/pricing",
+        success_url=f"{settings.base_url_origin}/billing/success?session_id={{CHECKOUT_SESSION_ID}}",
+        cancel_url=f"{settings.base_url_origin}/pricing",
         metadata={"user_id": str(user["id"])}
     )
     return RedirectResponse(session.url, status_code=303)
@@ -806,11 +814,24 @@ def billing_success(request: Request, session_id: str = ""):
     if stripe is not None and settings.stripe_secret_key and session_id:
         try:
             session = stripe.checkout.Session.retrieve(session_id)
-            if session.payment_status in {"paid", "no_payment_required"}:
+            metadata = getattr(session, "metadata", None) or {}
+            metadata_user_id = str(metadata.get("user_id", ""))
+            session_email = (getattr(session, "customer_email", None) or "").lower().strip()
+            current_email = (user.get("email") or "").lower().strip()
+            if (
+                metadata_user_id == str(user["id"])
+                and session_email == current_email
+                and session.payment_status in {"paid", "no_payment_required"}
+            ):
                 with db() as conn:
                     conn.execute(
-                        "UPDATE users SET subscription_status = ?, stripe_customer_id = ? WHERE id = ?",
-                        ("active", getattr(session, "customer", None), user["id"]),
+                        "UPDATE users SET subscription_status = ?, stripe_customer_id = ?, stripe_subscription_id = ? WHERE id = ?",
+                        (
+                            "active",
+                            getattr(session, "customer", None),
+                            getattr(session, "subscription", None),
+                            user["id"],
+                        ),
                     )
         except Exception:
             pass
@@ -836,7 +857,7 @@ def billing_portal(request: Request):
         try:
             session = stripe.billing_portal.Session.create(
                 customer=user["stripe_customer_id"],
-                return_url=f"{settings.base_url}/account",
+                return_url=f"{settings.base_url_origin}/account",
             )
             return RedirectResponse(session.url, status_code=303)
         except Exception:

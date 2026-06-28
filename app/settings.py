@@ -1,7 +1,12 @@
 from functools import lru_cache
 from pathlib import Path
+import re
+from urllib.parse import urlsplit, urlunsplit
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+GOOGLE_CLIENT_ID_RE = re.compile(r"^[0-9A-Za-z_-]+\.apps\.googleusercontent\.com$")
 
 
 class Settings(BaseSettings):
@@ -16,10 +21,29 @@ class Settings(BaseSettings):
     stripe_price_id: str = Field(default="", alias="STRIPE_PRICE_ID")
     google_client_id: str = Field(default="", alias="GOOGLE_CLIENT_ID")
     free_contact_limit: int = Field(default=5, alias="FREE_CONTACT_LIMIT")
-    static_version: str = Field(default="20260628-18", alias="STATIC_VERSION")
+    static_version: str = Field(default="20260628-19", alias="STATIC_VERSION")
     upload_dir: Path = Path("uploads")
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+
+    @property
+    def google_client_id_clean(self) -> str:
+        return self.google_client_id.strip()
+
+    @property
+    def google_client_id_valid_format(self) -> bool:
+        return bool(GOOGLE_CLIENT_ID_RE.fullmatch(self.google_client_id_clean))
+
+    @property
+    def google_signin_enabled(self) -> bool:
+        return bool(self.google_client_id_clean and self.google_client_id_valid_format)
+
+    @property
+    def base_url_origin(self) -> str:
+        parsed = urlsplit(self.base_url.strip())
+        if parsed.scheme and parsed.netloc:
+            return urlunsplit((parsed.scheme, parsed.netloc, "", "", ""))
+        return self.base_url.strip().rstrip("/")
 
 
 @lru_cache

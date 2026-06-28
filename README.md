@@ -88,6 +88,23 @@ The app handles:
 - `customer.subscription.deleted`
 - `customer.subscription.paused`
 
+## Google sign-in setup
+
+Create an OAuth client in Google Cloud Console:
+
+- Application type: `Web application`
+- Authorized JavaScript origins: your site origin, for example `https://your-domain.com`
+- Authorized redirect URIs: not required by Google Identity Services for this app, but adding `https://your-domain.com/auth/google` is harmless
+
+Add the generated Web client ID to `.env`:
+
+```text
+GOOGLE_CLIENT_ID="1234567890-abc123.apps.googleusercontent.com"
+BASE_URL="https://your-domain.com"
+```
+
+If Google shows `Error 401: invalid_client` or `[GSI_LOGGER]: The given client ID is not found`, the `GOOGLE_CLIENT_ID` in the running environment is missing, stale, deleted, or not the Web OAuth client ID from Google Cloud.
+
 ## Suggested production checklist
 
 - Deploy behind HTTPS

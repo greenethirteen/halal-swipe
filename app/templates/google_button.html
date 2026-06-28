@@ -1,8 +1,8 @@
-{% if settings.google_client_id %}
+{% if settings.google_signin_enabled %}
 <div class="google-auth">
   <div id="g_id_onload"
-       data-client_id="{{ settings.google_client_id }}"
-       data-login_uri="{{ settings.base_url }}/auth/google"
+       data-client_id="{{ settings.google_client_id_clean }}"
+       data-login_uri="{{ settings.base_url_origin }}/auth/google"
        data-auto_prompt="false"></div>
   <div class="g_id_signin" data-type="standard" data-theme="outline"
        data-text="continue_with" data-shape="pill" data-size="large"
