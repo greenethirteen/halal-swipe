@@ -237,24 +237,29 @@
       .top-link { font-size: .84rem; }
       .filter-btn { font-size: .84rem; padding: 7px 10px; }
       .menu-btn { width: 36px; height: 36px; }
-      .stage { padding: 0 8px 138px; align-items: center; }
+      .stage { padding: 0 8px 150px; align-items: center; }
       .card {
-        top: 42%;
-        width: min(508px, calc(100vw - 18px));
-        height: min(522px, calc(100dvh - 214px));
+        top: 41%;
+        width: min(508px, calc(100vw - 28px));
+        height: min(500px, calc(100dvh - 244px));
         min-height: 0;
         max-height: calc(100% - 18px);
         border-radius: 22px;
         box-shadow: 0 26px 54px -18px rgba(0,0,0,.58), 0 8px 20px rgba(0,0,0,.2);
       }
-      .card-inner { flex: 1; padding: 17px 18px 13px; }
+      .card-inner { flex: 1; padding: 22px 24px 20px; }
       .card-head { gap: 8px; }
-      .card-head h2 { font-size: 1.86rem; line-height: .98; font-weight: 900; letter-spacing: -.04em; }
-      .card-head h2 .age { font-size: 1.2rem; font-weight: 850; }
+      .card-head h2 { font-size: 2.05rem; line-height: .98; font-weight: 900; letter-spacing: -.045em; }
+      .card-head h2 .age { font-size: 1.26rem; font-weight: 850; }
       .more-btn { height: 34px; padding: 0 12px; }
       .loc { margin-top: 6px; font-size: 1rem; font-weight: 800; }
-      .summary { margin-top: 12px; font-size: 1.04rem; line-height: 1.44; font-weight: 800; -webkit-line-clamp: 3; }
+      .summary {
+        display: block; margin-top: 13px; font-size: 1.04rem; line-height: 1.44; font-weight: 800;
+        height: 1.44em; max-height: 1.44em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        -webkit-line-clamp: initial; -webkit-box-orient: initial;
+      }
       .facts { gap: 7px; margin-top: 12px; }
+      .facts .fact:nth-child(n+5) { display: none; }
       .fact { padding: 7px 10px; border-radius: 12px; }
       .fact .fl { font-size: .7rem; }
       .fact .fv { font-size: 1rem; font-weight: 850; -webkit-line-clamp: 1; }

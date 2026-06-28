@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     stripe_price_id: str = Field(default="", alias="STRIPE_PRICE_ID")
     google_client_id: str = Field(default="", alias="GOOGLE_CLIENT_ID")
     free_contact_limit: int = Field(default=5, alias="FREE_CONTACT_LIMIT")
-    static_version: str = Field(default="20260628-15", alias="STATIC_VERSION")
+    static_version: str = Field(default="20260628-16", alias="STATIC_VERSION")
     upload_dir: Path = Path("uploads")
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
