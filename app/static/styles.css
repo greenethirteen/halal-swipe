@@ -534,4 +534,17 @@ th { color: var(--muted); font-size: .82rem; text-transform: uppercase; letter-s
   .two-col, .fields, .filters, .review-card { grid-template-columns: 1fr; }
   .hero h1, .page-title h1 { font-size: 3rem; }
   .auth-card h1 { font-size: 1.8rem; }
+  .auth-shell { max-width: 100%; margin-top: 4px; gap: 10px; padding: 0 2px; }
+  .auth-card { gap: 8px; padding: 16px 14px 14px; border-radius: 22px; }
+  .auth-card h1 { margin: 0; font-size: 1.62rem; }
+  .google-auth { max-width: 300px; padding: 7px; border-radius: 19px; overflow: hidden; }
+  .auth-divider { margin-top: 0; }
+  .auth-card .form.compact { gap: 8px; margin-top: 0; }
+  .auth-card input { height: 48px; }
+  .auth-card .button.full { min-height: 48px; margin-top: 2px; }
+  .auth-alt { margin: 0; }
+  .auth-perks { padding: 14px 18px 16px; border-radius: 20px; }
+  .auth-perks h3 { margin-top: 9px; font-size: 1.34rem; }
+  .auth-perks ul { margin-top: 10px; gap: 7px; }
+  .auth-perks li { font-size: .9rem; line-height: 1.25; }
 }
