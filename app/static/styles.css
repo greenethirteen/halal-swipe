@@ -345,7 +345,7 @@ label { display: grid; gap: 8px; font-weight: 750; color: var(--ink); }
   }
   .auth-shell .auth-card h1 { font-size: 2.2rem; }
   .auth-shell .auth-alt { text-align: left; }
-  .auth-shell .google-auth { justify-items: stretch; }
+  .auth-shell .google-auth { justify-items: center; }
 }
 
 /* Pricing — value column + plan card */
