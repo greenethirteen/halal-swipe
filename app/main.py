@@ -669,12 +669,12 @@ def register(
 
 
 @app.get("/login", response_class=HTMLResponse)
-def login_page(request: Request, next: str = "/") -> HTMLResponse:
+def login_page(request: Request, next: str = "/account") -> HTMLResponse:
     return render(request, "login.html", {"next": safe_next(next)})
 
 
 @app.post("/login")
-def login(request: Request, email: str = Form(...), password: str = Form(...), next: str = Form("/")):
+def login(request: Request, email: str = Form(...), password: str = Form(...), next: str = Form("/account")):
     row = one("SELECT * FROM users WHERE email = ?", (email.lower().strip(),))
     if not row or not verify_password(password, row["password_hash"]):
         flash(request, "Invalid email or password.")
@@ -777,7 +777,7 @@ async def auth_google(request: Request):
         )
     request.session["user_id"] = user_id
     flash(request, "Signed in with Google.")
-    return redirect("/")
+    return redirect("/account")
 
 
 @app.post("/logout")
