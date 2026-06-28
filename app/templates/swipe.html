@@ -145,9 +145,9 @@
     .controls button:active { transform: scale(.9); }
     .swipe-hint {
       position: fixed; left: 50%; bottom: max(82px, calc(env(safe-area-inset-bottom) + 82px)); transform: translateX(-50%);
-      z-index: 52; display: none; align-items: center; gap: 9px; padding: 8px 13px; border-radius: 999px;
-      color: var(--ink); background: rgba(255,255,255,.92); border: 1px solid var(--line);
-      box-shadow: 0 10px 24px rgba(120,40,70,.14); font-weight: 850; font-size: .9rem;
+      z-index: 85; display: none; align-items: center; gap: 9px; padding: 8px 13px; border-radius: 999px;
+      color: #fff; background: var(--coral); border: 1px solid rgba(255,255,255,.38);
+      box-shadow: 0 14px 28px rgba(255,111,97,.38), 0 4px 12px rgba(42,32,24,.22); font-weight: 850; font-size: .9rem;
     }
     .swipe-hint.show { display: inline-flex; animation: hint-pop .25s ease both; }
     .swipe-hint svg { width: 16px; height: 16px; fill: currentColor; }
@@ -286,6 +286,7 @@
       .controls #rewind { width: 46px; height: 46px; }
       .controls #no { width: 58px; height: 58px; }
       .controls #yes { width: 66px; height: 66px; }
+      .swipe-hint { bottom: max(104px, calc(env(safe-area-inset-bottom) + 104px)); }
       .gate-overlay {
         align-items: stretch;
         padding: max(18px, env(safe-area-inset-top)) 16px max(22px, env(safe-area-inset-bottom));
