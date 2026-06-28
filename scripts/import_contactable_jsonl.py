@@ -5,7 +5,7 @@ Usage:
   python scripts/import_contactable_jsonl.py /path/to/profiles.txt --replace
   python scripts/import_contactable_jsonl.py /path/to/profiles.txt --dry-run
 
-The importer accepts either JSONL rows or the display-ready TSV export.
+The importer accepts JSONL rows, display-ready TSV exports, or readable rich-bio blocks.
 """
 from __future__ import annotations
 
@@ -303,6 +303,69 @@ def load_tsv_profiles(path: Path) -> tuple[list[dict[str, Any]], dict[str, int],
     return profiles, counts, reasons
 
 
+def parse_rich_block(block: str) -> dict[str, Any] | None:
+    lines = [line.rstrip() for line in block.splitlines() if line.strip()]
+    if not lines:
+        return None
+    header = clean(lines[0])
+    if not header:
+        return None
+    match = re.match(r"^(?P<ref>[A-Z]+-\d+)\s*\|\s*(?P<title>.+)$", header)
+    if not match:
+        return None
+
+    row: dict[str, Any] = {"profile_id": match.group("ref"), "title": match.group("title")}
+    key_map = {
+        "type": "profile_type",
+        "age": "age",
+        "height": "height",
+        "hometown": "hometown",
+        "current city": "current_city",
+        "country": "current_country",
+        "marital status": "marital_status",
+        "education": "qualification",
+        "job": "job",
+        "appearance": "appearance",
+        "family": "family",
+        "looking for": "expectations",
+        "bio": "bio",
+        "phone": "primary_phone",
+    }
+    current_key: str | None = None
+    for line in lines[1:]:
+        key, sep, value = line.partition(":")
+        mapped = key_map.get(key.strip().lower()) if sep else None
+        if mapped:
+            current_key = mapped
+            row[current_key] = value.strip()
+        elif current_key:
+            row[current_key] = f"{row.get(current_key, '')}\n{line.strip()}".strip()
+    row["phones"] = PHONE_RE.findall(str(row.get("primary_phone") or ""))
+    return row
+
+
+def load_rich_block_profiles(path: Path) -> tuple[list[dict[str, Any]], dict[str, int], list[str]]:
+    text = path.read_text(encoding="utf-8")
+    raw_blocks = [block.strip() for block in re.split(r"\n\s*---\s*\n", text) if block.strip()]
+    profiles: list[dict[str, Any]] = []
+    counts = {"total": 0, "bad_json": 0, "skipped": 0}
+    reasons: list[str] = []
+    for block_no, block in enumerate(raw_blocks, 1):
+        row = parse_rich_block(block)
+        if not row:
+            counts["skipped"] += 1
+            reasons.append(f"block {block_no}: invalid profile block")
+            continue
+        counts["total"] += 1
+        profile, reason = parse_row(row, path.name)
+        if reason:
+            counts["skipped"] += 1
+            reasons.append(f"block {block_no} {row.get('profile_id')}: {reason}")
+        elif profile:
+            profiles.append(profile)
+    return profiles, counts, reasons
+
+
 def is_tsv_export(path: Path) -> bool:
     with path.open("r", encoding="utf-8", newline="") as fh:
         header = fh.readline()
@@ -310,9 +373,18 @@ def is_tsv_export(path: Path) -> bool:
     return {"profile_id", "profile_type", "primary_phone"}.issubset(fields)
 
 
+def is_rich_block_export(path: Path) -> bool:
+    with path.open("r", encoding="utf-8") as fh:
+        first = fh.readline().strip()
+        second = fh.readline().strip()
+    return bool(re.match(r"^[A-Z]+-\d+\s*\|", first)) and second.lower().startswith("type:")
+
+
 def load_profiles(path: Path) -> tuple[list[dict[str, Any]], dict[str, int], list[str]]:
     if is_tsv_export(path):
         return load_tsv_profiles(path)
+    if is_rich_block_export(path):
+        return load_rich_block_profiles(path)
     return load_jsonl_profiles(path)
 
 
