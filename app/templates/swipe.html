@@ -81,8 +81,8 @@
     @keyframes card-in { from { opacity: 0; transform: translate(-50%, -50%) scale(.92) translateY(18px); } to { opacity: 1; transform: translate(-50%, -50%); } }
     .card.liking { box-shadow: 0 0 0 3px var(--green), 0 26px 54px -20px rgba(47,158,126,.5); }
     .card.noping { box-shadow: 0 0 0 3px var(--coral), 0 26px 54px -20px rgba(255,111,97,.5); }
-    .card-accent { height: 5px; flex-shrink: 0; background: linear-gradient(90deg, #ff8a5b, #ff6f61); }
-    .card-accent.groom { background: linear-gradient(90deg, #2fae8f, #12876a); }
+    .card-accent { height: 5px; flex-shrink: 0; background: linear-gradient(90deg, var(--coral-dark), var(--coral), var(--gold)); }
+    .card-accent.groom { background: linear-gradient(90deg, var(--green-mid), var(--green)); }
 
     .card-inner { flex: 0 1 auto; min-height: 0; overflow: auto; padding: 20px 22px 16px; touch-action: pan-y; display: flex; flex-direction: column; }
     .card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
@@ -137,7 +137,7 @@
     .controls #rewind svg { width: 18px; height: 18px; }
     .controls #no { width: 52px; height: 52px; color: var(--coral); box-shadow: 0 8px 20px rgba(255,111,97,.28); }
     .controls #no svg { width: 23px; height: 23px; }
-    .controls #yes { width: 60px; height: 60px; color: #fff; background: linear-gradient(135deg, #ff8a5b, #ff6f61); box-shadow: 0 10px 26px rgba(255,111,97,.5); }
+    .controls #yes { width: 60px; height: 60px; color: #fff; background: linear-gradient(135deg, var(--green-mid), var(--green)); box-shadow: 0 10px 26px rgba(15,77,61,.36); }
     .controls #yes svg { width: 27px; height: 27px; }
     .controls button:hover { transform: translateY(-2px) scale(1.05); }
     .controls button:active { transform: scale(.9); }
@@ -158,8 +158,10 @@
     /* Bride / Groom gate */
     .gate-overlay {
       position: fixed; inset: 0; z-index: 70; display: none; align-items: center; justify-content: center; padding: 16px;
-      background: radial-gradient(circle at 30% 20%, rgba(255,154,170,.5), transparent 26rem),
-                  radial-gradient(circle at 75% 80%, rgba(255,169,59,.4), transparent 26rem), rgba(255,247,240,.96);
+      background:
+        radial-gradient(circle at 20% 0%, rgba(240,169,59,.28), transparent 24rem),
+        radial-gradient(circle at 86% 92%, rgba(255,111,97,.18), transparent 26rem),
+        linear-gradient(160deg, var(--green-dark), var(--green-mid));
       backdrop-filter: blur(6px);
     }
     .gate-overlay.open { display: flex; }
@@ -173,9 +175,9 @@
       box-shadow: 0 12px 28px rgba(120,40,70,.1); transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease; }
     .gate-pick strong { font-size: 1.15rem; font-weight: 850; }
     .gate-pick small, .gp-orb { display: none; }
-    .gp-bride { background: linear-gradient(135deg, #ff9a8b, #ff6a88); }
-    .gp-groom { background: linear-gradient(135deg, #2fae8f, #12876a); }
-    .gate-pick:hover { transform: translateY(-4px); border-color: var(--coral); box-shadow: 0 20px 40px rgba(255,111,97,.24); }
+    .gp-bride { background: linear-gradient(135deg, var(--coral-dark), var(--coral)); }
+    .gp-groom { background: linear-gradient(135deg, var(--green-mid), var(--green)); }
+    .gate-pick:hover { transform: translateY(-4px); border-color: var(--gold); box-shadow: 0 20px 40px rgba(15,77,61,.24); }
     .gate-pick:active { transform: scale(.97); }
 
     /* Filter sheet */
@@ -216,15 +218,15 @@
     .info-field dd { margin: 5px 0 0; color: var(--ink); line-height: 1.5; white-space: pre-line; }
 
     @media (max-width: 600px) {
-      html, body { background: #17120f; }
+      html, body { background: var(--green-dark); }
       body {
         overflow: hidden;
         background:
-          radial-gradient(circle at 50% 18%, rgba(255,111,97,.22), transparent 18rem),
-          radial-gradient(circle at 50% 100%, rgba(18,135,106,.3), transparent 22rem),
-          #17120f;
+          radial-gradient(circle at 18% 0%, rgba(240,169,59,.22), transparent 18rem),
+          radial-gradient(circle at 92% 16%, rgba(255,111,97,.16), transparent 16rem),
+          linear-gradient(165deg, var(--green-dark) 0%, #0b2b24 52%, var(--green-mid) 100%);
       }
-      .splash { background: #17120f; }
+      .splash { background: var(--green-dark); }
       .swipe-top { width: calc(100% - 18px); padding: 0; margin-top: 4px; }
       .swipe-top .brand img { height: 58px; filter: drop-shadow(0 8px 16px rgba(0,0,0,.28)); }
       .top-pill {
@@ -285,9 +287,9 @@
         margin: auto;
         padding: 22px 18px;
         border-radius: 28px;
-        background: rgba(255,253,250,.9);
-        border: 1px solid rgba(42,32,24,.08);
-        box-shadow: 0 22px 60px rgba(42,32,24,.16);
+        background: rgba(255,253,250,.94);
+        border: 1px solid rgba(255,255,255,.55);
+        box-shadow: 0 22px 60px rgba(0,0,0,.28);
       }
       .gate-logo { width: 156px; margin-bottom: 0; }
       .gate-card h2 { margin: 2px 0 16px; font-size: 1.85rem; }
@@ -299,8 +301,8 @@
         border: 0;
         color: #fff;
       }
-      .gate-pick[data-type="Groom"] { background: linear-gradient(135deg, #0f766e, #0f5d49); }
-      .gate-pick[data-type="Bride"] { background: linear-gradient(135deg, #9a463d, #7a3d5f); }
+      .gate-pick[data-type="Groom"] { background: linear-gradient(135deg, var(--green-mid), var(--green)); }
+      .gate-pick[data-type="Bride"] { background: linear-gradient(135deg, var(--coral-dark), var(--coral)); }
       .gate-pick strong { font-size: 1.2rem; }
       .gate-pick small { display: block; margin-left: auto; color: rgba(255,255,255,.78); font-weight: 750; }
       .info-grid { grid-template-columns: 1fr; }
@@ -333,14 +335,14 @@
       .dh-btn svg { width: 21px; height: 21px; fill: currentColor; }
       .dh-btn:hover { transform: translateY(-3px); filter: brightness(1.05); }
       .dh-btn:active { transform: scale(.97); }
-      .dh-groom { background: linear-gradient(135deg, #2fae8f, #12876a); box-shadow: 0 16px 34px rgba(18,135,106,.34); }
-      .dh-bride { background: linear-gradient(135deg, #ff9a8b, #ff6a88); box-shadow: 0 16px 34px rgba(255,111,97,.32); }
+      .dh-groom { background: linear-gradient(135deg, var(--green-mid), var(--green)); box-shadow: 0 16px 34px rgba(18,135,106,.34); }
+      .dh-bride { background: linear-gradient(135deg, var(--coral-dark), var(--coral)); box-shadow: 0 16px 34px rgba(255,111,97,.32); }
       .dh-all { margin: 22px 0 0; align-self: flex-start; color: var(--muted); font-weight: 800; font-size: .95rem; }
       .dh-all:hover { color: var(--ink); }
       .dh-verse {
         position: relative; margin: 0; display: flex; flex-direction: column; justify-content: center;
         padding: 40px 38px; border-radius: 30px; overflow: hidden; color: #f6fffb;
-        background: linear-gradient(155deg, #11362e 0%, #0f5d49 55%, #14785d 100%);
+        background: linear-gradient(155deg, var(--green-dark) 0%, var(--green-mid) 55%, #14785d 100%);
         box-shadow: 0 30px 70px rgba(15,77,61,.36);
       }
       .dh-verse::before {
