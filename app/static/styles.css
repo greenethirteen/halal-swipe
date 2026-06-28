@@ -264,18 +264,32 @@ label { display: grid; gap: 8px; font-weight: 750; color: var(--ink); }
 .auth-card h1 { font-size: 1.7rem; margin: 2px 0; }
 /* narrower, deeper inputs */
 .auth-card .form.compact { gap: 10px; max-width: 272px; width: 100%; margin: 2px auto 0; }
-/* Highlighted, prominent Google sign-in */
 .google-auth {
-  display: grid; justify-items: center; gap: 9px; width: 100%; max-width: 340px; margin: 0 auto 2px;
-  padding: 12px 6px; border-radius: 18px;
-  background: linear-gradient(180deg, rgba(255,212,128,.24), rgba(255,138,76,.12));
-  border: 1.5px solid rgba(240,169,59,.5);
-  box-shadow: 0 14px 32px -12px rgba(255,138,76,.55);
+  display: grid;
+  justify-items: center;
+  width: 100%;
+  max-width: 320px;
+  margin: 0 auto;
 }
-.google-tag {
-  font-size: .64rem; font-weight: 850; letter-spacing: .1em; text-transform: uppercase;
-  color: var(--gold-dark); background: rgba(255,212,128,.65); padding: 4px 11px; border-radius: 999px;
+.auth-divider {
+  width: 100%;
+  max-width: 272px;
+  margin: 2px auto 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted);
+  font-size: .78rem;
+  font-weight: 750;
 }
+.auth-divider::before,
+.auth-divider::after {
+  content: "";
+  height: 1px;
+  flex: 1;
+  background: var(--line);
+}
+.auth-divider span { white-space: nowrap; }
 .auth-card input {
   height: 46px; border-radius: 13px; padding: 0 14px; background: #fff;
   border: 1.5px solid rgba(42,32,24,.14); box-shadow: inset 0 1px 2px rgba(42,32,24,.06);
@@ -305,7 +319,7 @@ label { display: grid; gap: 8px; font-weight: 750; color: var(--ink); }
 @media (min-width: 860px) {
   .auth-perks { display: none; }
   .auth-shell .auth-card::before { display: none; }
-  .auth-shell .auth-card .form.compact, .auth-shell .auth-card .google-auth, .auth-shell .auth-card .button.full { max-width: none; }
+  .auth-shell .auth-card .form.compact, .auth-shell .auth-card .google-auth, .auth-shell .auth-card .auth-divider, .auth-shell .auth-card .button.full { max-width: none; }
   .auth-shell .auth-card input { height: auto; }
   .auth-shell {
     max-width: 920px; margin: 5vh auto 0; grid-template-columns: 1fr 1fr;

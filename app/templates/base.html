@@ -5,6 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}{{ settings.app_name }}™ — Swipe right for nikah 💍{% endblock %}</title>
   <meta name="description" content="{{ settings.app_name }} — browse serious, reviewed Sri Lankan Nikah profiles and connect with families the respectful way.">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18279239348"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'AW-18279239348');
+  </script>
   <link rel="icon" type="image/png" href="/static/logo.png?v={{ settings.static_version }}">
   <link rel="apple-touch-icon" href="/static/logo.png?v={{ settings.static_version }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
