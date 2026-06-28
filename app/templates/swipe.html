@@ -225,8 +225,13 @@
       .info-grid { grid-template-columns: 1fr; }
     }
     @media (min-width: 900px) {
-      /* Swipe (deck + heart/pass/rewind controls) runs on desktop too. */
-      .desktop-home { display: none !important; }
+      html, body { overflow: auto; }
+      .gate-overlay { display: none !important; }
+      .desktop-home {
+        flex: 1; width: min(1100px, calc(100% - 48px)); margin: 3vh auto 6vh;
+        display: grid; grid-template-columns: 1.08fr .92fr; align-items: stretch; gap: 30px;
+      }
+      .stage, .controls, .swipe-hint { display: none; }
       .card { width: min(440px, 92vw); }
       .dh-inner { display: flex; flex-direction: column; justify-content: center; padding: 6px 2px; }
       .dh-eyebrow {
@@ -338,18 +343,17 @@
     <div class="dh-inner">
       <span class="dh-eyebrow">Halal · Private · Serious intentions</span>
       <h1 class="dh-title">Find your <em>other half</em>, the right way.</h1>
-      <p class="dh-lead">Browse serious Sri Lankan Nikah profiles. Tell us who you're looking for to begin.</p>
+      <p class="dh-lead">Browse serious Sri Lankan Nikah profiles and connect with families when you're ready.</p>
       <div class="dh-actions">
-        <a class="dh-btn dh-groom" href="/profiles?profile_type=Groom">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm0 2c-3.3 0-6 1.8-6 4v3h12v-3c0-2.2-2.7-4-6-4Zm9.5-9.5L21 6l-2.5 2.5L17 7l1-1h-3V4h3l-1-1 1.5-.5ZM20 11v4h2v-4h-2Z"/></svg>
-          Find a groom
+        <a class="dh-btn dh-groom" href="/profiles">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 2a8 8 0 1 0 4.9 14.3l5.4 5.4 1.4-1.4-5.4-5.4A8 8 0 0 0 10 2Zm0 2a6 6 0 1 1 0 12 6 6 0 0 1 0-12Z"/></svg>
+          Browse profiles
         </a>
-        <a class="dh-btn dh-bride" href="/profiles?profile_type=Bride">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm0 2c-3.3 0-6 1.8-6 4v3h12v-3c0-2.2-2.7-4-6-4ZM7 13l1.4 1.4L7 15.8 5.6 14.4 4.2 15.8 2.8 14.4 4.2 13 2.8 11.6 4.2 10.2 5.6 11.6 7 10.2 8.4 11.6 7 13Z"/></svg>
-          Find a bride
+        <a class="dh-btn dh-bride" href="/pricing">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 3 6v6c0 5.2 3.8 8.5 9 10 5.2-1.5 9-4.8 9-10V6l-9-4Zm0 2.2L19 7v5c0 4-2.7 6.7-7 8-4.3-1.3-7-4-7-8V7l7-2.8Zm-1 10.4 5.3-5.3 1.4 1.4L11 17.4l-3.7-3.7 1.4-1.4 2.3 2.3Z"/></svg>
+          See membership
         </a>
       </div>
-      <a class="dh-all" href="/profiles">Or browse everyone →</a>
     </div>
     <figure class="dh-verse">
       <span class="dh-verse-mark">﴾﴿</span>
@@ -687,7 +691,7 @@
       idx = 0; document.querySelector('.controls').style.visibility=''; render(); closeFilter();
     }
     function resetFilter(){
-      fType.value = sessionStorage.getItem('lookingFor') || '';
+      fType.value = '';
       fMin.value=''; fMax.value=''; fCity.value=''; fHeight.value=''; fEducation.value=''; fProfession.value=''; fMarital.value='';
       applyFilter();
     }
@@ -705,12 +709,21 @@
       if(e.key.toLowerCase()==='z') rewind();
     });
 
-    // Bride / Groom gate
+    // Mobile opens straight into swipe. Desktop stays on the home hero.
     const gate = document.getElementById('gateOverlay');
-    function startBrowsing(type){ sessionStorage.setItem('lookingFor', type); fType.value = type; gate.classList.remove('open'); applyFilter(); }
+    const isDesktop = () => window.matchMedia('(min-width: 900px)').matches;
+    function startBrowsing(type){
+      fType.value = type;
+      gate.classList.remove('open');
+      applyFilter();
+    }
     document.querySelectorAll('.gate-pick').forEach(btn => { btn.onclick = () => startBrowsing(btn.dataset.type); });
-    const chosen = sessionStorage.getItem('lookingFor');
-    if(chosen){ fType.value = chosen; applyFilter(); } else { gate.classList.add('open'); }
+    if(isDesktop()){
+      gate.classList.remove('open');
+    } else {
+      gate.classList.remove('open');
+      applyFilter();
+    }
   </script>
   <script type="module" src="/static/firebase.js?v={{ settings.static_version }}"></script>
 </body>
