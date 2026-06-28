@@ -373,7 +373,6 @@ def contact_gate(request: Request, profile_id: int):
     """
     user = current_user(request)
     if not user:
-        flash(request, "Please sign in or create an account to view contact details.")
         return False, redirect(f"/login?next=/profiles/{profile_id}")
     if has_active_subscription(user) or has_viewed_contact(user["id"], profile_id):
         return True, None

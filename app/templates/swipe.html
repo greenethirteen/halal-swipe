@@ -225,12 +225,9 @@
       .info-grid { grid-template-columns: 1fr; }
     }
     @media (min-width: 900px) {
-      html, body { overflow: auto; }
-      .gate-overlay, .stage, .controls, .swipe-hint { display: none !important; }
-      .desktop-home {
-        flex: 1; width: min(1100px, calc(100% - 48px)); margin: 3vh auto 6vh;
-        display: grid; grid-template-columns: 1.08fr .92fr; align-items: stretch; gap: 30px;
-      }
+      /* Swipe (deck + heart/pass/rewind controls) runs on desktop too. */
+      .desktop-home { display: none !important; }
+      .card { width: min(440px, 92vw); }
       .dh-inner { display: flex; flex-direction: column; justify-content: center; padding: 6px 2px; }
       .dh-eyebrow {
         display: inline-flex; align-self: flex-start; align-items: center; gap: 8px;
@@ -279,7 +276,7 @@
       .swipe-top .nav-links .nav-join { background: var(--green); color: #fff; margin-left: 6px; }
       .swipe-top .nav-links .nav-join:hover { background: #0f6f57; }
       .swipe-top .nav-links form.inline { display: inline-flex; }
-      .swipe-top .pill-inline, .swipe-top #filterBtn, .swipe-top #menuBtn, .swipe-top #menuDrawer { display: none !important; }
+      .swipe-top .pill-inline, .swipe-top #menuBtn, .swipe-top #menuDrawer { display: none !important; }
     }
     .nav-links { display: none; }
     @media (min-width: 900px) and (max-width: 1040px) {

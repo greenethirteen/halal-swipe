@@ -246,11 +246,56 @@ label { display: grid; gap: 8px; font-weight: 750; color: var(--ink); }
 .unlock-box { background: rgba(15,77,61,.1); color: var(--green); }
 .locked-box { background: rgba(184,138,59,.13); color: var(--gold-dark); }
 /* Auth pages — split brand panel + form */
-.auth-shell { max-width: 440px; margin: 12px auto 0; display: grid; gap: 0; }
+.auth-shell { max-width: 384px; margin: 14px auto 0; display: grid; gap: 14px; padding: 0 6px; }
 .auth-aside { display: none; }
-.auth-card { display: grid; gap: 12px; text-align: center; padding: 20px; }
-.auth-card h1 { font-size: 2rem; }
+.auth-card {
+  position: relative; overflow: hidden; display: grid; gap: 11px; text-align: center;
+  padding: 24px 20px 20px; border-radius: 24px;
+  background:
+    radial-gradient(circle at 50% -20%, rgba(255,138,76,.18), transparent 62%),
+    linear-gradient(180deg, #fffdfa, #fff4ec);
+  border: 1px solid rgba(255,138,76,.2);
+  box-shadow: 0 20px 46px -16px rgba(255,111,97,.34), 0 4px 12px rgba(120,40,70,.08);
+}
+.auth-card::before {
+  content: ""; position: absolute; inset: 0 0 auto; height: 4px;
+  background: linear-gradient(90deg, #ff8a5b, #ff6f61, #f0a93b);
+}
+.auth-card h1 { font-size: 1.7rem; margin: 2px 0; }
+/* narrower, deeper inputs */
+.auth-card .form.compact { gap: 10px; max-width: 290px; width: 100%; margin: 2px auto 0; }
+.auth-card .google-auth { max-width: 290px; width: 100%; margin: 0 auto; }
+.auth-card input {
+  height: 46px; border-radius: 13px; padding: 0 14px; background: #fff;
+  border: 1.5px solid rgba(42,32,24,.14); box-shadow: inset 0 1px 2px rgba(42,32,24,.06);
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.auth-card input:focus { outline: none; border-color: var(--coral); box-shadow: 0 0 0 3px rgba(255,111,97,.18); }
+.auth-card .button.full { max-width: 290px; margin: 4px auto 0; }
+
+/* Free-tier sell below the form */
+.auth-perks {
+  position: relative; overflow: hidden; text-align: center; padding: 18px 18px 20px; border-radius: 22px;
+  color: #f6fffb; background: linear-gradient(160deg, #11362e 0%, #0f5d49 60%, #14785d 100%);
+  box-shadow: 0 18px 42px -14px rgba(15,77,61,.5);
+}
+.auth-perks-badge {
+  display: inline-block; font-size: .66rem; font-weight: 850; letter-spacing: .13em; text-transform: uppercase;
+  color: #11362e; background: rgba(255,212,128,.95); padding: 5px 12px; border-radius: 999px;
+}
+.auth-perks h3 { margin: 12px 0 0; font-size: 1.5rem; letter-spacing: -.02em; font-weight: 850; }
+.auth-perks h3 strong { color: #ffd480; }
+.auth-perks ul { list-style: none; margin: 14px auto 0; padding: 0; display: grid; gap: 9px; max-width: 250px; text-align: left; }
+.auth-perks li { position: relative; padding-left: 26px; font-weight: 600; font-size: .95rem; color: rgba(246,255,251,.95); }
+.auth-perks li::before {
+  content: "✓"; position: absolute; left: 0; top: 1px; width: 18px; height: 18px; border-radius: 50%;
+  display: grid; place-items: center; font-size: .7rem; font-weight: 900; color: #11362e; background: #ffd480;
+}
 @media (min-width: 860px) {
+  .auth-perks { display: none; }
+  .auth-shell .auth-card::before { display: none; }
+  .auth-shell .auth-card .form.compact, .auth-shell .auth-card .google-auth, .auth-shell .auth-card .button.full { max-width: none; }
+  .auth-shell .auth-card input { height: auto; }
   .auth-shell {
     max-width: 920px; margin: 5vh auto 0; grid-template-columns: 1fr 1fr;
     align-items: stretch; gap: 0; border-radius: 30px; overflow: hidden;

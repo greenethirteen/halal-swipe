@@ -19,5 +19,15 @@
     </form>
     <p class="auth-alt">Already a member? <a href="/login{% if next and next != '/' %}?next={{ next }}{% endif %}">Log in</a></p>
   </div>
+
+  <div class="auth-perks">
+    <span class="auth-perks-badge">Free to join</span>
+    <h3>Get <strong>{{ settings.free_contact_limit }} free contacts</strong></h3>
+    <ul>
+      <li>Browse every profile, free forever</li>
+      <li>{{ settings.free_contact_limit }} free WhatsApp &amp; call reveals</li>
+      <li>Go unlimited anytime — just $5/month</li>
+    </ul>
+  </div>
 </section>
 {% endblock %}
