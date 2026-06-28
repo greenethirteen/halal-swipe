@@ -99,7 +99,9 @@
       box-shadow: 0 4px 12px rgba(42,32,24,.18); transition: transform .14s ease, box-shadow .14s ease;
     }
     .more-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(42,32,24,.26); }
+    .card-meta { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 6px; }
     .loc { display: flex; align-items: center; gap: 6px; color: var(--muted); margin-top: 6px; font-weight: 600; font-size: .92rem; }
+    .card-meta .loc { margin-top: 0; }
     .loc svg { width: 13px; height: 13px; fill: var(--coral); flex-shrink: 0; }
     .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 12px; }
     .fact { background: var(--bg); border: 1px solid var(--line); border-radius: 13px; padding: 9px 12px; min-width: 0; }
@@ -251,15 +253,15 @@
       .card-head { gap: 8px; }
       .card-head h2 { font-size: 2.05rem; line-height: .98; font-weight: 900; letter-spacing: -.045em; }
       .card-head h2 .age { font-size: 1.26rem; font-weight: 850; }
-      .more-btn { height: 34px; padding: 0 12px; }
-      .loc { margin-top: 6px; font-size: 1rem; font-weight: 800; }
+      .card-meta { margin-top: 6px; }
+      .more-btn { height: 32px; padding: 0 11px; font-size: .75rem; }
+      .loc { min-width: 0; margin-top: 0; font-size: 1rem; font-weight: 800; }
       .summary {
         display: block; margin-top: 13px; font-size: 1.04rem; line-height: 1.44; font-weight: 800;
         height: 1.44em; max-height: 1.44em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         -webkit-line-clamp: initial; -webkit-box-orient: initial;
       }
       .facts { gap: 7px; margin-top: 12px; }
-      .facts .fact:nth-child(n+5) { display: none; }
       .fact { padding: 7px 10px; border-radius: 12px; }
       .fact .fl { font-size: .7rem; }
       .fact .fv { font-size: 1rem; font-weight: 850; -webkit-line-clamp: 1; }
@@ -656,10 +658,12 @@
               <h2>${esc(p.title)}${p.age ? ` <span class="age">${esc(p.age)}</span>` : ''}</h2>
               <div class="card-tools">
                 <span class="chip${groom ? ' groom' : ''}">${esc(p.profile_type || 'Profile')}</span>
-                <button class="more-btn" type="button" title="View profile" aria-label="View profile">View profile</button>
               </div>
             </div>
-            ${place ? `<div class="loc">${PIN}${esc(place)}</div>` : ''}
+            <div class="card-meta">
+              ${place ? `<div class="loc">${PIN}${esc(place)}</div>` : '<div></div>'}
+              <button class="more-btn" type="button" title="View profile" aria-label="View profile">View profile</button>
+            </div>
             ${summary ? `<p class="summary">${esc(summary)}</p>` : ''}
             <div class="facts">${facts}</div>
             <div class="card-actions">
