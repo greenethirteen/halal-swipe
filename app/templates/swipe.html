@@ -179,7 +179,7 @@
     .gate-pick:active { transform: scale(.97); }
 
     /* Filter sheet */
-    .filter-overlay { position: fixed; inset: 0; z-index: 60; display: none; align-items: center; justify-content: center; padding: 16px; background: rgba(42,32,24,.38); backdrop-filter: blur(3px); }
+    .filter-overlay { position: fixed; inset: 0; z-index: 90; display: none; align-items: center; justify-content: center; padding: 16px; background: rgba(42,32,24,.38); backdrop-filter: blur(3px); }
     .filter-overlay.open { display: flex; }
     .filter-sheet { width: min(420px, 100%); max-height: 88dvh; overflow-y: auto; background: var(--bg-2); border-radius: 24px; padding: 22px; box-shadow: var(--shadow); display: grid; gap: 13px; animation: pop-in .25s ease both; }
     @keyframes pop-in { from { transform: scale(.94) translateY(8px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
@@ -192,7 +192,7 @@
     .desktop-home { display: none; }
 
     .info-overlay {
-      position: fixed; inset: 0; z-index: 80; display: none; align-items: center; justify-content: center;
+      position: fixed; inset: 0; z-index: 100; display: none; align-items: center; justify-content: center;
       padding: 16px; background: rgba(42,32,24,.42); backdrop-filter: blur(4px);
     }
     .info-overlay.open { display: flex; }
@@ -216,20 +216,68 @@
     .info-field dd { margin: 5px 0 0; color: var(--ink); line-height: 1.5; white-space: pre-line; }
 
     @media (max-width: 600px) {
+      body { overflow: hidden; }
       .swipe-top { width: calc(100% - 14px); padding: 0; }
       .swipe-top .brand img { height: 78px; }
       .top-pill { gap: 6px; padding: 5px 6px 5px 12px; }
       .top-link { font-size: .84rem; }
       .filter-btn { font-size: .84rem; padding: 7px 10px; }
       .menu-btn { width: 36px; height: 36px; }
-      .stage { padding: 6px 8px 4px; }
-      .card { width: min(508px, calc(100vw - 16px)); max-height: calc(100% - 4px); border-radius: 22px; }
+      .stage { padding: 4px 8px 104px; align-items: center; }
+      .card { width: min(508px, calc(100vw - 16px)); max-height: calc(100% - 26px); border-radius: 22px; }
       .card-inner { padding: 18px 18px 12px; }
       .card-head h2 { font-size: 1.62rem; }
       .card-head h2 .age { font-size: 1.1rem; }
       .facts { gap: 8px; }
       .fact { padding: 8px 10px; }
       .card-actions .ic { height: 42px; }
+      .controls {
+        position: fixed;
+        left: 50%;
+        bottom: max(12px, env(safe-area-inset-bottom));
+        transform: translateX(-50%);
+        z-index: 65;
+        width: min(316px, calc(100% - 32px));
+        min-height: 76px;
+        margin: 0;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(255,253,250,.92);
+        border: 1px solid rgba(42,32,24,.08);
+        box-shadow: 0 16px 38px rgba(42,32,24,.18);
+        backdrop-filter: blur(18px);
+      }
+      .controls #rewind { width: 46px; height: 46px; }
+      .controls #no { width: 58px; height: 58px; }
+      .controls #yes { width: 66px; height: 66px; }
+      .gate-overlay {
+        align-items: stretch;
+        padding: max(18px, env(safe-area-inset-top)) 16px max(22px, env(safe-area-inset-bottom));
+      }
+      .gate-card {
+        width: 100%;
+        max-width: 390px;
+        margin: auto;
+        padding: 22px 18px;
+        border-radius: 28px;
+        background: rgba(255,253,250,.9);
+        border: 1px solid rgba(42,32,24,.08);
+        box-shadow: 0 22px 60px rgba(42,32,24,.16);
+      }
+      .gate-logo { width: 156px; margin-bottom: 0; }
+      .gate-card h2 { margin: 2px 0 16px; font-size: 1.85rem; }
+      .gate-options { grid-template-columns: 1fr; gap: 10px; }
+      .gate-pick {
+        justify-content: flex-start;
+        min-height: 74px;
+        padding: 16px 18px;
+        border: 0;
+        color: #fff;
+      }
+      .gate-pick[data-type="Groom"] { background: linear-gradient(135deg, #0f766e, #0f5d49); }
+      .gate-pick[data-type="Bride"] { background: linear-gradient(135deg, #9a463d, #7a3d5f); }
+      .gate-pick strong { font-size: 1.2rem; }
+      .gate-pick small { display: block; margin-left: auto; color: rgba(255,255,255,.78); font-weight: 750; }
       .info-grid { grid-template-columns: 1fr; }
     }
     @media (min-width: 900px) {
@@ -717,7 +765,7 @@
       if(e.key.toLowerCase()==='z') rewind();
     });
 
-    // Mobile opens straight into swipe. Desktop stays on the home hero.
+    // Mobile asks who the user is looking for before opening swipe. Desktop stays on the home hero.
     const gate = document.getElementById('gateOverlay');
     const isDesktop = () => window.matchMedia('(min-width: 900px)').matches;
     function startBrowsing(type){
@@ -729,8 +777,7 @@
     if(isDesktop()){
       gate.classList.remove('open');
     } else {
-      gate.classList.remove('open');
-      applyFilter();
+      gate.classList.add('open');
     }
   </script>
   <script type="module" src="/static/firebase.js?v={{ settings.static_version }}"></script>
