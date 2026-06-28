@@ -272,9 +272,9 @@ label { display: grid; gap: 8px; font-weight: 750; color: var(--ink); }
   margin: 0 auto;
   padding: 9px;
   border-radius: 22px;
-  background: rgba(15,77,61,.055);
-  border: 1.5px solid rgba(15,77,61,.24);
-  box-shadow: 0 12px 28px -20px rgba(15,77,61,.55);
+  background: rgba(18,135,106,.12);
+  border: 1.5px solid rgba(18,135,106,.42);
+  box-shadow: 0 14px 30px -22px rgba(15,77,61,.7);
 }
 .auth-divider {
   width: 100%;
