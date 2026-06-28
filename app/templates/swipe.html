@@ -237,26 +237,28 @@
       .top-link { font-size: .84rem; }
       .filter-btn { font-size: .84rem; padding: 7px 10px; }
       .menu-btn { width: 36px; height: 36px; }
-      .stage { padding: 0 8px 98px; align-items: center; }
+      .stage { padding: 0 8px 138px; align-items: center; }
       .card {
-        top: 46%;
+        top: 42%;
         width: min(508px, calc(100vw - 18px));
-        min-height: min(520px, calc(100dvh - 236px));
-        max-height: calc(100% - 16px);
+        height: min(522px, calc(100dvh - 214px));
+        min-height: 0;
+        max-height: calc(100% - 18px);
         border-radius: 22px;
         box-shadow: 0 26px 54px -18px rgba(0,0,0,.58), 0 8px 20px rgba(0,0,0,.2);
       }
-      .card-inner { flex: 1; padding: 16px 17px 12px; }
+      .card-inner { flex: 1; padding: 17px 18px 13px; }
       .card-head { gap: 8px; }
-      .card-head h2 { font-size: 1.58rem; }
-      .card-head h2 .age { font-size: 1.1rem; }
+      .card-head h2 { font-size: 1.86rem; line-height: .98; font-weight: 900; letter-spacing: -.04em; }
+      .card-head h2 .age { font-size: 1.2rem; font-weight: 850; }
       .more-btn { height: 34px; padding: 0 12px; }
-      .loc { margin-top: 5px; }
-      .summary { margin-top: 10px; -webkit-line-clamp: 3; }
-      .facts { gap: 8px; }
-      .fact { padding: 8px 10px; }
-      .fact .fv { -webkit-line-clamp: 1; }
-      .card-actions { margin-top: auto; padding-top: 14px; }
+      .loc { margin-top: 6px; font-size: 1rem; font-weight: 800; }
+      .summary { margin-top: 12px; font-size: 1.04rem; line-height: 1.44; font-weight: 800; -webkit-line-clamp: 3; }
+      .facts { gap: 7px; margin-top: 12px; }
+      .fact { padding: 7px 10px; border-radius: 12px; }
+      .fact .fl { font-size: .7rem; }
+      .fact .fv { font-size: 1rem; font-weight: 850; -webkit-line-clamp: 1; }
+      .card-actions { margin-top: 13px; padding-top: 0; }
       .card-actions .ic { height: 42px; }
       .controls {
         position: fixed;
@@ -264,7 +266,7 @@
         bottom: max(14px, env(safe-area-inset-bottom));
         transform: translateX(-50%);
         z-index: 65;
-        width: min(308px, calc(100% - 44px));
+        width: min(306px, calc(100% - 48px));
         min-height: 74px;
         margin: 0;
         padding: 8px 12px;
