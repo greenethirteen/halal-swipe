@@ -78,19 +78,19 @@
 
     .card-inner { flex: 0 1 auto; min-height: 0; overflow: auto; padding: 20px 22px 16px; touch-action: pan-y; display: flex; flex-direction: column; }
     .card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
-    .card-head h2 { margin: 0; font-size: 1.95rem; letter-spacing: -.03em; color: var(--ink); line-height: 1.05; }
-    .card-head h2 .age { color: var(--muted); font-weight: 700; font-size: 1.28rem; }
+    .card-head h2 { margin: 0; font-size: 2.7rem; letter-spacing: -.035em; color: var(--ink); line-height: 1; }
+    .card-head h2 .age { color: var(--muted); font-weight: 700; font-size: 1.5rem; }
     .card-tools { display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0; }
     .card .chip { flex-shrink: 0; display: inline-flex; align-items: center; border-radius: 999px; padding: 6px 11px;
       font-size: .76rem; font-weight: 800; background: rgba(255,111,97,.16); color: var(--coral); }
     .card .chip.groom { background: rgba(18,135,106,.16); color: var(--green); }
     .more-btn {
-      flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--line);
-      display: grid; place-items: center; background: #fff; color: var(--ink); cursor: pointer;
-      box-shadow: 0 4px 12px rgba(255,138,76,.14); transition: transform .14s ease, box-shadow .14s ease;
+      flex-shrink: 0; height: 32px; padding: 0 13px; border-radius: 999px; border: 0;
+      display: inline-flex; align-items: center; background: var(--ink); color: #fff; cursor: pointer;
+      font: inherit; font-weight: 800; font-size: .78rem; white-space: nowrap; text-decoration: none;
+      box-shadow: 0 4px 12px rgba(42,32,24,.18); transition: transform .14s ease, box-shadow .14s ease;
     }
-    .more-btn svg { width: 16px; height: 16px; fill: currentColor; }
-    .more-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(255,138,76,.2); }
+    .more-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(42,32,24,.26); }
     .loc { display: flex; align-items: center; gap: 6px; color: var(--muted); margin-top: 6px; font-weight: 600; font-size: .92rem; }
     .loc svg { width: 13px; height: 13px; fill: var(--coral); flex-shrink: 0; }
     .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 12px; }
@@ -246,7 +246,7 @@
       .dh-actions { display: flex; gap: 14px; margin: 28px 0 0; flex-wrap: wrap; }
       .dh-btn {
         display: inline-flex; align-items: center; gap: 11px; padding: 15px 24px; border-radius: 16px;
-        font-weight: 850; font-size: 1.04rem; color: #fff; cursor: pointer;
+        border: 0; font: inherit; font-weight: 850; font-size: 1.04rem; color: #fff; cursor: pointer;
         transition: transform .16s ease, box-shadow .16s ease, filter .16s ease;
       }
       .dh-btn svg { width: 21px; height: 21px; fill: currentColor; }
@@ -543,7 +543,7 @@
               <h2>${esc(p.title)}${p.age ? ` <span class="age">${esc(p.age)}</span>` : ''}</h2>
               <div class="card-tools">
                 <span class="chip${groom ? ' groom' : ''}">${esc(p.profile_type || 'Profile')}</span>
-                <button class="more-btn" type="button" data-profile-id="${p.id}" title="More info" aria-label="More info">${INFO}</button>
+                <a class="more-btn" href="/profiles/${p.id}" title="View profile" aria-label="View profile">View profile</a>
               </div>
             </div>
             ${place ? `<div class="loc">${PIN}${esc(place)}</div>` : ''}
@@ -561,7 +561,7 @@
           </div>`;
         c.addEventListener('animationend', ()=>{ c.style.animation='none'; if(i===idx) c.style.transform=baseTransform(); }, {once:true});
         const more = c.querySelector('.more-btn');
-        if(more) more.onclick = (e)=>{ e.preventDefault(); e.stopPropagation(); openInfo(p); };
+        if(more) more.addEventListener('pointerdown', e => e.stopPropagation());
         stage.appendChild(c);
         if(i===idx) attachDrag(c);
       }
