@@ -170,13 +170,15 @@ main { width: min(1180px, calc(100% - 24px)); margin: 0 auto 28px; }
   border: 0;
   transition: transform .15s ease, box-shadow .15s ease;
 }
-/* 5-tone cycle: coprime with the 4/2/1 column counts so colours shift
+/* 7-tone cycle: coprime with the 4/2/1 column counts so colours shift
    diagonally row-to-row instead of locking one colour per column. */
-.profile-card:nth-child(5n+1) { background: #12876a; }
-.profile-card:nth-child(5n+2) { background: #2a2018; }
-.profile-card:nth-child(5n+3) { background: #0f5d49; }
-.profile-card:nth-child(5n+4) { background: #c05b4f; }
-.profile-card:nth-child(5n+5) { background: #315f7d; }
+.profile-card:nth-child(7n+1) { background: #0f766e; }
+.profile-card:nth-child(7n+2) { background: #4b3f72; }
+.profile-card:nth-child(7n+3) { background: #9a463d; }
+.profile-card:nth-child(7n+4) { background: #24516a; }
+.profile-card:nth-child(7n+5) { background: #5f6f3f; }
+.profile-card:nth-child(7n+6) { background: #7a3d5f; }
+.profile-card:nth-child(7n+7) { background: #2a2018; }
 .profile-card::before {
   content: ""; position: absolute; inset: 0 0 auto; height: 4px;
   background: rgba(255,255,255,.32);
