@@ -58,7 +58,7 @@
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5H7Z"/></svg>
         </button>
       </div>
-      <div class="bf-field bf-secondary-field"><span class="bf-label">Marital status</span>
+      <div class="bf-field bf-marital-field"><span class="bf-label">Marital status</span>
         <select id="fMarital" class="bf-native-select" tabindex="-1" aria-hidden="true">
           <option value="">Any status</option>
           {% for m in marital_statuses %}<option value="{{ m }}">{{ m }}</option>{% endfor %}
@@ -68,13 +68,19 @@
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5H7Z"/></svg>
         </button>
       </div>
-      <label class="bf-field bf-age bf-secondary-field"><span class="bf-label">Min age</span>
-        <input id="fMin" type="number" min="18" max="99" inputmode="numeric" placeholder="18">
-      </label>
-      <label class="bf-field bf-age bf-max-age-field"><span class="bf-label">Max age</span>
-        <input id="fMax" type="number" min="18" max="99" inputmode="numeric" placeholder="60">
-      </label>
-      <label class="bf-field bf-toggle-field"><span class="bf-label">More</span>
+      <div class="bf-field bf-age-range-field"><span class="bf-label">Age range</span>
+        <input id="fMin" type="hidden" value="18">
+        <input id="fMax" type="hidden" value="60">
+        <div class="bf-age-range">
+          <div class="bf-age-readout"><strong id="fAgeText">18-60</strong><span>yrs</span></div>
+          <div class="bf-range-track">
+            <span class="bf-range-fill" id="fAgeFill"></span>
+            <input id="fMinRange" type="range" min="18" max="60" value="18" aria-label="Minimum age">
+            <input id="fMaxRange" type="range" min="18" max="60" value="60" aria-label="Maximum age">
+          </div>
+        </div>
+      </div>
+      <label class="bf-field bf-toggle-field"><span class="bf-label">Abroad</span>
         <span class="bf-toggle">
         <input id="fAbroad" type="checkbox">
         <span class="bf-switch"></span>
@@ -115,30 +121,43 @@
   const fMarital = document.getElementById('fMarital');
   const fMin = document.getElementById('fMin');
   const fMax = document.getElementById('fMax');
+  const fMinRange = document.getElementById('fMinRange');
+  const fMaxRange = document.getElementById('fMaxRange');
+  const fAgeText = document.getElementById('fAgeText');
+  const fAgeFill = document.getElementById('fAgeFill');
   const fAbroad = document.getElementById('fAbroad');
   const countEl = document.getElementById('browseCount');
   const emptyEl = document.getElementById('browseEmpty');
   const filters = document.getElementById('browseFilters');
   let compact = false;
-  let compactEnter = 0;
-  let compactExit = 0;
 
   function tokens(){ return (fq.value || '').toLowerCase().split(/\s+/).filter(Boolean); }
 
-  function measureCompactThresholds(){
-    if(!filters) return;
-    const wasCompact = filters.classList.contains('is-compact');
-    filters.classList.remove('is-compact');
-    compactEnter = filters.offsetTop + filters.offsetHeight + 24;
-    compactExit = filters.offsetTop + 36;
-    filters.classList.toggle('is-compact', wasCompact);
-  }
-
   function syncCompactFilters(){
     if(!filters) return;
-    if(!compact && window.scrollY > compactEnter) compact = true;
-    else if(compact && window.scrollY < compactExit) compact = false;
+    compact = window.scrollY > 4;
     filters.classList.toggle('is-compact', compact);
+  }
+
+  function syncAgeRange(changed, shouldApply = true){
+    let min = parseInt(fMinRange.value, 10);
+    let max = parseInt(fMaxRange.value, 10);
+    if(min > max){
+      if(changed === fMinRange) max = min;
+      else min = max;
+    }
+    fMinRange.value = String(min);
+    fMaxRange.value = String(max);
+    fMin.value = String(min);
+    fMax.value = String(max);
+    if(fAgeText) fAgeText.textContent = `${min}-${max}`;
+    if(fAgeFill){
+      const low = ((min - 18) / 42) * 100;
+      const high = ((max - 18) / 42) * 100;
+      fAgeFill.style.left = `${low}%`;
+      fAgeFill.style.width = `${high - low}%`;
+    }
+    if(shouldApply) apply();
   }
 
   function syncSelectButton(select){
@@ -226,7 +245,8 @@
 
   function reset(){
     fq.value=''; setType('Bride', false); fLocation.value=''; fQual.value='';
-    fJob.value=''; fMarital.value=''; fMin.value=''; fMax.value=''; fAbroad.checked=false;
+    fJob.value=''; fMarital.value=''; fMinRange.value='18'; fMaxRange.value='60'; fAbroad.checked=false;
+    syncAgeRange(null, false);
     [fLocation, fQual, fJob, fMarital].forEach(select => {
       syncSelectButton(select);
       const popup = document.querySelector(`.bf-select-popup[data-for="${select.id}"]`);
@@ -242,16 +262,17 @@
     if(shouldApply) apply();
   }
 
-  [fq, fMin, fMax].forEach(el => el.addEventListener('input', apply));
+  [fq].forEach(el => el.addEventListener('input', apply));
+  [fMinRange, fMaxRange].forEach(el => el.addEventListener('input', () => syncAgeRange(el)));
   [fAbroad].forEach(el => el.addEventListener('change', apply));
   typeButtons.forEach(btn => btn.addEventListener('click', () => setType(btn.dataset.value)));
   buildSelectPopups();
+  syncAgeRange(null, false);
   setType(fType.value, false);
   apply();
-  measureCompactThresholds();
   syncCompactFilters();
   window.addEventListener('scroll', syncCompactFilters, {passive: true});
-  window.addEventListener('resize', () => { measureCompactThresholds(); syncCompactFilters(); }, {passive: true});
+  window.addEventListener('resize', syncCompactFilters, {passive: true});
   document.addEventListener('click', () => closeSelectPopups());
   document.addEventListener('keydown', e => { if(e.key === 'Escape') closeSelectPopups(); });
   document.getElementById('fReset').addEventListener('click', reset);
