@@ -859,7 +859,16 @@ label { display: grid; gap: 8px; font-weight: 750; color: var(--ink); }
   .browse-filters.is-compact .bf-field { font-size: .5rem; }
   .browse-filters.is-compact .bf-select-btn,
   .browse-filters.is-compact .bf-field input { height: 28px; min-height: 28px; padding: 0 7px; font-size: .7rem; }
+  .browse-filters.is-compact .bf-select-popup {
+    position: fixed;
+    left: 16px;
+    right: 16px;
+    top: 64px;
+    width: auto;
+    max-height: min(320px, 56vh);
+  }
   .bf-location-field .bf-select-popup { left: auto; right: 0; }
+  .browse-filters.is-compact .bf-location-field .bf-select-popup { left: 16px; right: 16px; }
   .bf-row { grid-template-columns: 1fr 1fr; gap: 6px; }
   .bf-search-field { grid-column: 1 / -1; }
   .bf-type-field { grid-column: span 1; }
