@@ -28,7 +28,7 @@ class Settings(BaseSettings):
 
     @property
     def asset_version(self) -> str:
-        return f"{self.static_version}-20260718-14"
+        return f"{self.static_version}-20260718-16"
 
     @property
     def google_client_id_clean(self) -> str:
