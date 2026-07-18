@@ -463,7 +463,6 @@ label { display: grid; gap: 8px; font-weight: 750; color: var(--ink); }
 .browse-head h1 { margin: 0; font-size: clamp(2rem, 5vw, 3.6rem); letter-spacing: -.03em; line-height: .95; }
 .browse-head span { color: var(--muted); font-weight: 800; }
 .browse-filters {
-  position: sticky; top: 4px; z-index: 12;
   padding: 12px; border: 1px solid rgba(255,255,255,.12); border-radius: 18px;
   background: linear-gradient(145deg, #111827 0%, #1e293b 62%, #0f766e 140%);
   color: #fff;
