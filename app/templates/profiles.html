@@ -3,7 +3,7 @@
 {% block content %}
 <section class="browse-shell">
   <div class="browse-filters" id="browseFilters">
-    <div class="bf-row">
+    <div class="bf-row bf-full-row">
       <a class="bf-compact-logo" href="/" aria-label="{{ settings.app_name }}">
         <img src="/static/logo.png?v={{ settings.asset_version }}" alt="">
       </a>
@@ -89,6 +89,35 @@
       </label>
       <div class="bf-field bf-reset-field"><span>&nbsp;</span><button class="button ghost mini" type="button" id="fReset">Reset</button></div>
     </div>
+    <div class="bf-compact-row" aria-label="Quick filters">
+      <a class="bf-compact-logo" href="/" aria-label="{{ settings.app_name }}">
+        <img src="/static/logo.png?v={{ settings.asset_version }}" alt="">
+      </a>
+      <div class="bf-field bf-compact-field bf-location-field">
+        <button class="bf-select-btn" type="button" data-select-target="fLocation" aria-haspopup="listbox" aria-expanded="false">
+          <span class="bf-select-value">Location</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5H7Z"/></svg>
+        </button>
+      </div>
+      <div class="bf-field bf-compact-field bf-age-range-field">
+        <div class="bf-age-range bf-compact-age" aria-live="polite">
+          <div class="bf-age-readout"><strong id="fAgeTextCompact">18-60</strong><span>yrs</span></div>
+        </div>
+      </div>
+      <div class="bf-field bf-compact-field bf-job-field">
+        <button class="bf-select-btn" type="button" data-select-target="fJob" aria-haspopup="listbox" aria-expanded="false">
+          <span class="bf-select-value">Job field</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5H7Z"/></svg>
+        </button>
+      </div>
+      <label class="bf-field bf-compact-field bf-toggle-field">
+        <span class="bf-toggle">
+          <span class="bf-toggle-text">Abroad</span>
+          <input id="fAbroadCompact" type="checkbox">
+          <span class="bf-switch"></span>
+        </span>
+      </label>
+    </div>
   </div>
 
   <div class="browse-head">
@@ -124,8 +153,10 @@
   const fMinRange = document.getElementById('fMinRange');
   const fMaxRange = document.getElementById('fMaxRange');
   const fAgeText = document.getElementById('fAgeText');
+  const fAgeTextCompact = document.getElementById('fAgeTextCompact');
   const fAgeFill = document.getElementById('fAgeFill');
   const fAbroad = document.getElementById('fAbroad');
+  const fAbroadCompact = document.getElementById('fAbroadCompact');
   const countEl = document.getElementById('browseCount');
   const emptyEl = document.getElementById('browseEmpty');
   const filters = document.getElementById('browseFilters');
@@ -140,7 +171,7 @@
     if(nextCompact !== compact){
       filters.classList.add('is-morphing');
       clearTimeout(morphTimer);
-      morphTimer = setTimeout(() => filters.classList.remove('is-morphing'), 360);
+      morphTimer = setTimeout(() => filters.classList.remove('is-morphing'), 340);
     }
     compact = nextCompact;
     filters.classList.toggle('is-compact', compact);
@@ -158,6 +189,7 @@
     fMin.value = String(min);
     fMax.value = String(max);
     if(fAgeText) fAgeText.textContent = `${min}-${max}`;
+    if(fAgeTextCompact) fAgeTextCompact.textContent = `${min}-${max}`;
     if(fAgeFill){
       const low = ((min - 18) / 42) * 100;
       const high = ((max - 18) / 42) * 100;
@@ -168,25 +200,30 @@
   }
 
   function syncSelectButton(select){
-    const btn = document.querySelector(`[data-select-target="${select.id}"]`);
-    if(!btn) return;
-    const value = btn.querySelector('.bf-select-value');
-    if(value) value.textContent = select.options[select.selectedIndex]?.text || '';
+    document.querySelectorAll(`[data-select-target="${select.id}"]`).forEach(btn => {
+      const value = btn.querySelector('.bf-select-value');
+      if(value) value.textContent = select.options[select.selectedIndex]?.text || '';
+    });
+  }
+
+  function syncSelectOptions(select){
+    document.querySelectorAll(`.bf-select-popup[data-for="${select.id}"] .bf-select-option`).forEach(el => {
+      el.setAttribute('aria-selected', el.dataset.value === select.value ? 'true' : 'false');
+    });
   }
 
   function closeSelectPopups(except){
     document.querySelectorAll('.bf-select-popup.open').forEach(popup => {
       if(popup === except) return;
       popup.classList.remove('open');
-      const btn = document.querySelector(`[data-select-target="${popup.dataset.for}"]`);
-      if(btn) btn.setAttribute('aria-expanded', 'false');
+      document.querySelectorAll(`[data-select-target="${popup.dataset.for}"]`).forEach(btn => btn.setAttribute('aria-expanded', 'false'));
     });
   }
 
   function buildSelectPopups(){
-    document.querySelectorAll('.bf-native-select').forEach(select => {
-      const btn = document.querySelector(`[data-select-target="${select.id}"]`);
-      if(!btn) return;
+    document.querySelectorAll('[data-select-target]').forEach(btn => {
+      const select = document.getElementById(btn.dataset.selectTarget);
+      if(!select) return;
       const popup = document.createElement('div');
       popup.className = 'bf-select-popup';
       popup.dataset.for = select.id;
@@ -202,7 +239,7 @@
         item.setAttribute('aria-selected', option.selected ? 'true' : 'false');
         item.addEventListener('click', () => {
           select.value = option.value;
-          popup.querySelectorAll('.bf-select-option').forEach(el => el.setAttribute('aria-selected', el.dataset.value === option.value ? 'true' : 'false'));
+          syncSelectOptions(select);
           syncSelectButton(select);
           closeSelectPopups();
           apply();
@@ -253,11 +290,11 @@
   function reset(){
     fq.value=''; setType('Bride', false); fLocation.value=''; fQual.value='';
     fJob.value=''; fMarital.value=''; fMinRange.value='18'; fMaxRange.value='60'; fAbroad.checked=false;
+    if(fAbroadCompact) fAbroadCompact.checked = false;
     syncAgeRange(null, false);
     [fLocation, fQual, fJob, fMarital].forEach(select => {
       syncSelectButton(select);
-      const popup = document.querySelector(`.bf-select-popup[data-for="${select.id}"]`);
-      if(popup) popup.querySelectorAll('.bf-select-option').forEach(el => el.setAttribute('aria-selected', el.dataset.value === select.value ? 'true' : 'false'));
+      syncSelectOptions(select);
     });
     apply();
   }
@@ -271,7 +308,16 @@
 
   [fq].forEach(el => el.addEventListener('input', apply));
   [fMinRange, fMaxRange].forEach(el => el.addEventListener('input', () => syncAgeRange(el)));
-  [fAbroad].forEach(el => el.addEventListener('change', apply));
+  fAbroad.addEventListener('change', () => {
+    if(fAbroadCompact) fAbroadCompact.checked = fAbroad.checked;
+    apply();
+  });
+  if(fAbroadCompact){
+    fAbroadCompact.addEventListener('change', () => {
+      fAbroad.checked = fAbroadCompact.checked;
+      apply();
+    });
+  }
   typeButtons.forEach(btn => btn.addEventListener('click', () => setType(btn.dataset.value)));
   buildSelectPopups();
   syncAgeRange(null, false);
