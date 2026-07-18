@@ -27,6 +27,10 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     @property
+    def asset_version(self) -> str:
+        return f"{self.static_version}-20260718-02"
+
+    @property
     def google_client_id_clean(self) -> str:
         return self.google_client_id.strip()
 

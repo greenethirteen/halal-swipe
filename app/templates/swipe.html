@@ -13,12 +13,12 @@
     gtag('js', new Date());
     gtag('config', 'AW-18279239348');
   </script>
-  <link rel="icon" type="image/png" href="/static/logo.png?v={{ settings.static_version }}">
-  <link rel="apple-touch-icon" href="/static/logo.png?v={{ settings.static_version }}">
+  <link rel="icon" type="image/png" href="/static/logo.png?v={{ settings.asset_version }}">
+  <link rel="apple-touch-icon" href="/static/logo.png?v={{ settings.asset_version }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&display=swap">
-  <link rel="stylesheet" href="/static/styles.css?v={{ settings.static_version }}">
+  <link rel="stylesheet" href="/static/styles.css?v={{ settings.asset_version }}">
   <style>
     html, body { height: 100%; overflow: hidden; }
     body { display: flex; flex-direction: column; margin: 0; height: 100dvh; }
@@ -840,6 +840,6 @@
       gate.classList.add('open');
     }
   </script>
-  <script type="module" src="/static/firebase.js?v={{ settings.static_version }}"></script>
+  <script type="module" src="/static/firebase.js?v={{ settings.asset_version }}"></script>
 </body>
 </html>
