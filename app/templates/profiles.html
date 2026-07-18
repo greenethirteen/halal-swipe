@@ -130,12 +130,19 @@
   const emptyEl = document.getElementById('browseEmpty');
   const filters = document.getElementById('browseFilters');
   let compact = false;
+  let morphTimer = null;
 
   function tokens(){ return (fq.value || '').toLowerCase().split(/\s+/).filter(Boolean); }
 
   function syncCompactFilters(){
     if(!filters) return;
-    compact = window.scrollY > 4;
+    const nextCompact = window.scrollY > 4;
+    if(nextCompact !== compact){
+      filters.classList.add('is-morphing');
+      clearTimeout(morphTimer);
+      morphTimer = setTimeout(() => filters.classList.remove('is-morphing'), 360);
+    }
+    compact = nextCompact;
     filters.classList.toggle('is-compact', compact);
   }
 
