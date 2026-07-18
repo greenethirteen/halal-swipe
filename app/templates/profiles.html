@@ -25,37 +25,37 @@
         </div>
         <input id="fType" type="hidden" value="Bride">
       </div>
-      <label class="bf-field">Location
+      <label class="bf-field bf-location-field">Location
         <select id="fLocation">
           <option value="">Anywhere</option>
           {% for loc in locations %}<option value="{{ loc }}">{{ loc }}</option>{% endfor %}
         </select>
       </label>
-      <label class="bf-field">Qualification
+      <label class="bf-field bf-secondary-field">Qualification
         <select id="fQual">
           <option value="">Any qualification</option>
           {% for q in qual_categories %}<option value="{{ q }}">{{ q }}</option>{% endfor %}
         </select>
       </label>
-      <label class="bf-field">Job field
+      <label class="bf-field bf-secondary-field">Job field
         <select id="fJob">
           <option value="">Any field</option>
           {% for j in job_categories %}<option value="{{ j }}">{{ j }}</option>{% endfor %}
         </select>
       </label>
-      <label class="bf-field">Marital status
+      <label class="bf-field bf-secondary-field">Marital status
         <select id="fMarital">
           <option value="">Any status</option>
           {% for m in marital_statuses %}<option value="{{ m }}">{{ m }}</option>{% endfor %}
         </select>
       </label>
-      <label class="bf-field bf-age">Min age
+      <label class="bf-field bf-age bf-secondary-field">Min age
         <input id="fMin" type="number" min="18" max="99" inputmode="numeric" placeholder="18">
       </label>
-      <label class="bf-field bf-age">Max age
+      <label class="bf-field bf-age bf-secondary-field">Max age
         <input id="fMax" type="number" min="18" max="99" inputmode="numeric" placeholder="60">
       </label>
-      <label class="bf-field bf-toggle-field">More
+      <label class="bf-field bf-toggle-field bf-secondary-field">More
         <span class="bf-toggle">
         <input id="fAbroad" type="checkbox">
         <span class="bf-switch"></span>
@@ -99,8 +99,15 @@
   const fAbroad = document.getElementById('fAbroad');
   const countEl = document.getElementById('browseCount');
   const emptyEl = document.getElementById('browseEmpty');
+  const filters = document.getElementById('browseFilters');
+  const compactAfter = filters ? filters.offsetTop + 72 : 0;
 
   function tokens(){ return (fq.value || '').toLowerCase().split(/\s+/).filter(Boolean); }
+
+  function syncCompactFilters(){
+    if(!filters) return;
+    filters.classList.toggle('is-compact', window.scrollY > compactAfter);
+  }
 
   function apply(){
     const terms = tokens();
@@ -149,6 +156,8 @@
   typeButtons.forEach(btn => btn.addEventListener('click', () => setType(btn.dataset.value)));
   setType(fType.value, false);
   apply();
+  syncCompactFilters();
+  window.addEventListener('scroll', syncCompactFilters, {passive: true});
   document.getElementById('fReset').addEventListener('click', reset);
   document.getElementById('browseClear').addEventListener('click', e => { e.preventDefault(); reset(); });
 })();
