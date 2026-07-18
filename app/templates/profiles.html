@@ -12,12 +12,18 @@
       </label>
       <div class="bf-field bf-type-field">
         <span>Looking for</span>
-        <div class="bf-segmented" role="group" aria-label="Looking for">
-          <button type="button" data-value="" aria-pressed="true">Anyone</button>
-          <button type="button" data-value="Bride" aria-pressed="false">Bride</button>
-          <button type="button" data-value="Groom" aria-pressed="false">Groom</button>
+        <div class="bf-profile-toggle" role="group" aria-label="Looking for" data-active="bride">
+          <span class="bf-toggle-glow" aria-hidden="true"></span>
+          <button type="button" data-value="Bride" aria-pressed="true">
+            <span class="bf-toggle-dot bride-dot"></span>
+            Bride
+          </button>
+          <button type="button" data-value="Groom" aria-pressed="false">
+            <span class="bf-toggle-dot groom-dot"></span>
+            Groom
+          </button>
         </div>
-        <input id="fType" type="hidden" value="">
+        <input id="fType" type="hidden" value="Bride">
       </div>
       <label class="bf-field">Location
         <select id="fLocation">
@@ -82,7 +88,8 @@
   const cards = Array.from(grid.querySelectorAll('.profile-card'));
   const fq = document.getElementById('fq');
   const fType = document.getElementById('fType');
-  const typeButtons = Array.from(document.querySelectorAll('.bf-segmented button'));
+  const typeToggle = document.querySelector('.bf-profile-toggle');
+  const typeButtons = Array.from(document.querySelectorAll('.bf-profile-toggle button'));
   const fLocation = document.getElementById('fLocation');
   const fQual = document.getElementById('fQual');
   const fJob = document.getElementById('fJob');
@@ -125,7 +132,7 @@
   }
 
   function reset(){
-    fq.value=''; setType('', false); fLocation.value=''; fQual.value='';
+    fq.value=''; setType('Bride', false); fLocation.value=''; fQual.value='';
     fJob.value=''; fMarital.value=''; fMin.value=''; fMax.value=''; fAbroad.checked=false;
     apply();
   }
@@ -133,12 +140,15 @@
   function setType(value, shouldApply = true){
     fType.value = value;
     typeButtons.forEach(btn => btn.setAttribute('aria-pressed', btn.dataset.value === value ? 'true' : 'false'));
+    if(typeToggle) typeToggle.dataset.active = value.toLowerCase();
     if(shouldApply) apply();
   }
 
   [fq, fMin, fMax].forEach(el => el.addEventListener('input', apply));
   [fLocation, fQual, fJob, fMarital, fAbroad].forEach(el => el.addEventListener('change', apply));
   typeButtons.forEach(btn => btn.addEventListener('click', () => setType(btn.dataset.value)));
+  setType(fType.value, false);
+  apply();
   document.getElementById('fReset').addEventListener('click', reset);
   document.getElementById('browseClear').addEventListener('click', e => { e.preventDefault(); reset(); });
 })();

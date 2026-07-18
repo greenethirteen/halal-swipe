@@ -486,35 +486,76 @@ label { display: grid; gap: 8px; font-weight: 750; color: var(--ink); }
 .bf-field select option { color: #172033; background: #fff; }
 .bf-field select, .bf-field input, .bf-reset-field .button { height: 42px; }
 .bf-age { max-width: none; }
-.bf-type-field { display: grid; }
-.bf-segmented {
+.bf-type-field { display: grid; grid-column: span 2; }
+.bf-profile-toggle {
+  position: relative;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 3px;
-  height: 42px;
-  padding: 3px;
-  border: 1px solid rgba(255,255,255,.18);
-  border-radius: 12px;
-  background: rgba(255,255,255,.1);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  min-height: 46px;
+  padding: 4px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 22% 18%, rgba(255,111,97,.34), transparent 34%),
+    radial-gradient(circle at 78% 20%, rgba(20,184,166,.34), transparent 34%),
+    rgba(255,255,255,.1);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 10px 22px rgba(0,0,0,.14);
 }
-.bf-segmented button {
+.bf-toggle-glow {
+  position: absolute;
+  inset: 4px auto 4px 4px;
+  width: calc(50% - 4px);
+  border-radius: 12px;
+  background: linear-gradient(135deg, #fff7ed, #fff);
+  box-shadow: 0 10px 22px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.9);
+  transition: transform .22s ease, background .22s ease;
+}
+.bf-profile-toggle[data-active="groom"] .bf-toggle-glow {
+  transform: translateX(100%);
+  background: linear-gradient(135deg, #ecfdf5, #fff);
+}
+.bf-profile-toggle button {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
   border: 0;
-  border-radius: 9px;
+  min-width: 0;
+  min-height: 38px;
+  border-radius: 12px;
   background: transparent;
-  color: rgba(255,255,255,.76);
+  color: rgba(255,255,255,.82);
   font: inherit;
-  font-size: .85rem;
-  font-weight: 800;
+  font-size: .94rem;
+  font-weight: 900;
   letter-spacing: 0;
   text-transform: none;
   cursor: pointer;
+  transition: color .18s ease, transform .18s ease;
 }
-.bf-segmented button[aria-pressed="true"] {
-  background: #fff;
+.bf-profile-toggle button[aria-pressed="true"] {
   color: #172033;
-  box-shadow: 0 6px 14px rgba(0,0,0,.16);
+  transform: translateY(-1px);
 }
-.bf-segmented button:focus-visible { outline: 3px solid rgba(20,184,166,.45); outline-offset: 2px; }
+.bf-toggle-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.58);
+  box-shadow: 0 0 0 4px rgba(255,255,255,.08);
+}
+.bf-profile-toggle button[aria-pressed="true"] .bride-dot {
+  background: #ff6f61;
+  box-shadow: 0 0 0 4px rgba(255,111,97,.16);
+}
+.bf-profile-toggle button[aria-pressed="true"] .groom-dot {
+  background: #14b8a6;
+  box-shadow: 0 0 0 4px rgba(20,184,166,.16);
+}
+.bf-profile-toggle button:focus-visible { outline: 3px solid rgba(255,255,255,.5); outline-offset: -2px; }
 .bf-toggle-field, .bf-reset-field { align-self: end; }
 .bf-toggle { min-height: 42px; display: inline-flex; align-items: center; gap: 8px; font-weight: 750; color: #fff; cursor: pointer; user-select: none; text-transform: none; letter-spacing: 0; }
 .bf-toggle input { position: absolute; opacity: 0; width: 0; height: 0; }
