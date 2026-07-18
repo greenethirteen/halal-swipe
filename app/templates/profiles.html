@@ -7,14 +7,14 @@
       <a class="bf-compact-logo" href="/" aria-label="{{ settings.app_name }}">
         <img src="/static/logo.png?v={{ settings.asset_version }}" alt="">
       </a>
-      <label class="bf-field bf-search-field">Search
+      <label class="bf-field bf-search-field"><span class="bf-label">Search</span>
         <span class="bf-search">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 2a8 8 0 1 0 4.9 14.3l5.4 5.4 1.4-1.4-5.4-5.4A8 8 0 0 0 10 2Zm0 2a6 6 0 1 1 0 12 6 6 0 0 1 0-12Z"/></svg>
           <input id="fq" type="search" placeholder="Name, place, work, study…" autocomplete="off">
         </span>
       </label>
       <div class="bf-field bf-type-field">
-        <span>Looking for</span>
+        <span class="bf-label">Looking for</span>
         <div class="bf-profile-toggle" role="group" aria-label="Looking for" data-active="bride">
           <span class="bf-toggle-glow" aria-hidden="true"></span>
           <button type="button" data-value="Bride" aria-pressed="true">
@@ -28,37 +28,53 @@
         </div>
         <input id="fType" type="hidden" value="Bride">
       </div>
-      <label class="bf-field bf-location-field">Location
-        <select id="fLocation">
+      <div class="bf-field bf-location-field"><span class="bf-label">Location</span>
+        <select id="fLocation" class="bf-native-select" tabindex="-1" aria-hidden="true">
           <option value="">Anywhere</option>
           {% for loc in locations %}<option value="{{ loc }}">{{ loc }}</option>{% endfor %}
         </select>
-      </label>
-      <label class="bf-field bf-secondary-field">Qualification
-        <select id="fQual">
+        <button class="bf-select-btn" type="button" data-select-target="fLocation" aria-haspopup="listbox" aria-expanded="false">
+          <span class="bf-select-value">Anywhere</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5H7Z"/></svg>
+        </button>
+      </div>
+      <div class="bf-field bf-secondary-field"><span class="bf-label">Qualification</span>
+        <select id="fQual" class="bf-native-select" tabindex="-1" aria-hidden="true">
           <option value="">Any qualification</option>
           {% for q in qual_categories %}<option value="{{ q }}">{{ q }}</option>{% endfor %}
         </select>
-      </label>
-      <label class="bf-field bf-secondary-field">Job field
-        <select id="fJob">
+        <button class="bf-select-btn" type="button" data-select-target="fQual" aria-haspopup="listbox" aria-expanded="false">
+          <span class="bf-select-value">Any qualification</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5H7Z"/></svg>
+        </button>
+      </div>
+      <div class="bf-field bf-job-field"><span class="bf-label">Job field</span>
+        <select id="fJob" class="bf-native-select" tabindex="-1" aria-hidden="true">
           <option value="">Any field</option>
           {% for j in job_categories %}<option value="{{ j }}">{{ j }}</option>{% endfor %}
         </select>
-      </label>
-      <label class="bf-field bf-secondary-field">Marital status
-        <select id="fMarital">
+        <button class="bf-select-btn" type="button" data-select-target="fJob" aria-haspopup="listbox" aria-expanded="false">
+          <span class="bf-select-value">Any field</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5H7Z"/></svg>
+        </button>
+      </div>
+      <div class="bf-field bf-secondary-field"><span class="bf-label">Marital status</span>
+        <select id="fMarital" class="bf-native-select" tabindex="-1" aria-hidden="true">
           <option value="">Any status</option>
           {% for m in marital_statuses %}<option value="{{ m }}">{{ m }}</option>{% endfor %}
         </select>
-      </label>
-      <label class="bf-field bf-age bf-secondary-field">Min age
+        <button class="bf-select-btn" type="button" data-select-target="fMarital" aria-haspopup="listbox" aria-expanded="false">
+          <span class="bf-select-value">Any status</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5H7Z"/></svg>
+        </button>
+      </div>
+      <label class="bf-field bf-age bf-secondary-field"><span class="bf-label">Min age</span>
         <input id="fMin" type="number" min="18" max="99" inputmode="numeric" placeholder="18">
       </label>
-      <label class="bf-field bf-age bf-max-age-field">Max age
+      <label class="bf-field bf-age bf-max-age-field"><span class="bf-label">Max age</span>
         <input id="fMax" type="number" min="18" max="99" inputmode="numeric" placeholder="60">
       </label>
-      <label class="bf-field bf-toggle-field bf-secondary-field">More
+      <label class="bf-field bf-toggle-field"><span class="bf-label">More</span>
         <span class="bf-toggle">
         <input id="fAbroad" type="checkbox">
         <span class="bf-switch"></span>
@@ -103,13 +119,80 @@
   const countEl = document.getElementById('browseCount');
   const emptyEl = document.getElementById('browseEmpty');
   const filters = document.getElementById('browseFilters');
-  const compactAfter = filters ? filters.offsetTop + 72 : 0;
+  let compact = false;
+  let compactEnter = 0;
+  let compactExit = 0;
 
   function tokens(){ return (fq.value || '').toLowerCase().split(/\s+/).filter(Boolean); }
 
+  function measureCompactThresholds(){
+    if(!filters) return;
+    const wasCompact = filters.classList.contains('is-compact');
+    filters.classList.remove('is-compact');
+    compactEnter = filters.offsetTop + filters.offsetHeight + 24;
+    compactExit = filters.offsetTop + 36;
+    filters.classList.toggle('is-compact', wasCompact);
+  }
+
   function syncCompactFilters(){
     if(!filters) return;
-    filters.classList.toggle('is-compact', window.scrollY > compactAfter);
+    if(!compact && window.scrollY > compactEnter) compact = true;
+    else if(compact && window.scrollY < compactExit) compact = false;
+    filters.classList.toggle('is-compact', compact);
+  }
+
+  function syncSelectButton(select){
+    const btn = document.querySelector(`[data-select-target="${select.id}"]`);
+    if(!btn) return;
+    const value = btn.querySelector('.bf-select-value');
+    if(value) value.textContent = select.options[select.selectedIndex]?.text || '';
+  }
+
+  function closeSelectPopups(except){
+    document.querySelectorAll('.bf-select-popup.open').forEach(popup => {
+      if(popup === except) return;
+      popup.classList.remove('open');
+      const btn = document.querySelector(`[data-select-target="${popup.dataset.for}"]`);
+      if(btn) btn.setAttribute('aria-expanded', 'false');
+    });
+  }
+
+  function buildSelectPopups(){
+    document.querySelectorAll('.bf-native-select').forEach(select => {
+      const btn = document.querySelector(`[data-select-target="${select.id}"]`);
+      if(!btn) return;
+      const popup = document.createElement('div');
+      popup.className = 'bf-select-popup';
+      popup.dataset.for = select.id;
+      popup.setAttribute('role', 'listbox');
+      popup.setAttribute('aria-label', btn.closest('.bf-field')?.querySelector('.bf-label')?.textContent || 'Filter');
+      Array.from(select.options).forEach(option => {
+        const item = document.createElement('button');
+        item.type = 'button';
+        item.className = 'bf-select-option';
+        item.dataset.value = option.value;
+        item.textContent = option.textContent;
+        item.setAttribute('role', 'option');
+        item.setAttribute('aria-selected', option.selected ? 'true' : 'false');
+        item.addEventListener('click', () => {
+          select.value = option.value;
+          popup.querySelectorAll('.bf-select-option').forEach(el => el.setAttribute('aria-selected', el.dataset.value === option.value ? 'true' : 'false'));
+          syncSelectButton(select);
+          closeSelectPopups();
+          apply();
+        });
+        popup.appendChild(item);
+      });
+      btn.after(popup);
+      syncSelectButton(select);
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        const open = !popup.classList.contains('open');
+        closeSelectPopups(open ? popup : null);
+        popup.classList.toggle('open', open);
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+    });
   }
 
   function apply(){
@@ -144,6 +227,11 @@
   function reset(){
     fq.value=''; setType('Bride', false); fLocation.value=''; fQual.value='';
     fJob.value=''; fMarital.value=''; fMin.value=''; fMax.value=''; fAbroad.checked=false;
+    [fLocation, fQual, fJob, fMarital].forEach(select => {
+      syncSelectButton(select);
+      const popup = document.querySelector(`.bf-select-popup[data-for="${select.id}"]`);
+      if(popup) popup.querySelectorAll('.bf-select-option').forEach(el => el.setAttribute('aria-selected', el.dataset.value === select.value ? 'true' : 'false'));
+    });
     apply();
   }
 
@@ -155,12 +243,17 @@
   }
 
   [fq, fMin, fMax].forEach(el => el.addEventListener('input', apply));
-  [fLocation, fQual, fJob, fMarital, fAbroad].forEach(el => el.addEventListener('change', apply));
+  [fAbroad].forEach(el => el.addEventListener('change', apply));
   typeButtons.forEach(btn => btn.addEventListener('click', () => setType(btn.dataset.value)));
+  buildSelectPopups();
   setType(fType.value, false);
   apply();
+  measureCompactThresholds();
   syncCompactFilters();
   window.addEventListener('scroll', syncCompactFilters, {passive: true});
+  window.addEventListener('resize', () => { measureCompactThresholds(); syncCompactFilters(); }, {passive: true});
+  document.addEventListener('click', () => closeSelectPopups());
+  document.addEventListener('keydown', e => { if(e.key === 'Escape') closeSelectPopups(); });
   document.getElementById('fReset').addEventListener('click', reset);
   document.getElementById('browseClear').addEventListener('click', e => { e.preventDefault(); reset(); });
 })();
