@@ -432,8 +432,6 @@ label { display: grid; gap: 8px; font-weight: 750; color: var(--ink); }
 .account-start p { margin: 0; }
 .account-start-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
 .account-start-actions .button { min-width: 160px; }
-.account-cta-swipe { background: transparent; color: var(--green); border: 1px solid rgba(15,77,61,.28); box-shadow: none; }
-.account-cta-swipe:hover { background: rgba(15,77,61,.07); box-shadow: none; }
 .account-grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 18px; align-items: start; margin-top: 8px; }
 .status-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 6px 0 14px; }
 .badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; font-weight: 800; font-size: .85rem; }
@@ -452,10 +450,6 @@ label { display: grid; gap: 8px; font-weight: 750; color: var(--ink); }
   .account-start { grid-template-columns: 1fr; }
   .account-start-actions { justify-content: stretch; }
   .account-start-actions .button { width: 100%; }
-  .account-cta-swipe { background: var(--green); color: #fff; border: 0; box-shadow: 0 14px 30px rgba(15,77,61,.18); order: 1; }
-  .account-cta-swipe:hover { box-shadow: 0 20px 40px rgba(15,77,61,.28); }
-  .account-cta-browse { background: transparent; color: var(--green); border: 1px solid rgba(15,77,61,.28); box-shadow: none; order: 2; }
-  .account-cta-browse:hover { background: rgba(15,77,61,.07); box-shadow: none; }
 }
 .price-card { text-align: center; display: grid; gap: 12px; padding: 22px; }
 .price-card h1 { font-size: 4rem; margin: 0; letter-spacing: -.02em; }
@@ -492,6 +486,35 @@ label { display: grid; gap: 8px; font-weight: 750; color: var(--ink); }
 .bf-field select option { color: #172033; background: #fff; }
 .bf-field select, .bf-field input, .bf-reset-field .button { height: 42px; }
 .bf-age { max-width: none; }
+.bf-type-field { display: grid; }
+.bf-segmented {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 3px;
+  height: 42px;
+  padding: 3px;
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 12px;
+  background: rgba(255,255,255,.1);
+}
+.bf-segmented button {
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: rgba(255,255,255,.76);
+  font: inherit;
+  font-size: .85rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: none;
+  cursor: pointer;
+}
+.bf-segmented button[aria-pressed="true"] {
+  background: #fff;
+  color: #172033;
+  box-shadow: 0 6px 14px rgba(0,0,0,.16);
+}
+.bf-segmented button:focus-visible { outline: 3px solid rgba(20,184,166,.45); outline-offset: 2px; }
 .bf-toggle-field, .bf-reset-field { align-self: end; }
 .bf-toggle { min-height: 42px; display: inline-flex; align-items: center; gap: 8px; font-weight: 750; color: #fff; cursor: pointer; user-select: none; text-transform: none; letter-spacing: 0; }
 .bf-toggle input { position: absolute; opacity: 0; width: 0; height: 0; }

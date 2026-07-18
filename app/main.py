@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 import os
 import re
 import shutil
@@ -389,43 +388,7 @@ def contact_gate(request: Request, profile_id: int):
 
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request) -> HTMLResponse:
-    rows = all_rows(
-        """
-        SELECT * FROM profiles
-        WHERE status = 'approved'
-        ORDER BY created_at DESC
-        LIMIT 100
-        """
-    )
-    cards = []
-    for row in rows:
-        r = public_profile(row)
-        location = ", ".join(filter(None, [r["city"], r["district"]])) or None
-        title = r["full_name"] or f"{r['profile_type'] or 'Nikah'} profile"
-        if (title or "").strip().lower() in {"bride profile", "groom profile", "profile"} and r["city"]:
-            title = f"{r['profile_type'] or 'Profile'} from {r['city']}"
-        cards.append(
-            {
-                "id": r["id"],
-                "reference_code": r["reference_code"],
-                "title": title,
-                "profile_type": r["profile_type"],
-                "age": r["age"],
-                "location": location,
-                "city": r["city"],
-                "district": r["district"],
-                "height": r["height"],
-                "education": r["education"],
-                "profession": r["profession"],
-                "marital_status": r["marital_status"],
-                "expectations": r["expectations"],
-                "family_background": r["family_background"],
-                "faith_notes": r["faith_notes"],
-                "country": r["country"],
-                "bio": r["bio_summary"],
-            }
-        )
-    return render(request, "swipe.html", {"profiles_json": json.dumps(cards)})
+    return redirect("/profiles")
 
 
 @app.get("/profiles", response_class=HTMLResponse)

@@ -10,13 +10,15 @@
           <input id="fq" type="search" placeholder="Name, place, work, study…" autocomplete="off">
         </span>
       </label>
-      <label class="bf-field">Looking for
-        <select id="fType">
-          <option value="">Anyone</option>
-          <option value="Bride">Bride</option>
-          <option value="Groom">Groom</option>
-        </select>
-      </label>
+      <div class="bf-field bf-type-field">
+        <span>Looking for</span>
+        <div class="bf-segmented" role="group" aria-label="Looking for">
+          <button type="button" data-value="" aria-pressed="true">Anyone</button>
+          <button type="button" data-value="Bride" aria-pressed="false">Bride</button>
+          <button type="button" data-value="Groom" aria-pressed="false">Groom</button>
+        </div>
+        <input id="fType" type="hidden" value="">
+      </div>
       <label class="bf-field">Location
         <select id="fLocation">
           <option value="">Anywhere</option>
@@ -80,6 +82,7 @@
   const cards = Array.from(grid.querySelectorAll('.profile-card'));
   const fq = document.getElementById('fq');
   const fType = document.getElementById('fType');
+  const typeButtons = Array.from(document.querySelectorAll('.bf-segmented button'));
   const fLocation = document.getElementById('fLocation');
   const fQual = document.getElementById('fQual');
   const fJob = document.getElementById('fJob');
@@ -122,13 +125,20 @@
   }
 
   function reset(){
-    fq.value=''; fType.value=''; fLocation.value=''; fQual.value='';
+    fq.value=''; setType('', false); fLocation.value=''; fQual.value='';
     fJob.value=''; fMarital.value=''; fMin.value=''; fMax.value=''; fAbroad.checked=false;
     apply();
   }
 
+  function setType(value, shouldApply = true){
+    fType.value = value;
+    typeButtons.forEach(btn => btn.setAttribute('aria-pressed', btn.dataset.value === value ? 'true' : 'false'));
+    if(shouldApply) apply();
+  }
+
   [fq, fMin, fMax].forEach(el => el.addEventListener('input', apply));
-  [fType, fLocation, fQual, fJob, fMarital, fAbroad].forEach(el => el.addEventListener('change', apply));
+  [fLocation, fQual, fJob, fMarital, fAbroad].forEach(el => el.addEventListener('change', apply));
+  typeButtons.forEach(btn => btn.addEventListener('click', () => setType(btn.dataset.value)));
   document.getElementById('fReset').addEventListener('click', reset);
   document.getElementById('browseClear').addEventListener('click', e => { e.preventDefault(); reset(); });
 })();

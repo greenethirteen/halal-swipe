@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}{{ settings.app_name }}™ — Swipe right for nikah 💍{% endblock %}</title>
+  <title>{% block title %}{{ settings.app_name }}™ — Browse serious Nikah profiles{% endblock %}</title>
   <meta name="description" content="{{ settings.app_name }} — browse serious, reviewed Sri Lankan Nikah profiles and connect with families the respectful way.">
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18279239348"></script>
@@ -26,7 +26,6 @@
     <a class="brand" href="/"><img src="/static/logo.png" alt="{{ settings.app_name }}"></a>
     <div class="top-pill">
       <nav class="nav-links">
-        <a class="top-link" href="/">Swipe</a>
         <a class="top-link" href="/profiles">Browse</a>
         <a class="top-link" href="/pricing">Pricing</a>
         <a class="top-link" href="/about">About</a>
@@ -44,7 +43,7 @@
       <a class="top-link pill-inline" href="/pricing">Pricing</a>
       <button class="menu-btn" id="menuBtn" type="button" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
       <nav class="menu-drawer" id="menuDrawer">
-        <a href="/">Swipe</a>
+        <a href="/profiles">Browse</a>
         <a href="/about">About</a>
         {% if is_admin %}<a href="/admin">Admin</a>{% endif %}
         {% if user %}
