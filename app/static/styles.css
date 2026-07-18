@@ -616,7 +616,7 @@ label { display: grid; gap: 8px; font-weight: 750; color: var(--ink); }
 }
 .bf-age-readout {
   display: inline-flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: center;
   gap: 4px;
   min-width: 0;
@@ -862,11 +862,12 @@ label { display: grid; gap: 8px; font-weight: 750; color: var(--ink); }
   .bf-row { grid-template-columns: 1fr 1fr; gap: 6px; }
   .bf-search-field { grid-column: 1 / -1; }
   .bf-type-field { grid-column: span 1; }
-  .bf-full-row .bf-age-range-field { grid-column: 1 / -1; }
-  .bf-age-range { grid-template-columns: 88px minmax(0, 1fr); min-height: 40px; padding: 6px 10px; column-gap: 10px; }
-  .bf-age-readout { min-height: 26px; padding: 0 6px; }
-  .bf-age-readout strong { font-size: .78rem; }
-  .bf-range-track { height: 22px; margin: 0 8px; }
+  .bf-full-row .bf-age-range-field { grid-column: span 1; }
+  .bf-age-range { grid-template-columns: 80px 52px; min-height: 38px; padding: 5px; column-gap: 6px; justify-content: center; }
+  .bf-age-readout { min-height: 26px; padding: 0 4px; align-items: center; gap: 2px; font-size: .66rem; }
+  .bf-age-readout strong { font-size: .68rem; }
+  .bf-age-readout span { font-size: .64rem; }
+  .bf-range-track { width: 50px; height: 22px; margin: 0 auto; }
   .bf-range-track input[type="range"] { height: 22px; }
   .bf-range-track input[type="range"]::-webkit-slider-runnable-track { height: 22px; }
   .bf-range-track input[type="range"]::-webkit-slider-thumb { width: 16px; height: 16px; border-width: 2px; }
