@@ -490,29 +490,46 @@ label { display: grid; gap: 8px; font-weight: 750; color: var(--ink); }
   position: relative;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  min-height: 46px;
-  padding: 4px;
+  min-height: 52px;
+  padding: 5px;
   overflow: hidden;
-  border: 1px solid rgba(255,255,255,.2);
-  border-radius: 16px;
-  background:
-    radial-gradient(circle at 22% 18%, rgba(255,111,97,.34), transparent 34%),
-    radial-gradient(circle at 78% 20%, rgba(20,184,166,.34), transparent 34%),
-    rgba(255,255,255,.1);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 10px 22px rgba(0,0,0,.14);
+  isolation: isolate;
+  border: 1px solid rgba(255,255,255,.24);
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(255,255,255,.18), rgba(255,255,255,.06));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.22), inset 0 -16px 34px rgba(0,0,0,.16), 0 14px 28px rgba(0,0,0,.18);
+}
+.bf-profile-toggle::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  background: linear-gradient(90deg, rgba(255,111,97,.24), rgba(20,184,166,.24));
+  opacity: .72;
+  pointer-events: none;
 }
 .bf-toggle-glow {
   position: absolute;
-  inset: 4px auto 4px 4px;
-  width: calc(50% - 4px);
-  border-radius: 12px;
-  background: linear-gradient(135deg, #fff7ed, #fff);
-  box-shadow: 0 10px 22px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.9);
-  transition: transform .22s ease, background .22s ease;
+  z-index: 0;
+  inset: 5px auto 5px 5px;
+  width: calc(50% - 5px);
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ff6f61, #fff7ed 42%, #fff);
+  box-shadow: 0 12px 24px rgba(0,0,0,.28), 0 0 0 1px rgba(255,255,255,.56) inset;
+  transition: transform .28s cubic-bezier(.2,.9,.2,1), background .28s ease, box-shadow .28s ease;
+}
+.bf-toggle-glow::after {
+  content: "";
+  position: absolute;
+  inset: 2px 48% 2px 2px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(255,255,255,.75), rgba(255,255,255,0));
+  pointer-events: none;
 }
 .bf-profile-toggle[data-active="groom"] .bf-toggle-glow {
   transform: translateX(100%);
-  background: linear-gradient(135deg, #ecfdf5, #fff);
+  background: linear-gradient(135deg, #14b8a6, #ecfdf5 42%, #fff);
+  box-shadow: 0 12px 24px rgba(0,0,0,.28), 0 0 0 1px rgba(255,255,255,.56) inset;
 }
 .bf-profile-toggle button {
   position: relative;
@@ -523,38 +540,44 @@ label { display: grid; gap: 8px; font-weight: 750; color: var(--ink); }
   gap: 7px;
   border: 0;
   min-width: 0;
-  min-height: 38px;
-  border-radius: 12px;
+  min-height: 42px;
+  border-radius: 999px;
   background: transparent;
-  color: rgba(255,255,255,.82);
+  color: rgba(255,255,255,.9);
   font: inherit;
-  font-size: .94rem;
+  font-size: .96rem;
   font-weight: 900;
   letter-spacing: 0;
   text-transform: none;
   cursor: pointer;
-  transition: color .18s ease, transform .18s ease;
+  transition: color .2s ease, transform .2s ease;
 }
 .bf-profile-toggle button[aria-pressed="true"] {
-  color: #172033;
+  color: #13211e;
   transform: translateY(-1px);
 }
 .bf-toggle-dot {
-  width: 9px;
-  height: 9px;
+  width: 10px;
+  height: 10px;
   border-radius: 999px;
-  background: rgba(255,255,255,.58);
-  box-shadow: 0 0 0 4px rgba(255,255,255,.08);
+  background: currentColor;
+  opacity: .78;
+  box-shadow: 0 0 0 4px rgba(255,255,255,.1);
+  transition: opacity .2s ease, transform .2s ease, box-shadow .2s ease;
 }
 .bf-profile-toggle button[aria-pressed="true"] .bride-dot {
   background: #ff6f61;
-  box-shadow: 0 0 0 4px rgba(255,111,97,.16);
+  opacity: 1;
+  transform: scale(1.08);
+  box-shadow: 0 0 0 4px rgba(255,111,97,.18), 0 0 16px rgba(255,111,97,.42);
 }
 .bf-profile-toggle button[aria-pressed="true"] .groom-dot {
   background: #14b8a6;
-  box-shadow: 0 0 0 4px rgba(20,184,166,.16);
+  opacity: 1;
+  transform: scale(1.08);
+  box-shadow: 0 0 0 4px rgba(20,184,166,.18), 0 0 16px rgba(20,184,166,.42);
 }
-.bf-profile-toggle button:focus-visible { outline: 3px solid rgba(255,255,255,.5); outline-offset: -2px; }
+.bf-profile-toggle button:focus-visible { outline: 3px solid rgba(255,255,255,.55); outline-offset: -3px; }
 .bf-toggle-field, .bf-reset-field { align-self: end; }
 .bf-toggle { min-height: 42px; display: inline-flex; align-items: center; gap: 8px; font-weight: 750; color: #fff; cursor: pointer; user-select: none; text-transform: none; letter-spacing: 0; }
 .bf-toggle input { position: absolute; opacity: 0; width: 0; height: 0; }
