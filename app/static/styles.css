@@ -503,6 +503,9 @@ label { display: grid; gap: 8px; font-weight: 750; color: var(--ink); }
 .browse-filters.is-compact .bf-field { gap: 2px; font-size: .58rem; letter-spacing: .04em; text-align: center; }
 .browse-filters.is-compact .bf-search-field .bf-label,
 .browse-filters.is-compact .bf-type-field .bf-label,
+.browse-filters.is-compact .bf-location-field .bf-label,
+.browse-filters.is-compact .bf-job-field .bf-label,
+.browse-filters.is-compact .bf-age-range-field .bf-label,
 .browse-filters.is-compact .bf-secondary-field .bf-label,
 .browse-filters.is-compact .bf-reset-field .bf-label { display: none; }
 .browse-filters.is-compact .bf-compact-logo { display: flex; align-items: center; justify-content: center; }
@@ -680,14 +683,23 @@ label { display: grid; gap: 8px; font-weight: 750; color: var(--ink); }
 .browse-filters.is-compact .bf-age-range {
   height: 30px;
   min-height: 30px;
-  padding: 0 8px;
+  padding: 0 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 10px;
 }
-.browse-filters.is-compact .bf-age-readout { font-size: .68rem; }
+.browse-filters.is-compact .bf-age-readout {
+  width: 100%;
+  min-height: 24px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-size: .68rem;
+  text-align: center;
+}
 .browse-filters.is-compact .bf-age-readout strong { font-size: .76rem; }
+.browse-filters.is-compact .bf-age-readout strong::before { content: "Age "; font-size: .68rem; font-weight: 900; }
 .browse-filters.is-compact .bf-range-track { display: none; }
 .bf-type-field { display: grid; grid-column: span 2; }
 .bf-profile-toggle {
@@ -791,7 +803,9 @@ label { display: grid; gap: 8px; font-weight: 750; color: var(--ink); }
 .bf-toggle-field, .bf-reset-field { align-self: end; }
 .bf-toggle { min-height: 42px; display: inline-flex; align-items: center; gap: 8px; font-weight: 750; color: #fff; cursor: pointer; user-select: none; text-transform: none; letter-spacing: 0; }
 .bf-toggle { transition: min-height .34s cubic-bezier(.2,.8,.2,1), font-size .34s cubic-bezier(.2,.8,.2,1), gap .34s cubic-bezier(.2,.8,.2,1); }
-.browse-filters.is-compact .bf-toggle { min-height: 30px; justify-content: center; font-size: 0; }
+.bf-toggle-text { font-weight: 850; }
+.browse-filters.is-compact .bf-toggle { min-height: 30px; justify-content: center; gap: 6px; font-size: 0; }
+.browse-filters.is-compact .bf-toggle-text { font-size: .68rem; line-height: 1; }
 .browse-filters.is-compact .bf-switch { width: 34px; height: 20px; }
 .browse-filters.is-compact .bf-switch::after { width: 14px; height: 14px; }
 .browse-filters.is-compact .bf-toggle input:checked + .bf-switch::after { transform: translateX(14px); }

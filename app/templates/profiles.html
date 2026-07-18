@@ -30,11 +30,11 @@
       </div>
       <div class="bf-field bf-location-field"><span class="bf-label">Location</span>
         <select id="fLocation" class="bf-native-select" tabindex="-1" aria-hidden="true">
-          <option value="">Anywhere</option>
+          <option value="">Location</option>
           {% for loc in locations %}<option value="{{ loc }}">{{ loc }}</option>{% endfor %}
         </select>
         <button class="bf-select-btn" type="button" data-select-target="fLocation" aria-haspopup="listbox" aria-expanded="false">
-          <span class="bf-select-value">Anywhere</span>
+          <span class="bf-select-value">Location</span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5H7Z"/></svg>
         </button>
       </div>
@@ -50,11 +50,11 @@
       </div>
       <div class="bf-field bf-job-field"><span class="bf-label">Job field</span>
         <select id="fJob" class="bf-native-select" tabindex="-1" aria-hidden="true">
-          <option value="">Any field</option>
+          <option value="">Job field</option>
           {% for j in job_categories %}<option value="{{ j }}">{{ j }}</option>{% endfor %}
         </select>
         <button class="bf-select-btn" type="button" data-select-target="fJob" aria-haspopup="listbox" aria-expanded="false">
-          <span class="bf-select-value">Any field</span>
+          <span class="bf-select-value">Job field</span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5H7Z"/></svg>
         </button>
       </div>
@@ -80,11 +80,11 @@
           </div>
         </div>
       </div>
-      <label class="bf-field bf-toggle-field"><span class="bf-label">Abroad</span>
+      <label class="bf-field bf-toggle-field">
         <span class="bf-toggle">
+        <span class="bf-toggle-text">Abroad</span>
         <input id="fAbroad" type="checkbox">
         <span class="bf-switch"></span>
-        Living abroad
         </span>
       </label>
       <div class="bf-field bf-reset-field"><span>&nbsp;</span><button class="button ghost mini" type="button" id="fReset">Reset</button></div>
